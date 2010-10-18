@@ -2,19 +2,22 @@
 
 module Model where
 
+import Control.Monad
+
 type Individual = Integer
 type BinaryRelation = (String, [(Individual,Individual)])
 type UnaryRelation = (String, [Individual])
+type Model = ([UnaryRelation], [BinaryRelation])
 
--- notice how easy it is to generalise
-isInModelBin :: String -> (Individual,Individual) -> BinaryRelation -> Bool
-isInModelBin relation (a,b) modelBinary = 
-             if fst modelBinary == relation
-             then elem (a,b) $ snd modelBinary
-             else False
+-- the following two function return Nothing if the relation name is not part of the model
+-- otherwise it return true or false according to whether R(a) or R(a,b) is true in the
+-- model or not
 
-isInModelUn :: String -> Individual -> UnaryRelation -> Bool
-isInModelUn relation a modelUnary =
-            if fst modelBinary == relation
-            then elem a $ snd modelBinary
-            else False
+isInModelBin :: String -> (Individual,Individual) -> Model -> Maybe Bool
+isInModelBin name (a,b) (_, binaryModel)
+  = liftM (elem (a,b)) $ lookup name binaryModel
+
+isInModelUn :: String -> Individual -> Model -> Maybe Bool
+isInModelUn name a (unaryModel, _)
+  = liftM (elem a) $ lookup name unaryModel
+

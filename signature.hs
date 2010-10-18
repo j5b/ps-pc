@@ -10,4 +10,13 @@ data Formula t = T | Atom Int | Neg (Formula t) |
      	       	 And (Formula t) (Formula t) | Exists t (Formula t)
      deriving (Eq, Show)
 
+top = T
+bottom = Neg T
 
+(&) :: (Formula t) -> (Formula t) -> (Formula t)
+f1 & f2 = And f1 f2
+
+(!):: (Formula t) -> (Formula t) -> (Formula t)
+f1 ! f2 = Neg ((Neg f1) & (Neg f2))
+
+-- need a way to define Forall
