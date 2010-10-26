@@ -1,0 +1,67 @@
+\documentclass[12pt,a4paper]{scrartcl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Inception Report                                      %
+% Proof Searching and Proof checking                    %
+% Computing Group Project 2010                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% standard packages
+\usepackage[latin1]{inputenc}
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{fancyhdr}
+
+% for the code listings (if any)
+\usepackage{listings}
+\lstset{language=Haskell, numbers=left, 
+  showstringspaces=false, frame=single}
+
+% double spacing
+\usepackage{setspace}
+\doublespacing
+
+\begin{document}
+
+% the first page
+\thispagestyle{empty}
+\begin{titlepage}
+  \begin{center}
+    \vspace*{\fill}
+            {{\Large Imperial College London\\ Department of Computing\\}}
+            \vfill {{\Huge Proof searching vs proof checking \\
+                     Inception Report}}\\
+            \vfill {{\large Computing Group Project\\ 
+                Supervisor: Dirk Pattinson\\ Autumn 2010}}
+            \vfill {Jannis Bulian, jb1508@ic.ac.uk, 567339 \\
+                    Michal Parusinski, ... \\
+                    Ka Wai Cheng, ... \\
+                    Sagie Benaim, ...}
+  \end{center}
+\end{titlepage}
+
+\newpage
+
+\tableofcontents
+\thispagestyle{empty}
+
+\newpage
+
+\section{Summary}
+\input{first_a}
+
+\section{Key Requirements}
+\input{first_b}
+
+\section{Extensions}
+\input{first_c}
+
+\section{Development Method}
+\input{second}
+
+\section{First Iteration Plan}
+\input{third}
+
+\section{Schedule}
+\input{fourth}
+
+\end{document}
