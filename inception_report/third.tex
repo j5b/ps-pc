@@ -1,0 +1,47 @@
+% Specification of length of, and dates for, first iteration.
+
+Our first iteration started on 22/10/10 and will end after two weeks on 05/11/10.
+In the beginning of the iteration all team members acquired a theoretical understanding
+of the task by reading journal articles on description logic and proof/model searching.
+The tasks for our first iteration are as in the sprint backlog in Table~\ref{sprint}.
+
+% Details mapping of iteration tasks onto group members (-> Sprint backlog).
+
+\begin{table}
+  \caption{Sprint backlog.}
+  \begin{tabular}{l|l|l}
+    %\hline
+    %\multicolumn{2}{|c|}{Tasks} \\
+    \hline
+    \textbf{Task} & \textbf{Owner} & \textbf{To be completed by} \\
+    \hline
+    specification of concept as haskell data type & group & 29/10/10 \\
+    specification of model as haskell data type & group & 29/10/10 \\
+    specification of proof as haskell data type & group & 29/10/10 \\
+    implementation of proof/model search for $\mathcal{AL}$ & Jannis, Sagie & 29/10/10 \\
+    implementation of model checker for $\mathcal{AL}$ & Michal & 05/11/10 \\
+    implementation of proof checker for $\mathcal{AL}$ & Ka Wai & 05/11/10
+  \end{tabular}
+  \label{sprint}
+\end{table}
+
+% Identification of potential risks during first iteration.
+
+In order to successfully complete the first iteration everyone needs to have a good
+understanding of the underlying theory. We need to identify suitable algorithms and
+adapt them to our setup. This might take more time than we expected and we will keep
+track of that in our regular meetings.
+
+To minimize this risk we aim to implement the most basic functionality first while
+still producing a complete working program in the first iteration. The design will
+allow extending this functionality in further iterations.
+
+% Planned progress measure for first iteration.
+
+Our objective for the first iteration is a fully working program that, given an
+$\mathcal{AL}$ concept, produces either a model for that concept or a proof showing its
+unsatisfiablity. Both proof and model can be checked for correctness by the program.
+
+The progress to achieve this goal is measured by regular meetings (twice a week) where
+we will discuss the progress so far, identify problems and determine the next tasks. This
+way we will always exactly know how far we are from completing the iteration.
