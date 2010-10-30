@@ -1,5 +1,7 @@
 -- file: signature_test.hs
+
 import Signature
+import Test.HUnit
 
 -- EXAMPLES
 data ExampleAtoms = C | D | E deriving (Show, Eq)
@@ -19,19 +21,28 @@ simple7 = exists R simple1
 simple8 = forall S bottom
 
 -- binding tests
-bindTest1 = part1 == part2
+bindTest1 
+  = TestCase (assertBool "And stronger than or" $ part1 == part2)
   where part1, part2 :: (Concept Ea Er)
         part1 = top \/ bottom /\ top
         part2 = top \/ (bottom /\ top)
-bindTest2 = part1 == part2
+bindTest2 
+   = TestCase (assertBool "Neg stronger than anything" $ part1 == part2)
    where part1, part2 :: (Concept Ea Er)
          part1 = neg top /\ bottom 
          part2 = neg (top /\ bottom)
-bindTest3 = part1 == part2
+bindTest3 
+   = TestCase (assertBool "Or stronger than subset" $ part1 == part2)
    where part1, part2 :: (Concept Ea Er)
          part1 = (atom C) \/ (atom D) .> top
          part2 = ((atom C) \/ (atom D)) .> top
-bindTest4 = part1 == part2 
+bindTest4 
+   = TestCase (assertBool "Anything stronger than equals" $ part1 == part2)
    where part1, part2 :: (Concept Ea Er)
          part1 = top /\ bottom <-> bottom \/ top
-         part2 = (top /\ bottom) <-> (bottom \/ top) 
+         part2 = (top /\ bottom) <-> (bottom \/ top)
+
+bindTests = TestList [TestLabel "bind test 1" bindTest1,
+                      TestLabel "bind test 2" bindTest2,
+                      TestLabel "bind test 3" bindTest3,
+                      TestLabel "bind test 4" bindTest4]
