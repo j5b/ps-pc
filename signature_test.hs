@@ -1,4 +1,11 @@
--- file: signature_test.hs
+{- 
+   Author: Michal Gerard Parusinski
+   Maintainer: Michal Gerard Parusinski
+   Email: <mparusinski@googlemail.com>
+   License: GPL 3.0
+   File: signature_test.hs
+   Description: Tests the signature.hs file
+-}
 
 import Signature
 import Test.HUnit
@@ -30,7 +37,7 @@ bindTest2
    = TestCase (assertBool "Neg stronger than anything" $ part1 == part2)
    where part1, part2 :: (Concept Ea Er)
          part1 = neg top /\ bottom 
-         part2 = neg (top /\ bottom)
+         part2 = neg (top) /\ bottom
 bindTest3 
    = TestCase (assertBool "Or stronger than subset" $ part1 == part2)
    where part1, part2 :: (Concept Ea Er)
