@@ -9,8 +9,7 @@
 
 module Signature where
 
--- TODO: Add forall and or constructor and modify everything below
--- TODO: Change to string
+-- TODO: Create a show method for Concept
 
 -- Concept is the language definition for description logic ALC and AL
 data Concept = T | Atom String | Neg Concept | Or Concept Concept |

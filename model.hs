@@ -22,16 +22,16 @@ type Model = (Domain, [UnaryRelation], [BinaryRelation])
 -- Creates an empty model (good for testing)
 emptyModel = ([], [], [])
 
--- report if the domain is empty
-emptyModelReport = ("Model is fine since we got an empty result", True)
+-- report for the empty model
+emptyModelReport = ("", ["Model is fine since we got an empty result"], True)
 emr = emptyModelReport
 
 -- checks the domain for errors
 checkModel :: Model -> Report
 checkModel (dom, uns, bins) = 
   combine reportUns reportBins
-  where reportUns  = title "=> Unary check" $ checkUnary dom uns
-        reportBins = title "=> Binary check" $ checkBinary dom bins
+  where reportUns  = pushTitle $ title "Unary check" $ checkUnary dom uns
+        reportBins = pushTitle $ title "Binary check" $ checkBinary dom bins
   
 -- checks the domain for errors relating to atoms
 checkUnary :: Domain -> [UnaryRelation] -> Report
