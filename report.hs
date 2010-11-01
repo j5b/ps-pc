@@ -11,28 +11,33 @@ module Report where
 
 type Success = Bool
 type Log = String
-type Report = (Log, Success)
+type Title = String
+type Report = (Title, [Log], Success)
 
 buildReport :: String -> Bool -> Report
-buildReport msg success = (msg, success)
+buildReport msg success = ("", [msg], success)
 
 printReport :: Report -> IO ()
 printReport report = do putStrLn $ toOutput report
 
 toOutput :: Report -> String
-toOutput (txt, success) =
-  (if success then "===== PASSED: =====\n" else "===== FAILED =====:\n") 
-      ++ txt ++ "\n----- END REPORT -----"
+toOutput (title, txt, success) 
+  | title == [] = mainMessage ++ newMsg
+  | otherwise   = mainMessage ++ "=> "++title++"\n"++newMsg
+  where mainMessage = if success then "===== PASSED: =====\n" else "===== FAILED =====:\n"
+        newMsg      = (foldl (++) "" $ map (flip (++) "\n") txt)
 
 standardReport :: Report
-standardReport = ("No error found!", True)
+standardReport = ("Standard message", ["No error found!"], True)
 
 combine :: Report -> Report -> Report
-combine (txt1, success1) (txt2, success2) =
-  (txt1++"\n----- END REPORT -----\n"++txt2, success1 && success2)
+combine (title1, txt1, success1) (title2, txt2, success2) 
+  | title1 == title2 = (title1, txt1++txt2, success1 && success2)
+  | otherwise        = error "To combine reports we need the same title"
 
 title :: String -> Report -> Report
-title tt (txt, success) = (tt++"\n"++txt, success)
+title str (_, txt, success) = (str, txt, success)
 
-append :: String -> Report -> Report
-append appMsg (txt, success) = (txt++"\n"++appMsg,success)
+pushTitle :: Report -> Report
+pushTitle (title, msg, success) = ("", ["=> "++title++"\n"++newMsg], success)
+  where newMsg = foldl (++) "" $ map (flip (++) "\n") $ (map ((++) "\t") msg)
