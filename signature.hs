@@ -9,9 +9,12 @@
 
 module Signature where
 
+-- TODO: Add forall and or constructor and modify everything below
+-- TODO: Change to string
+
 -- Concept is the language definition for description logic ALC and AL
-data Concept atoms rels = T | Atom atoms | Neg (Concept atoms rels) | 
-     	       	          And (Concept atoms rels) (Concept atoms rels) | Exists rels (Concept atoms rels)
+data Concept = T | Atom String | Neg Concept | Or Concept Concept |
+     	       And Concept Concept | Exists String Concept | Forall String Concept
      deriving (Show, Eq)
 
 {- 
@@ -30,38 +33,50 @@ top = T
 bottom = Neg T
 
 -- neg negates a concept
-neg :: (Concept a r) -> (Concept a r)
+neg :: Concept -> Concept
 neg concept = Neg concept
 
 -- atom builds and atomic concept
-atom :: a -> (Concept a r)
+atom :: String -> Concept
 atom atomic = Atom atomic 
 
 infixr 8 /\
 -- /\ is and/intersection in description logic
-(/\) :: (Concept a r) -> (Concept a r) -> (Concept a r)
+(/\) :: Concept -> Concept -> Concept
 f1 /\ f2 = And f1 f2
 
 infixr 7 \/
 -- \/ is or/union in description logic
-(\/) :: (Concept a r) -> (Concept a r) -> (Concept a r)
-f1 \/ f2 = Neg ((Neg f1) /\ (Neg f2))
+(\/) :: Concept -> Concept -> Concept
+f1 \/ f2 = Or f1 f2
 
 infixr 6 .>
 -- .> is implies/subset
-(.>) :: (Concept a r) -> (Concept a r) -> (Concept a r)
+(.>) :: Concept -> Concept -> Concept
 f1 .> f2 = (Neg f1) \/ f2
 
 infixr 5 <->
 -- <-> is equivalent/same set
-(<->) :: (Concept a r) -> (Concept a r) -> (Concept a r)
+(<->) :: Concept -> Concept -> Concept
 f1 <-> f2 = (f2 .> f1) /\ (f1 .> f2)
 
 -- exists constructs an exists expression
-exists :: r -> (Concept a r) -> (Concept a r)
+exists :: String -> Concept -> Concept
 exists rel concept = Exists rel concept
 
 -- forall constructs an forall expression
-forall :: r -> (Concept a r) -> (Concept a r)
-forall rel concept = Neg (Exists rel $ Neg concept)
+forall :: String -> Concept -> Concept
+forall rel concept = Forall rel concept
+
+-- converts a formula to Negation Normal Form
+toNNF :: Concept -> Concept
+toNNF (Neg (Neg f)) = toNNF f
+toNNF (Neg (And f1 f2)) = Or (toNNF $ Neg f1) (toNNF $ Neg f2)
+toNNF (Neg (Or f1 f2)) = And (toNNF $ Neg f1) (toNNF $ Neg f2)
+toNNF (Neg (Exists str f)) = Forall str $ toNNF (Neg f)
+toNNF (Neg (Forall str f)) = Exists str $ toNNF (Neg f)
+toNNF concept = concept
+
+-- more clearer name if required
+toNegationNormalForm = toNNF
 
