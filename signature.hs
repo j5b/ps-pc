@@ -79,3 +79,11 @@ toNNF concept = concept
 -- more clearer name if required
 toNegationNormalForm = toNNF
 
+-- Checks if a concept if Atomic 
+isAtomic :: Concept -> Bool
+isAtomic T = True
+isAtomic (Neg T) = True
+isAtomic (Atom string) = True
+isAtomic (Neg (Atom string)) = True
+isAtomic _ = False
+
