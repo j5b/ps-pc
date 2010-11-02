@@ -101,3 +101,13 @@ bindTests = TestList $ map testLabel [ ("bind test 1", bindTest1),
                                        ("bind test 2", bindTest2),
                                        ("bind test 3", bindTest3),
                                        ("bind test 4", bindTest4)]
+
+-- testing the atomic function
+
+atomicTest1 = TestCase (assertBool "Atomic simple 1" $ (isAtomic bottom) == True)
+atomicTest2 = TestCase (assertBool "Atomic simple 2" $ (isAtomic simple1) == True)
+atomicTest3 = TestCase (assertBool "Non atomic" $ (isAtomic simple6) == False)
+
+atomicTests = TestList $ map testLabel [ ("atomic test 1", atomicTest1),
+                                         ("atomic test 2", atomicTest2),
+                                         ("atomic test 3", atomicTest3) ]
