@@ -12,8 +12,9 @@ module Proof where
 -- TODO: Add somehow knowledge base
 -- TODO: Build up the proof rules
 
+-- The last Formula in the tuple is the concept that the rule is applied to
 type Rule = String
-type ProofStep = ([Formula], Rule)
+type ProofStep = ([Formula], Rule, Formula)
 data ProofTree = NodeZero ProofStep |            
                  NodeOne ProofStep ProofTree |
-                 NodeTwo ProofStep ProofTtree ProofTree |
+                 NodeTwo ProofStep ProofTtree ProofTree
