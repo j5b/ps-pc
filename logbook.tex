@@ -1,0 +1,217 @@
+\documentclass[12pt]{article}
+\title{Group Project - Proof search vs Proof checking - Log book}
+\author{M. G. Parusinski - CID 00566542}
+
+\begin{document}
+
+\maketitle
+
+\section*{Meeting 1 - 12.10.2010} 
+
+\textbf{People present:} S. Benhaim, J. Bullian, M.G. Parusinski, K. Cheng, Dr. Dirk \\
+\textbf{Purpose:} Discuss organisation of the project and discuss main topic on the project \\
+\textbf{Points discussed:}
+\begin{itemize}
+\item Statement of the problem and its implications
+\item Possible challenges of the problem
+\item Reports and deadlines to meet
+\item Goals of the project
+\end{itemize} 
+\textbf{For next meeting}
+\begin{itemize}
+\item Read litterature about Description Logic and KR based system
+\end{itemize}
+
+\section*{Meeting 2 - 13.10.2010}
+
+\textbf{People present:} S. Benhaim, J. Bullian, M.G. Parusinski, K. Cheng \\
+\textbf{Purpose:} Discuss organisation of the project, assigning role in the group, discussing design and goals. \\
+\textbf{Points discussed:}
+\begin{itemize}
+\item Language will be Haskell
+\item M.G. Parusinski becomes Secretary
+\item Syntax for representing formulas using Abstract Data Types
+\item Output files to be generated: one human readable, one machine readable
+\item Tools for programming: Code review, Version Control, Automated testing (HUnit)
+\item Optimisation
+\end{itemize}
+\textbf{For next meeting:}
+\begin{itemize}
+\item Check HUnit
+\item Think about a modular design
+\item Choose version control
+\item Provide possible documentation for other members
+\end{itemize}
+\textbf{Temporary assignements:}
+\begin{itemize}
+\item S.Benhaim: Proof search
+\item M.G. Parusinski: Model Checking
+\item K.Cheng: Proof Checking
+\item J.Bullian: Model Construction
+\end{itemize}
+\textbf{Suggested critical goals (for B):} 
+\begin{itemize}
+\item Implementing an algorithm that performs proof searching
+\item Implementing an algorithm that performs model construction
+\item Implementing an algorithm that performs proof checking
+\item Implementing an algorithm that performs model checking
+\item Ensuring our algorithms are correct if terminates
+\end{itemize}
+\textbf{Secondary optional goals (for A):}
+\begin{itemize}
+\item Generating human readable format for models and proof representation
+\item Implement a parser for reading formulas
+\item Testing the code with tests unit
+\item Extend to non standard logics
+\end{itemize}
+
+\section*{Meeting 3 - 14.10.2010}
+
+\textbf{People present:} S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng \\
+\textbf{Purpose:} Discuss organisation of the project, agreeing on roles \\
+\textbf{Points discussed:} 
+\begin{itemize}
+\item Code review and version control: Google code if the project can be open source
+\item HUnit will be used for testing
+\item Data type to describe signature: see signature.hs
+\item Questions for the supervisor
+\end{itemize}
+\textbf{For next meeting:}
+\begin{itemize}
+\item Decide whether the code can open source or not. If possible which license to use
+\end{itemize}
+
+\section*{Meeting 4 - 15.10.2010}
+
+\textbf{People present:} Dr. Dirk, S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng \\
+\textbf{Purpose:} Discuss first report and division of work \\
+\textbf{Points discuessed:}
+\begin{itemize}
+\item Changes to types: restricting to unary and binary relations correcting errors made
+\item Determining whether project can be open-source or not
+\item Diving proof and model search algorithm into three parts: tree creation, proof search, model search
+\end{itemize}
+\textbf{For next meeting:}
+\begin{itemize}
+\item Read litterature about DL, tableau calculus
+\item Check CoLoss
+\item Correct the type definitions
+\end{itemize}
+
+\section*{Meeting 5 - 18.10.2010}
+
+\textbf{People present:} S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng \\
+\textbf{Purpose:} Discuss first report, setting up the working environment for the project  and discuss timetable\\
+\textbf{Point discussed}
+\begin{itemize}
+\item Time table agreements
+\item Project organisation
+\item Should the language definition should be minimal or not
+\end{itemize}
+\textbf{Agreements:}
+\begin{itemize}
+\item Monday meetings at 12-13 everybody agreed this as their first choice
+\item Thursday meeting at 11-12 everybody agreed this as their first choice
+\item Use the minimal defintion
+\end{itemize}
+\textbf{For next meeting:}
+\begin{itemize}
+\item Set up a Google Account for code.googe.com if not already available
+\item Install Mercurial on favourite O.S.
+\item Read about DL, and tableau calculus
+\item Compare Extreme Programming, and Scrum
+\item Think about first iteration plan
+\item Think about schedule
+\item Think about development method (See above)
+\end{itemize}
+
+\section*{Meeting 6 - 21.10.2010}
+
+\textbf{People present:} S.Benhaim, J.Bullian, M.G. Parusinski (missed part of it), K.Cheng \\
+\textbf{Purpose:} Discuss first report, discuss development method \\
+\textbf{Point discussed:}
+\begin{itemize}
+\item Agile development method
+\item Discuss the algorithms
+\item Eating
+\end{itemize}
+\textbf{For next meeting:}
+\begin{itemize}
+\item Read the litterature more carefully and understand the algorithms
+\item Checkout all the Agile Software Development methods and choose one
+\item Describe the first iteration plan
+\item Finish the draft timetable
+\end{itemize}
+
+\section*{Meeting 7 -22.10.2010}
+
+\textbf{People present:} S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng
+\textbf{Purpose:} Discuss agile development method
+\textbf{Point discussed:}
+\begin{itemize}
+\item Testing code and testing practices
+\item Agile software development
+\item Inception report
+\end{itemize}
+\textbf{Agreements:}
+\begin{itemize}
+\item Write test then write code then test and then submit
+\item Review other people code whenever new submissions and if possible
+\item Clear comments
+\item Respect haskell standards
+\end{itemize}
+\textbf{For next meeting:}
+\begin{itemize}
+\item Read all relevant documentation
+\item Read about agile software development
+\item Find clear cut goals
+\item Agree for goals and agile software development
+\item Every person choose the features for the software development pratice
+\item Write the report
+\item Deadline spreadsheet and tasks spreadsheet
+\end{itemize}
+
+\section*{Meeting 8 - 25.10.2010 and Meeting 9 - 26.10.2010 }
+
+\textbf{People present:} S.Benhaim, J.Bullian, K.Cheng \\
+\textbf{Purpose:} Agreements for project inception \\
+\textbf{Agreements:}
+\begin{itemize}
+\item Software development method Agile development XP, Crystal Clear, Agile Unified Process mixture
+\item Agreement on design and early assignements of tasks
+\item Agreement on a draft schedule
+\item Agreement on a first iteration plan
+\end{itemize}
+
+\section*{Meeting 10 - 27.10.2010}
+
+\textbf{People present:} S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng \\
+\textbf{Purpose:} Finalize the inception report check any mistakes \\
+
+\section*{Meeting 11 - 28.10.2010}
+
+\textbf{People present:} Dr. Dirk, S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng \\
+\textbf{Purpose:} Ask the supervisor to check the inception report and ask questions about the litterature \\
+\textbf{Tasks:} \\ 
+\begin{itemize}
+\item Additional corrections for inception report
+\end{itemize}
+
+\section*{Meeting 12 - 29.10.2010}
+
+\textbf{People present:} S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng \\
+\textbf{Purpose:} Agree on tasks for first iteration \\
+\textbf{Tasks:} \\ 
+\begin{itemize}
+\item Write constructer functions of Description Logic to allow modular design
+\item Give precedence rule for operators (like in logic)
+\item Add domain to the code and appropriate
+\item Rules as a abstract data type
+\item Add knowledge base to the proof system
+\item Use either type for outputs
+\end{itemize}
+\textbf{For later:}
+\begin{itemize}
+\item Sanity check
+\end{itemize}
+\end{document}
