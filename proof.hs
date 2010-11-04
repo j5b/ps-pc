@@ -9,12 +9,14 @@
 
 module Proof where 
 
+import Signature
+
 -- TODO: Add somehow knowledge base
 -- TODO: Build up the proof rules
 
 -- The last Formula in the tuple is the concept that the rule is applied to
 type Rule = String
-type ProofStep = ([Formula], Rule, Formula)
-data ProofTree = NodeZero ProofStep |            
+type ProofStep = ([Concept], Rule, Concept)
+data ProofTree = NodeZero Concept |            
                  NodeOne ProofStep ProofTree |
-                 NodeTwo ProofStep ProofTtree ProofTree
+                 NodeTwo ProofStep ProofTree ProofTree
