@@ -20,7 +20,7 @@ type BinaryRelation = (String, [(Individual,Individual)])
 type UnaryRelation = (String, [Individual])
 type Model = (Domain, [UnaryRelation], [BinaryRelation])
 
-isInPrototype index element mapper = fromMaybe False $ liftM $ elem element $ lookup index mapper
+isInPrototype index element mapper = fromMaybe False $ liftM (elem element) $ lookup index mapper
 
 -- Checks if atomic concept is in model for given individual
 isInUnary :: String -> Individual -> Model -> Bool
@@ -28,7 +28,7 @@ isInUnary str ind (_,uns,_) = isInPrototype str ind uns
 
 -- Checks if relation is in model for given tuple of individuals
 isInBinary :: String -> (Individual, Individual) -> Model -> Bool
-isInBinary str ind (_,bins,_) = isInPrototype str ind bins
+isInBinary str (ind1,ind2) (_,_,bins) = isInPrototype str (ind1,ind2) bins
 
 -- Creates an empty model (good for testing)
 emptyModel = ([], [], [])
