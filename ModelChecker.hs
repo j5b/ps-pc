@@ -7,7 +7,7 @@
    Description: checks if a model is valid for a given concepts
 -}
 
-module Model.Checker where 
+module ModelChecker (checkAtomic, InputModel, Distinguished) where 
 
 import Data.Maybe
 import Control.Monad
@@ -16,7 +16,7 @@ import Model
 import Report
 
 type InputModel = (Model, [Concept], [Concept])
-type Distiguished = Maybe Individual
+type Distinguished = Maybe Individual
 
 -- returns the knowledge base considered
 getKB :: InputModel -> [Concept]
@@ -27,7 +27,7 @@ getGC :: InputModel -> [Concept]
 getGC (_, gc, _) = gc
 
 getConcepts :: InputModel -> [Concept]
-getConcepts input = (getKB kb) ++ (getGC gc)
+getConcepts input = (getKB input) ++ (getGC input)
 
 -- TODO: What to do if the model is empty
 {-
@@ -44,10 +44,10 @@ allConceptsToNNF :: [Concept] -> [Concept]
 allConceptsToNNF = map toNNF
 
 -- TODO: Modify this so it includes reports
-checkConcept :: Dintinguished -> Concept -> Model -> Bool
+checkConcept :: Distinguished -> Concept -> Model -> Bool
 -- Assuming that in NNF only not atoms occurs but not not concepts
 checkConcept individual (And f1 f2) model = 
-  f1 && f2
+  result1 && result2
   where result1 = if isAtomic f1 
                      then checkAtomic individual f1 model
                      else checkConcept individual f1 model
@@ -57,13 +57,13 @@ checkConcept individual (And f1 f2) model =
 
 -- checkAtomicReport :: Distinguished -> Concept -> Model -> Bool
 
--- TODO: Test this function
+-- Check if an atomic concept works for a distinguished individual (or no one) in a model
 checkAtomic :: Distinguished -> Concept -> Model -> Bool
 checkAtomic _ T _ = True
 checkAtomic _ (Neg T) _ = False
 checkAtomic individual (Atom atom) model 
   | isNothing individual = False
-  | otherwise           = isInUnary atom (fromJust individual) model
+  | otherwise            = isInUnary atom (fromJust individual) model
 checkAtomic individual (Neg (Atom atom)) model
   | isNothing individual = True
-  | otherwise           = not $ isInUnary atom (fromJust individual) model
+  | otherwise            = not $ isInUnary atom (fromJust individual) model
