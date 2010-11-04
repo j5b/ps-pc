@@ -7,7 +7,8 @@
    Description: provides a framework to build and handle description logic models
 -}
 
-module Model where
+module Model (Model, Individual, Domain, BinaryRelation, UnaryRelation,
+              emptyModel, checkModel, isInUnary, isInBinary) where
 
 import Control.Monad
 import Data.Maybe

@@ -16,16 +16,15 @@ data Concept = T | Atom String | Neg Concept | Or Concept Concept |
      	       And Concept Concept | Exists String Concept | Forall String Concept
      deriving (Show, Eq)
 
--- I defined my own show function so it is easier to report unsatisfied concepts in 
--- the model checker
+-- Can't defined my own show function because Concept doesn't get an input type
 
-show T = "T"
-show Atom atom = "Atom "++atom
-show (Neg concept) = "Not ("++(show concept)++")"
-show (Or f1 f2) = "("++(show f1)++" or "++(show f2)++")"
-show (And f1 f2) = "("++(show f1)++" and "++(show f3)++")"
-show (Exists name concept) = "(Exists "++name++" "++(show concept)++")"
-show (Forall name concept) = "(Forall "++name++" "++(show concept)++")"
+showConcept T = "T"
+showConcept (Atom atom) = "Atom "++atom
+showConcept (Neg concept) = "Not ("++(showConcept concept)++")"
+showConcept (Or f1 f2) = "("++(showConcept f1)++" or "++(showConcept f2)++")"
+showConcept (And f1 f2) = "("++(showConcept f1)++" and "++(showConcept f2)++")"
+showConcept (Exists name concept) = "(Exists "++name++" "++(showConcept concept)++")"
+showConcept (Forall name concept) = "(Forall "++name++" "++(showConcept concept)++")"
 
 {- 
    WARNING: Eq is dangerous since it only checks if two statements 
