@@ -7,9 +7,10 @@
    Description: checks if a model is valid for a given concepts
 -}
 
+module Model.Checker where 
+
 import Data.Maybe
 import Control.Monad
-
 import Signature
 import Model
 import Report
@@ -39,7 +40,6 @@ To check if a model is valid
       - Output report for each
   - 4th : Output the report (String, Bool)
 -}
-
 allConceptsToNNF :: [Concept] -> [Concept]
 allConceptsToNNF = map toNNF
 
