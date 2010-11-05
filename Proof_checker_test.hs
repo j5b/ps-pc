@@ -7,8 +7,6 @@
    Description: tests for the Proof Checker
 -}
 
-module Proof_checker_tests where
-
 import Signature
 import Proof
 import Proof_checker
@@ -131,7 +129,7 @@ etest4 = TestCase (assertEqual "Or rule on []"
 etest5 = TestCase (assertEqual "Or rule on [A, B and C, D or E, Neg A, ER.A, FR.B]"
                    exists5exp (checkProofStep eStep5 []))
 
--- Tests
+-- Simple checkProofStep tests
 bottomtests = TestList [TestLabel "bottomtest1" btest1,
                         TestLabel "bottomtest2" btest2,
                         TestLabel "bottomtest3" btest3,
@@ -157,8 +155,6 @@ existstests = TestList [TestLabel "existstest1" etest1,
 
 
 -- Test proofTree structures for checkProof:
-
--- NodeZero should always be: (Neg T)?
 leaf = NodeZero (Neg T)
 bTree = NodeOne ([Atom "A", Neg (Atom "A")], bRule, Atom "A") leaf
 aTree = NodeOne ([aConcept, Neg (Atom "A")], aRule, aConcept)
@@ -166,9 +162,20 @@ aTree = NodeOne ([aConcept, Neg (Atom "A")], aRule, aConcept)
 oTree = NodeTwo ([oConcept, Neg (Atom "C"), Neg (Atom "D")], oRule, oConcept)
 		(NodeOne ([Atom "C", Neg (Atom "C"), Neg (Atom "D")], bRule, Atom "C") leaf)
 		(NodeOne ([Atom "D", Neg (Atom "C"), Neg (Atom "D")], bRule, Atom "D") leaf)
+eTree = NodeOne ([Forall "R" (Neg (Atom "A")), eConcept, Forall "R" (Atom "A"),
+                 Forall "S" (Atom "B")], eRule, eConcept)
+		(NodeOne ([Atom "A", Atom "C", Neg (Atom "A")], bRule, Atom "A") leaf)
 
--- Erroneous proof trees
+-- More complex tree structures to test:
 
+-- Erroneous proof trees to test
+badleaf = NodeZero (Neg (Atom "A"))
+badbTree1 = NodeOne bStep4 leaf
+badbTree2 = NodeOne bStep5 leaf
+badaTree1 = NodeOne aStep1 (NodeZero (Atom "A"))
+badaTree2 = NodeOne aStep5 leaf
+badoTree1 = NodeTwo oStep1 (NodeZero (Atom "B")) (NodeZero (Atom "C"))
+badoTree2 = NodeTwo oStep4 leaf leaf
 
 
 
@@ -201,26 +208,69 @@ conceptEqualsTests = TestList [TestLabel "conceptEquals [] []" conceptEqualstest
 -- Tests for getConcepts
 getConceptsltest1 = TestCase(assertEqual "getConcept from a Leaf node" [Neg T] (getConcepts leaf))
 getConceptsbtest2 = TestCase(assertEqual "getConcept from a bTree"
-			     [Atom "A", Neg (Atom "A")] (getConcepts bTree))
+			        [Atom "A", Neg (Atom "A")] (getConcepts bTree))
 getConceptsatest3 = TestCase(assertEqual "getConcept from a aTree"
-			     [And  (Atom "A") (Atom "B"), Neg (Atom "A")] (getConcepts aTree))
+			        [And  (Atom "A") (Atom "B"), Neg (Atom "A")] (getConcepts aTree))
 getConceptsotest4 = TestCase(assertEqual "getConcept from a oTree"
-			     [Or (Atom "C") (Atom "D"), Neg (Atom "C"), Neg (Atom "D")] (getConcepts oTree))
+			        [Or (Atom "C") (Atom "D"), Neg (Atom "C"), Neg (Atom "D")]
+                    (getConcepts oTree))
+getConceptsetest5 = TestCase(assertEqual "getConcept from a eTree"
+			        [Neg (Atom "A"), eConcept, Forall "R" (Atom "A"),
+                     Forall "S" (Atom "B")]
+			        (getConcepts eTree))
 
 getConceptTests = TestList [TestLabel "getConcepts Leaf" getConceptsltest1,
 			    TestLabel "getConcepts btree" getConceptsbtest2,
 			    TestLabel "getConcepts atree" getConceptsatest3,
-			    TestLabel "getConcepts otree" getConceptsotest4]
+			    TestLabel "getConcepts otree" getConceptsotest4,
+			    TestLabel "getConcepts etree" getConceptsetest5]
 
 
 -- Tests for checkProof
-ltest = TestCase (assertEqual "NodeZero checkProof test" ("", True) (checkProof leaf []))
-btreetest = TestCase (assertEqual "NodeOne checkProof test1" ("", True) (checkProof bTree []))
+leaftest = TestCase (assertEqual "leaf tree checkProof test" ("", True)
+                     (checkProof leaf []))
+btreetest = TestCase (assertEqual "bottom tree checkProof test" ("", True)
+                      (checkProof bTree []))
+atreetest = TestCase (assertEqual "and tree checkProof test" ("", True)
+                      (checkProof aTree []))
+otreetest = TestCase (assertEqual "or tree checkProof test" ("", True)
+                      (checkProof oTree []))
+etreetest = TestCase (assertEqual "exists checkProof test" ("", True)
+                      (checkProof eTree []))
+
+badleaftest = TestCase (assertEqual "leaf tree checkProof test" ("", False)
+                     (checkProof badleaf []))
+badbtreetest1 = TestCase (assertEqual "bottom tree checkProof test" ("", False)
+                      (checkProof badbTree1 []))
+badbtreetest2 = TestCase (assertEqual "bottom tree checkProof test" ("", False)
+                      (checkProof badbTree2 []))
+badatreetest1 = TestCase (assertEqual "and tree checkProof test" ("", False)
+                      (checkProof badaTree1 []))
+badatreetest2 = TestCase (assertEqual "and tree checkProof test" ("", False)
+                      (checkProof badaTree2 []))
+badotreetest1 = TestCase (assertEqual "or tree checkProof test" ("", False)
+                      (checkProof badoTree1 []))
+badotreetest2 = TestCase (assertEqual "or tree checkProof test" ("", False)
+                      (checkProof badoTree2 []))
 
 
-simpletests = TestList [TestLabel "leaftest" ltest, TestLabel "btreetest" btreetest]
+simpletests = TestList [TestLabel "leaftest" leaftest,
+                        TestLabel "btreetest" btreetest,
+                        TestLabel "atreetest" atreetest,
+                        TestLabel "otreetest" otreetest,
+                        TestLabel "etreetest" etreetest]
 
+						
+erroneoustests = TestList [TestLabel "leaftest" badleaftest,
+                         TestLabel "btreetest1" badbtreetest1,
+                         TestLabel "btreetest2" badbtreetest2,
+                         TestLabel "atreetest1" badatreetest1,
+                         TestLabel "atreetest2" badatreetest2,
+                         TestLabel "otreetest1" badotreetest1,
+                         TestLabel "otreetest2" badotreetest2]
+--                         TestLabel "etreetest" etreetest]
 
+--complextests = 
 
 
 
@@ -237,8 +287,9 @@ testgetConcepts = do runTestTT getConceptTests
                      runTestTT conceptEqualsTests
 
 testcheckProof = do runTestTT simpletests
+                    runTestTT erroneoustests
 
 testcheckProofStep = do runTestTT bottomtests
-			runTestTT andtests
-			runTestTT ortests
-			runTestTT existstests
+                        runTestTT andtests
+                        runTestTT ortests
+                        runTestTT existstests
