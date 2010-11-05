@@ -9,6 +9,17 @@
 
 module ModelChecker (checkAtomic, checkConcept, checkModel, InputModel) where 
 
+{-
+To check if a model is valid
+  - 1st : Put all concepts to NNF form
+  - 2nd : Choose an individual
+  - 3rd : Check the validity for each concept in given model
+      - Check atomic formulas one by one
+      - Output report for each
+  - 4th : Output the report (String, Bool)
+  TODO: reports
+-}
+
 import Data.Maybe
 import Control.Monad
 import Signature
@@ -19,6 +30,10 @@ type KnowledgeBase = [Concept]
 type Givens = [Concept]
 type Concepts = [Concept]
 type InputModel = (Model, Givens, KnowledgeBase)
+
+-- return the model
+getModel :: InputModel -> Model
+getModel (model, _, _) = model
 
 -- returns the knowledge base considered
 getKB :: InputModel -> KnowledgeBase
@@ -31,30 +46,16 @@ getGC (_, gc, _) = gc
 getConcepts :: InputModel -> Concepts
 getConcepts input = (getKB input) ++ (getGC input)
 
--- TODO: What to do if the model is empty
-{-
-To check if a model is valid
-  - 1st : Put all concepts to NNF form
-  - 2nd : Choose an individual
-  - 3rd : Check the validity for each concept in given model
-      - Check atomic formulas one by one
-      - TODO: Find out what to do for forall and exists
-      - Output report for each
-  - 4th : Output the report (String, Bool)
--}
-allConceptsToNNF :: Concepts -> Concepts
-allConceptsToNNF = map toNNF
-
-{-
-  If overall a and b fails and a and/or b are atomic, state 
-  the formula fails for distinguished on atom a or b
-
-  For each individual in domain check if concept works or not
-  If the concept never works then combine reports to state which
-  formula fails in each case
+-- checks if input model is fine REALLY IMPORTANT FUNCTION
+-- TODO: TEST THIS
+{- checkInputModel :: InputModel -> Bool
+checkInputModel input = 
+  and $ map (flip checkModel model) concepts
+  where model    = getModel input
+        concepts = map toNNF $ getConcepts input 
 -}
 
-
+-- check if model is a model for concept
 checkModel :: Concept -> Model -> Bool
 {-
   Laziness will prevent to check the concept for every model
@@ -62,38 +63,41 @@ checkModel :: Concept -> Model -> Bool
 -}
 checkModel _ ([], _, _ ) = False
 checkModel concept model =
-  or $ result 
-  where result = [ checkConcept x concept model | x <- (getDomain model) ]
+  or $ map (checkConcept concept model) $ getDomain model
 
 -- TODO: Modify this so it includes reports
-checkConcept :: Individual -> Concept -> Model -> Bool
+checkConcept :: Concept -> Model -> Individual -> Bool
 -- Assuming that in NNF only not atoms occurs but not not concepts
-checkConcept distinguished (And f1 f2) model = 
+checkConcept (And f1 f2) model distinguished  = 
   result1 && result2
-  where result1 = if isAtomic f1 
-                     then checkAtomic distinguished f1 model
-                     else checkConcept distinguished f1 model
-        result2 = if isAtomic f2 
-                     then checkAtomic distinguished f2 model
-                     else checkConcept distinguished f2 model
-checkConcept distinguished (Or f1 f2) model =
+  where result1 = checkConcept f1 model distinguished
+        result2 = checkConcept f2 model distinguished
+checkConcept (Or f1 f2) model distinguished =
   result1 || result2
-  where result1 = if isAtomic f1 
-                     then checkAtomic distinguished f1 model
-                     else checkConcept distinguished f1 model
-        result2 = if isAtomic f2 
-                     then checkAtomic distinguished f2 model
-                     else checkConcept distinguished f2 model
-checkConcept distinguished any model =
+  where result1 = checkConcept f1 model distinguished
+        result2 = checkConcept f2 model distinguished
+checkConcept (Exists relation f) model distinguished =
+  or $ map (checkConcept f model) $ map snd $ filter (matches distinguished) relationSet
+  where matches individual x = (fst x) == individual
+-- TODO: I don't like the fromJust bit find something better
+        relationSet          = fromJust $ lookup relation relations
+        relations            = getRelations model
+checkConcept (Forall relation f) model distinguished =
+  and $ map (checkConcept f model) $ map snd $ filter (matches distinguished) relationSet
+  where matches individual x = (fst x) == individual
+-- TODO: I don't like the fromJust bit find something better
+        relationSet          = fromJust $ lookup relation relations
+        relations            = getRelations model
+checkConcept any model distinguished =
    -- if all cases fail we have an atom
-   checkAtomic distinguished any model
+   checkAtomic any model distinguished 
 
 -- Check if an atomic concept works for a distinguished individual (or no one) in a model
-checkAtomic :: Individual -> Concept -> Model -> Bool
-checkAtomic _ _ ([], _, _) = False -- this deals with the unlikely case of an empty model
-checkAtomic _ T _ = True
-checkAtomic _ (Neg T) _ = False
-checkAtomic distinguished (Atom atom) model =
+checkAtomic :: Concept -> Model -> Individual -> Bool
+checkAtomic _ ([], _, _) _ = False -- this deals with the unlikely case of an empty model
+checkAtomic T _ _ = True
+checkAtomic (Neg T) _ _ = False
+checkAtomic (Atom atom) model distinguished =
   isInUnary distinguished atom model
-checkAtomic distinguished (Neg (Atom atom)) model =
+checkAtomic (Neg (Atom atom)) model distinguished =
   not $ isInUnary distinguished atom model
