@@ -27,14 +27,14 @@ checkProof (NodeOne step tree) g
   | otherwise                          = ("Next steps formulas do not match", False)
     where (msg, success, f:fs) = checkProofStep step g
 checkProof (NodeTwo step t1 t2) g
-  | not success                          = (msg, False)
-  | fs /= []                             = ("There should be 2 resulting lists of conepts for NodeTwo", False)
-  | conceptEquals f1 (getConcepts t1) &&
-    conceptEquals f2 (getConcepts t2) ||
-    conceptEquals f2 (getConcepts t1) &&
-    conceptEquals f1 (getConcepts t2)    = (msg1 ++ msg2, tsuccess1 && tsuccess2)
-  | otherwise                            = ("Next steps formulas do not match", False)
-    where (msg, success, f1:f2:fs) = checkProofStep step g
+  | not success                             = (msg, False)
+  | length fs == 2                          = ("There should be 2 resulting lists of conepts for NodeTwo", False)
+  | conceptEquals (fs !! 1) (getConcepts t1) &&
+    conceptEquals (fs !! 2) (getConcepts t2) ||
+    conceptEquals (fs !! 2) (getConcepts t1) &&
+    conceptEquals (fs !! 1) (getConcepts t2)    = (msg1 ++ msg2, tsuccess1 && tsuccess2)
+  | otherwise                               = ("Next steps formulas do not match", False)
+    where (msg, success, fs) = checkProofStep step g
 	  (msg1, tsuccess1) = checkProof t1 g
 	  (msg2, tsuccess2) = checkProof t2 g
 
