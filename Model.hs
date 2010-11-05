@@ -8,7 +8,7 @@
 -}
 
 module Model (Model, Individual, Domain, BinaryRelation, UnaryRelation,
-              getDomain, isEmpty,
+              getDomain, getRelations, isEmpty,
               emptyModel, checkModelConsistency, isInUnary, isInBinary) where
 
 import Control.Monad
@@ -27,6 +27,9 @@ isEmpty model = flip (==) [] $ getDomain model
 
 -- returns the domain of the model
 getDomain (dom, _, _) = dom
+
+-- returns the relations of the model
+getRelations (_, _, relations) = relations
 
 isInPrototype element index mapper = fromMaybe False $ liftM (elem element) $ lookup index mapper
 
