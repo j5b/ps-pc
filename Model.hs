@@ -8,7 +8,8 @@
 -}
 
 module Model (Model, Individual, Domain, BinaryRelation, UnaryRelation,
-              emptyModel, checkModel, isInUnary, isInBinary) where
+              getDomain, isEmpty,
+              emptyModel, checkModelConsistency, isInUnary, isInBinary) where
 
 import Control.Monad
 import Data.Maybe
@@ -21,15 +22,21 @@ type BinaryRelation = (String, [(Individual,Individual)])
 type UnaryRelation = (String, [Individual])
 type Model = (Domain, [UnaryRelation], [BinaryRelation])
 
-isInPrototype index element mapper = fromMaybe False $ liftM (elem element) $ lookup index mapper
+-- check if the model is empty
+isEmpty model = flip (==) [] $ getDomain model
+
+-- returns the domain of the model
+getDomain (dom, _, _) = dom
+
+isInPrototype element index mapper = fromMaybe False $ liftM (elem element) $ lookup index mapper
 
 -- Checks if atomic concept is in model for given individual
-isInUnary :: String -> Individual -> Model -> Bool
-isInUnary str ind (_,uns,_) = isInPrototype str ind uns
+isInUnary :: Individual -> String -> Model -> Bool
+isInUnary ind str (_,uns,_) = isInPrototype ind str uns
 
 -- Checks if relation is in model for given tuple of individuals
-isInBinary :: String -> (Individual, Individual) -> Model -> Bool
-isInBinary str (ind1,ind2) (_,_,bins) = isInPrototype str (ind1,ind2) bins
+isInBinary :: (Individual, Individual) -> String -> Model -> Bool
+isInBinary pair str (_,_,bins) = isInPrototype pair str bins
 
 -- Creates an empty model (good for testing)
 emptyModel = ([], [], [])
@@ -39,15 +46,15 @@ emptyModelReport = ("", ["Model is fine since we got an empty result"], True)
 emr = emptyModelReport
 
 -- checks the domain for errors
-checkModel :: Model -> Report
-checkModel (dom, uns, bins) = 
+checkModelConsistency :: Model -> Report
+checkModelConsistency (dom, uns, bins) = 
   combine reportUns reportBins
-  where reportUns  = pushTitle $ title "Unary check" $ checkUnary dom uns
-        reportBins = pushTitle $ title "Binary check" $ checkBinary dom bins
+  where reportUns  = pushTitle $ title "Unary check" $ checkUnaryConsistency dom uns
+        reportBins = pushTitle $ title "Binary check" $ checkBinaryConsistency dom bins
   
 -- checks the domain for errors relating to atoms
-checkUnary :: Domain -> [UnaryRelation] -> Report
-checkUnary dom list = foldl1 combine $ makeCorrect (map checker list) [] [emr] -- [emr] since a list is expceted
+checkUnaryConsistency :: Domain -> [UnaryRelation] -> Report
+checkUnaryConsistency dom list = foldl1 combine $ makeCorrect (map checker list) [] [emr] -- [emr] since a list is expceted
   where checker (name, set) = flip buildReport result $ 
                                    "Unary " ++ name ++ 
                                     (if result then " is only containing elements of the domain" 
@@ -55,8 +62,8 @@ checkUnary dom list = foldl1 combine $ makeCorrect (map checker list) [] [emr] -
           where result      = allElements set dom
 
 -- checks the domain for errors relating to binary relations
-checkBinary :: Domain -> [BinaryRelation] -> Report
-checkBinary dom list = foldl1 combine $ makeCorrect (map checker list) [] [emr] -- [emr] since a list is expected
+checkBinaryConsistency :: Domain -> [BinaryRelation] -> Report
+checkBinaryConsistency dom list = foldl1 combine $ makeCorrect (map checker list) [] [emr] -- [emr] since a list is expected
   where checker (name, set) = flip buildReport result $ 
                                    "Binary " ++ name ++ 
                                     (if result then " is only containing elements of the domain" 
