@@ -58,10 +58,12 @@ findProofOrModel (Exists rel c : cs) gamma is
                     -> Either (Model, [Individual]) ProofTree
       foldExists [] is = Left (([], [], []), is)
       foldExists (Exists rel c : es) (i:is)
-        = either f Right (findProofOrModel (applyExists cs gamma (Exists rel c)) gamma is)
+        = either f (Right . g) (findProofOrModel
+                                (applyExists cs gamma (Exists rel c)) gamma is)
           where
-            f (m, is') = either (\(m', is'') -> Left (joinModels m' m'', is'')) Right 
-                        (foldExists es (i : is'))
+            g = NodeOne (Exists rel c : cs, "exists", Exists rel c)
+            f (m, is') = either (\(m', is'') -> Left (joinModels m' m'', is''))
+                         (Right . g) (foldExists es (i : is'))
               where
                 m'' = joinModels ([i], [], [(rel, [(i, head is)])]) m
 findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
