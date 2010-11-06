@@ -20,3 +20,4 @@ type ProofStep = ([Concept], Rule, Concept)
 data ProofTree = NodeZero Concept |            
                  NodeOne ProofStep ProofTree |
                  NodeTwo ProofStep ProofTree ProofTree
+               deriving (Show)
