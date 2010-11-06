@@ -16,6 +16,16 @@ data Concept = T | Atom String | Neg Concept | Or Concept Concept |
      	       And Concept Concept | Exists String Concept | Forall String Concept
      deriving (Show, Eq)
 
+-- Can't defined my own show function because Concept doesn't get an input type
+
+showConcept T = "T"
+showConcept (Atom atom) = "Atom "++atom
+showConcept (Neg concept) = "Not ("++(showConcept concept)++")"
+showConcept (Or f1 f2) = "("++(showConcept f1)++" or "++(showConcept f2)++")"
+showConcept (And f1 f2) = "("++(showConcept f1)++" and "++(showConcept f2)++")"
+showConcept (Exists name concept) = "(Exists "++name++" "++(showConcept concept)++")"
+showConcept (Forall name concept) = "(Forall "++name++" "++(showConcept concept)++")"
+
 {- 
    WARNING: Eq is dangerous since it only checks if two statements 
    are identical in the restricted language but not equivalence
