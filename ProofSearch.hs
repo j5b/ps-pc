@@ -13,6 +13,7 @@ module ProofSearch where
 
 import Data.Either
 import Data.List
+
 import Model
 import Proof
 import Signature
