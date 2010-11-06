@@ -7,7 +7,14 @@
    Description: provides a data type for checking which consist of a report and a result
 -}
 
-module Report where
+module Report (Report,
+               buildReport,
+               printReport,
+               toOutput,
+               standardReport,
+               combine, 
+               title,
+               pushTitle) where
 
 type Success = Bool
 type Log = String
