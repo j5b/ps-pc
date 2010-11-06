@@ -10,9 +10,9 @@
 -}
 
 import Data.Either
-import Model
-import Proof
-import Signature 
+import model
+import proof
+import signature 
 
 -- despatching function
 --findPOM :: [Concept] -> [Concept] -> Either Model Proof
@@ -26,9 +26,8 @@ conceptSort = id
 findProofOrModel :: [Concept] -> [Concept] ->  Either Model ProofTree
 findProofOrModel [] _                     = Left ([],[],[])
 findProofOrModel [(T):cs] gamma        = findProofOrModel cs gamma model proof
-findProofOrModel ((Atom c):cs) gamma   = if (neg (Atom c)) in xs 
-                                                    then Right (NodeOne ((Atom c):cs), "bottom", (Atom c))
-                                                    else findProofOrModel cs gamma model proof
+findProofOrModel ((Atom c):(Neg (Atom d)):cs) gamma   = if  c == d then Right (NodeOne ((Atom c):(Neg (Atom d)):cs), "bottom", (Atom c))
+                                                        else findProofOrModel cs gamma model proof
 findProofOrModel ((And c d):cs) gamma  = either Left g (findProofOrModel (conceptSort (c:d:cs)) gamma model proof)
     where
       g pf = NodeOne ((And c d):cs, "and", (And c d)) pf
