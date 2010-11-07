@@ -14,7 +14,7 @@ module Signature where
 -- Concept is the language definition for description logic ALC and AL
 data Concept = T | Atom String | Neg Concept | Or Concept Concept |
      	       And Concept Concept | Exists String Concept | Forall String Concept
-     deriving (Show, Eq)
+     deriving (Show, Eq, Ord)
 
 -- Can't defined my own show function because Concept doesn't get an input type
 
