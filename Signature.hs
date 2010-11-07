@@ -26,6 +26,12 @@ showConcept (And f1 f2) = "("++(showConcept f1)++" and "++(showConcept f2)++")"
 showConcept (Exists name concept) = "(Exists "++name++" "++(showConcept concept)++")"
 showConcept (Forall name concept) = "(Forall "++name++" "++(showConcept concept)++")"
 
+-- Useful for listing concepts when reporting errors
+showConceptList :: [Concept] -> String
+showConceptList [] = ""
+showConceptList [x] = showConcept x
+showConceptList (x:xs) = showConcept x ++ "," ++ showConceptList xs
+
 {- 
    WARNING: Eq is dangerous since it only checks if two statements 
    are identical in the restricted language but not equivalence
@@ -97,3 +103,14 @@ isAtomic (Atom string) = True
 isAtomic (Neg (Atom string)) = True
 isAtomic _ = False
 
+-- Checks if a concept is in Negation Normal Form
+isNNF :: Concept -> Bool
+isNNF T = True
+isNNF (Atom a) = True
+isNNF (Neg T) = True
+isNNF (Neg (Atom a)) = True
+isNNF (And f1 f2) = True
+isNNF (Or f1 f2) = True
+isNNF (Exists str f) = True
+isNNF (Forall str f) = True
+isNNF _ = False
