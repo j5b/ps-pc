@@ -74,7 +74,7 @@ findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
 
 conceptSort :: [Concept] -> [Concept]
 conceptSort cs 
-   = sortBy criteria cs
+   = getContradictingConcpets (sortBy criteria cs)
       where
         criteria x y 
           | x == y = EQ
@@ -97,6 +97,20 @@ conceptSort cs
                criteria' x y 
                   | x < y = LT
                   | otherwise = GT -- already checked that not equal
+
+getContradictingConcpets :: [Concept] -> [Concept]
+-- Helper function for conceptSort that puts A, not A concepts first
+getContradictingConcpets [] = []
+getContradictingConcpets cs 
+   = getThem cs cs
+     where
+       getThem [] xs = xs
+       getThem ((Neg c):cs) xs
+          | elem c xs = getThem cs (c:(Neg c):newlist)
+          | otherwise = getThem cs xs
+            where newlist = ((delete (Neg c) (delete c xs)))
+       getThem (c:cs) xs = getThem cs xs
+
 
 -- Joins two models.
 joinModels :: Model -> Model -> Model
