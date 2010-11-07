@@ -69,8 +69,34 @@ findProofOrModel (Exists rel c : cs) gamma is
                 m'' = joinModels ([i], [], [(rel, [(i, head is)])]) m
 findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
 
--- TODO: Implement a function that sorts concepts according to specific rules.
-conceptSort = id
+-- Implement a function that sorts concepts according to following rules:
+-- First to last: ("A, not A", "A and B", "A or B", "ER.C", "Other: single atoms, forall, etc.").
+
+conceptSort :: [Concept] -> [Concept]
+conceptSort cs 
+   = sortBy criteria cs
+      where
+        criteria x y 
+          | x == y = EQ
+          | otherwise = isContradiction x y
+             where
+               isContradiction (And a (Neg b)) y = if (a == b) then LT else criteria' (And a (Neg b)) y
+               isContradiction (And (Neg a) b) y = if (a == b) then LT else criteria' (And (Neg a) b) y
+	       isContradiction x (And (Neg c) d) = if (c == d) then GT else criteria' x (And (Neg c) d)
+               isContradiction x (And c (Neg d)) = if (c == d) then GT else criteria' x (And c (Neg d))
+               isContradiction x y = criteria' x y
+
+	       criteria' (Atom a) _ = GT
+               criteria' _ (Atom b) = LT
+               criteria' (And a b) _ = LT
+               criteria' _ (And a b) = GT
+               criteria' (Or a b) _ = LT
+               criteria' _ (Or a b) = GT
+               criteria' (Exists rel c) _ = LT
+               criteria' _ (Exists rel c) = GT
+               criteria' x y 
+                  | x < y = LT
+                  | otherwise = GT -- already checked that not equal
 
 -- Joins two models.
 joinModels :: Model -> Model -> Model
