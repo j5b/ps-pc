@@ -12,19 +12,20 @@
 
 import Data.Either
 import Data.List
-import IO
+import System.IO
 import System(getArgs)
 
 import Model
 import ModelChecker
 import Proof
-import Proof_checker
+import ProofChecker
 import ProofSearch
 import Signature
 
 -- TODO: parse input and call the proof/model searcher and check the result
 --main :: IO()
-main = do putStr $ "Nothing happening " ++ "yet"
+main = do putStr $ "Nothing happening " ++ "at "
+          putStr $ "the " ++ "moment"
 
 -- Dispatches call to either the model or proof checker.
 -- TODO: Make interfaces compatible.
