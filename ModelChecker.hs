@@ -46,14 +46,17 @@ getGC :: InputModel -> Givens
 getGC (_, gc, _) = gc
 
 -- checks the input model
-{-checkInputModel :: InputModel -> Bool
+checkInputModel :: InputModel -> Answer
 checkInputModel input = 
-  checkModel concepts model &&
+  checkModel concepts model `combine`
   (flip checkModel model $ foldl1 (/\) gamma)
   where model    = getModel input
         gamma    = map toNNF $ getKB input
         givens   = map toNNF $ getGC input
-        concepts = foldl1 (/\) $ gamma ++ givens -}
+        concepts = foldl1 (/\) $ gamma ++ givens
+        combine (part1, result1) (part2, result2) =
+                ("---- All concepts:\n"++part1++
+                 "---- Gamma only:\n"++part2, result1 && result2)
 
 {-
   Laziness will prevent to check the concept for every model
