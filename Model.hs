@@ -73,7 +73,7 @@ checkBinaryConsistency dom list = foldl1 combine $ makeCorrect (map checker list
                                                else " is not only containing elements of the domain")  
           where result      = allElements (map fst set) dom && allElements (map snd set) dom
 
-allElements subList list = and $ map (flip elem list) subList
+allElements subList list = all (`elem` list) subList
 
 makeCorrect result exception alternative =
   if result == exception then alternative else result
