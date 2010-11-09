@@ -31,6 +31,8 @@ type Givens = [Concept]
 type Concepts = [Concept]
 type InputModel = (Model, Givens, KnowledgeBase)
 
+type Answer = (String, Bool)
+
 -- return the model
 getModel :: InputModel -> Model
 getModel (model, _, _) = model
@@ -43,61 +45,91 @@ getKB (_, _, kb) = kb
 getGC :: InputModel -> Givens
 getGC (_, gc, _) = gc
 
-getConcepts :: InputModel -> Concepts
-getConcepts input = (getKB input) ++ (getGC input)
-
--- checks if input model is fine REALLY IMPORTANT FUNCTION
--- TODO: TEST THIS
-{- checkInputModel :: InputModel -> Bool
+-- checks the input model
+{-checkInputModel :: InputModel -> Bool
 checkInputModel input = 
-  and $ map (flip checkModel model) concepts
+  checkModel concepts model &&
+  (flip checkModel model $ foldl1 (/\) gamma)
   where model    = getModel input
-        concepts = map toNNF $ getConcepts input 
--}
+        gamma    = map toNNF $ getKB input
+        givens   = map toNNF $ getGC input
+        concepts = foldl1 (/\) $ gamma ++ givens -}
 
--- check if model is a model for concept
-checkModel :: Concept -> Model -> Bool
 {-
   Laziness will prevent to check the concept for every model
   Once one element validates the model it terminates :)
 -}
-checkModel _ ([], _, _ ) = False
-checkModel concept model =
-  or $ map (checkConcept concept model) $ getDomain model
 
--- TODO: Modify this so it includes reports
-checkConcept :: Concept -> Model -> Individual -> Bool
+-- check if model is a model for concept
+checkModel :: Concept -> Model -> Answer
+checkModel _ ([], _, _ ) = ("Empty model", False)
+checkModel concept model =
+  answerOr $ map (checkConcept concept model) $ getDomain model
+  where answerOr [(msg, result)]    = (msg,result)
+        answerOr ((msg,True):rest)  = (msg,True)
+        answerOr ((msg,False):rest) = if restResult then (restMsg, restResult)
+                                                    else (msg++restMsg, restResult)
+          where (restMsg, restResult) = answerOr rest
+
+-- Checks if a concept is valid in the given model
+checkConcept :: Concept -> Model -> Individual -> Answer
 -- Assuming that in NNF only not atoms occurs but not not concepts
 checkConcept (And f1 f2) model distinguished  = 
-  result1 && result2
-  where result1 = checkConcept f1 model distinguished
-        result2 = checkConcept f2 model distinguished
+  (msg1++msg2, result1 && result2)
+  where (msg1, result1) = checkConcept f1 model distinguished
+        (msg2, result2) = checkConcept f2 model distinguished
 checkConcept (Or f1 f2) model distinguished =
-  result1 || result2
-  where result1 = checkConcept f1 model distinguished
-        result2 = checkConcept f2 model distinguished
+  (newMsg, newResult)
+  where (msg1, result1) = checkConcept f1 model distinguished
+        (msg2, result2) = checkConcept f2 model distinguished
+        newResult       = result1 || result2 
+        newMsg          = if newResult then "" else msg1++msg2
 checkConcept (Exists relation f) model distinguished =
-  or $ map (checkConcept f model) $ map snd $ filter (matches distinguished) relationSet
-  where matches individual x = (fst x) == individual
--- TODO: I don't like the fromJust bit find something better
-        relationSet          = fromJust $ lookup relation relations
-        relations            = getRelations model
+  answerOr $ map (checkConcept f model . snd) elements
+  where elements      = filter (matches distinguished) relationSet
+        matches ind x = fst x == ind
+        relationSet   = fromJust $ lookup relation relations
+        relations     = getRelations model
+        answerOr :: [Answer] -> Answer
+        answerOr [] = ("No successors for ", False)
+          where newMsg = "No successors for relation "++relation++
+                         " for atom "++show distinguished
+        answerOr ((msg, result) : []) = (msg, result) -- last message 
+        answerOr ((msg, True) :rest)  = (msg, True)
+        answerOr ((msg, False) :rest) = 
+          if restResult then (restMsg, restResult) else (msg++restMsg, restResult) 
+          where (restMsg, restResult) = answerOr rest
 checkConcept (Forall relation f) model distinguished =
-  and $ map (checkConcept f model) $ map snd $ filter (matches distinguished) relationSet
-  where matches individual x = (fst x) == individual
--- TODO: I don't like the fromJust bit find something better
-        relationSet          = fromJust $ lookup relation relations
-        relations            = getRelations model
+  answerAnd $ map (checkConcept f model . snd) elements
+  where elements      = filter (matches distinguished) relationSet
+        matches ind x = fst x == ind
+        relationSet   = fromJust $ lookup relation relations
+        relations     = getRelations model
+        answerAnd :: [Answer] -> Answer
+        answerAnd [] = ("", True)
+        answerAnd ((msg, True) : rest)  = answerAnd rest
+        answerAnd ((msg, False) : rest) = (msg,False)
 checkConcept any model distinguished =
    -- if all cases fail we have an atom
    checkAtomic any model distinguished 
 
 -- Check if an atomic concept works for a distinguished individual (or no one) in a model
-checkAtomic :: Concept -> Model -> Individual -> Bool
-checkAtomic _ ([], _, _) _ = False -- this deals with the unlikely case of an empty model
-checkAtomic T _ _ = True
-checkAtomic (Neg T) _ _ = False
-checkAtomic (Atom atom) model distinguished =
-  isInUnary distinguished atom model
-checkAtomic (Neg (Atom atom)) model distinguished =
-  not $ isInUnary distinguished atom model
+checkAtomic :: Concept -> Model -> Individual -> Answer
+checkAtomic _ ([], _, _) _ = ("-Failed since we have an empty domain\n", False)
+checkAtomic T _ _ = ("", True)
+checkAtomic (Neg T) _ distinguished = (msg, False)
+  where msg    = "Failed since we have satisfy bottom for"++
+                 show distinguished++"\n"
+checkAtomic (Atom atom) model distinguished = (msg, result)
+  where result = isInUnary distinguished atom model
+        msg    = if result then "" 
+                           else "-Failed to satisfy "++atom++
+                                " in model for "++show distinguished++
+                                "\n"
+checkAtomic (Neg (Atom atom)) model distinguished = (msg, result)
+  where result = not $ isInUnary distinguished atom model
+        msg    = if result then "" 
+                                else "-Failed not to satisfy "++atom++
+                                     " in model for "++show distinguished++
+                                     "\n"
+
