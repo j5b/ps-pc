@@ -28,9 +28,9 @@ showConcept (Forall name concept) = "(Forall "++name++" "++(showConcept concept)
 
 -- Useful for listing concepts when reporting errors
 showConceptList :: [Concept] -> String
-showConceptList [] = ""
+showConceptList [] = "empty"
 showConceptList [x] = showConcept x
-showConceptList (x:xs) = showConcept x ++ "," ++ showConceptList xs
+showConceptList (x:xs) = showConcept x ++ ", " ++ showConceptList xs
 
 {- 
    WARNING: Eq is dangerous since it only checks if two statements 
