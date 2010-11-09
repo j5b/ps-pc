@@ -21,7 +21,7 @@ type ProofStep = ([Concept], Rule, Concept)
 data ProofTree = NodeZero Concept |            
                  NodeOne ProofStep ProofTree |
                  NodeTwo ProofStep ProofTree ProofTree
-               deriving (Show)
+               deriving (Show, Eq)
 
 
 -- Functions used in Proof Checker, may or may not be useful in other modules
