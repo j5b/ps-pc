@@ -99,7 +99,6 @@ conceptSort = id
                criteria' x y 
                   | x < y = LT
                   | otherwise = GT -- already checked that not equal
-
 -}
 
 getContradictingConcpets :: [Concept] -> [Concept]
