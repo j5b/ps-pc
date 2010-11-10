@@ -140,8 +140,8 @@ constructAtomicModel cs i = ([i], unaryRelations, [])
 -- maps them to concepts according to the Exists tableaux rule.
 applyExists :: [Concept] -> [Concept] -> Concept -> [Concept]
 applyExists cs gamma (Exists rel c)
-  = conceptSort $ c : gamma ++ 
-                  map (\(Forall _ c) -> c) (filter (isMatchingForall rel) cs)
+  = conceptSort . nub $ c : gamma ++ 
+    map (\(Forall _ c) -> c) (filter (isMatchingForall rel) cs)
   where
     -- Checks if the given concept is is a forall with the specified relation.
     isMatchingForall :: String -> Concept -> Bool
