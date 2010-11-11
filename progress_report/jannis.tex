@@ -15,10 +15,16 @@ in our discussions:
 \end{itemize}
 % These changes are supported by our supervisor.
 
-We still plan the same feature extensions, as listed below:
+We still plan the same feature extensions, as listed below. The expressivity we want to
+add to our program is more specific now.
 
 \begin{itemize}
-\item Extend the program to more expressive logics (for instance logics with number restrictions, probabilities, etc.) with a known proof/model theory
+\item Extend the program to more expressive logics with a known proof/model theory
+  \begin{itemize}
+    \item Add extensions that allow to refer to specific individuals in the domain and
+      specify their properties and relations (using either an \emph{Abox} or \emph{satisfaction operator} approach)
+    \item Possibly add an extension that allows to specify the number of relations
+  \end{itemize}
 \item Implementation of a parser for reading concepts in Description Logic
 \item Ability to represent models and proofs in a graphical representation
 \item User interface to the program
@@ -31,11 +37,11 @@ measuring our progress in this way. This is one of the useful tools provided by 
 blend of agile software development methods: eXtreme Programming, Scrum and Crystal Clear.
 Test-driven development, also adapted from this mix, plays an important part in measuring
 progress by giving us confidence that the parts of the program that have been written are
-working correctly and can be considered as complete.
+working correctly and can be considered as complete for the respective iteration.
 
 As discussed earlier, we already implemented the
-core functionality for simple cases and we are very confident that we will be able to
-extend this as planned to more complex ones. 
+core functionality for the $\mathcal{ALC}$-logic and we are very confident that we will
+be able to extend this as planned to the more complex logics mentioned above.
 
 Apart From joining the first two
 iterations as discussed above, we don't plan to make further changes to the iteration
