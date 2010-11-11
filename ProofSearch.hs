@@ -73,9 +73,7 @@ findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
 -- First to last: ("A, not A", "A and B", "A or B", "ER.C", "Other: single atoms, forall, etc.").
 
 conceptSort :: [Concept] -> [Concept]
-conceptSort = id
-
-{-conceptSort cs 
+conceptSort cs 
    = getContradictingConcpets (sortBy criteria cs)
       where
         criteria x y 
@@ -99,7 +97,6 @@ conceptSort = id
                criteria' x y 
                   | x < y = LT
                   | otherwise = GT -- already checked that not equal
--}
 
 getContradictingConcpets :: [Concept] -> [Concept]
 -- Helper function for conceptSort that puts A, not A concepts first
