@@ -87,7 +87,7 @@ checkConcept (Exists relation f) model distinguished =
   answerOr $ map (checkConcept f model . snd) elements
   where elements      = filter (matches distinguished) relationSet
         matches ind x = fst x == ind
-        relationSet   = fromJust $ lookup relation relations
+        relationSet   = fromMaybe [] $ lookup relation relations
         relations     = getRelations model
         answerOr :: [Answer] -> Answer
         answerOr [] = (newMsg, False)
@@ -102,7 +102,7 @@ checkConcept (Forall relation f) model distinguished =
   answerAnd $ map (checkConcept f model . snd) elements
   where elements      = filter (matches distinguished) relationSet
         matches ind x = fst x == ind
-        relationSet   = fromJust $ lookup relation relations
+        relationSet   = fromMaybe []  $ lookup relation relations
         relations     = getRelations model
         answerAnd :: [Answer] -> Answer
         answerAnd [] = ("", True)
