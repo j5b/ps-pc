@@ -7,7 +7,7 @@
    Description: checks if a model is valid for a given concepts
 -}
 
-module ModelChecker (checkAtomic, checkConcept, checkModel, InputModel) where 
+module ModelChecker (checkInputModel, checkAtomic, checkConcept, checkModel, InputModel) where 
 
 {-
 To check if a model is valid
