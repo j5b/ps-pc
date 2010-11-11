@@ -32,6 +32,8 @@ findProofOrModel [] _ (i:is)
   = Left (([i],[],[]), is)
 findProofOrModel (T:cs) gamma is
   = findProofOrModel cs gamma is
+findProofOrModel (Neg T:cs) gamma is
+  = Right (NodeZero (Neg T))
 findProofOrModel (Atom c : Neg (Atom d) : cs) _ _
   = if  c == d 
     then Right (NodeOne (Atom c : Neg (Atom d) : cs,
