@@ -7,7 +7,7 @@
    Description: checks if a model is valid for a given concepts
 -}
 
-module ModelChecker (checkInputModel, checkAtomic, checkConcept, checkModel, InputModel) where 
+module ModelChecker (checkInputModel, checkAtomic, checkConcept, checkModel) where 
 
 {-
 To check if a model is valid
@@ -26,34 +26,16 @@ import Signature
 import Model
 import Report
 
-type KnowledgeBase = [Concept]
-type Givens = [Concept]
 type Concepts = [Concept]
-type InputModel = (Model, Givens, KnowledgeBase)
 
 type Answer = (String, Bool)
 
--- return the model
-getModel :: InputModel -> Model
-getModel (model, _, _) = model
-
--- returns the knowledge base considered
-getKB :: InputModel -> KnowledgeBase
-getKB (_, _, kb) = kb
-
--- returns the given concepts
-getGC :: InputModel -> Givens
-getGC (_, gc, _) = gc
-
 -- checks the input model
-checkInputModel :: InputModel -> Answer
-checkInputModel input = 
+checkInputModel :: Model -> Concepts -> Concepts -> Answer
+checkInputModel model gamma givens = 
   checkModel concepts model `combine`
   (flip checkModel model $ foldl1 (/\) gamma)
-  where model    = getModel input
-        gamma    = map toNNF $ getKB input
-        givens   = map toNNF $ getGC input
-        concepts = foldl1 (/\) $ gamma ++ givens
+  where concepts = foldl1 (/\) $ gamma ++ givens
         combine (part1, result1) (part2, result2) =
                 ("---- All concepts:\n"++part1++
                  "---- Gamma only:\n"++part2, result1 && result2)
