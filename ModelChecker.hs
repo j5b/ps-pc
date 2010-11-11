@@ -33,11 +33,13 @@ type Answer = (String, Bool)
 -- checks the input model
 checkInputModel :: Model -> Concepts -> Concepts -> Answer
 checkInputModel model [] givens =
-  checkModel concepts model 
-  where concepts = foldl1 (/\) $ givens
+  ("---- All concepts:\n"++msg++
+   "---- Gamma only:\n", result) 
+  where concepts      = foldl1 (/\) $ givens
+  	(msg, result) = checkModel concepts model 
 checkInputModel model gamma givens = 
   checkModel concepts model `combine`
-  (flip checkModel model $ foldl1 (/\) gamma)
+  (flip checkGamma model $ foldl1 (/\) gamma)
   where concepts = foldl1 (/\) $ gamma ++ givens
         combine (part1, result1) (part2, result2) =
                 ("---- All concepts:\n"++part1++
@@ -53,10 +55,8 @@ checkGamma _ ([], _, _ ) = ("Empty model", False)
 checkGamma concept model =
   answerAnd $ map (checkConcept concept model) $ getDomain model
   where answerAnd [(msg, result)]     = (msg, result)
-        answerAnd ((msg,False):rest)  = (msg, False)
-        answerAnd ((msg,True):rest)   = if restResult then (restMsg, restResult)
-                                                      else (msg++restMsg, restResult)
-          where (restMsg, restResult) = answerAnd rest
+        answerAnd ((msg,False):rest)  = (msg,False)
+        answerAnd ((msg,True):rest)   = answerAnd rest
 
 
 -- check if model is a model for concept
