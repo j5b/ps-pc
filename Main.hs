@@ -32,5 +32,5 @@ main = do putStr $ "Nothing happening " ++ "at "
 check :: [Concept] -> [Concept] -> Either Model ProofTree -> (String, Bool)
 -- TODO: Need model checker that can deal with knowledge base and a set of
 --       concepts to dispatch this call.
---check cs gamma (Left model) = checkModel cs gamma model
+check cs gamma (Left model) = checkInputModel model gamma cs
 check _ gamma (Right proof) = checkProof proof gamma
