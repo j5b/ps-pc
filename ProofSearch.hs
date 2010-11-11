@@ -32,6 +32,8 @@ findProofOrModel [] _ (i:is)
   = Left (([i],[],[]), is)
 findProofOrModel (T:cs) gamma is
   = findProofOrModel cs gamma is
+findProofOrModel (Neg T:cs) gamma is
+  = Right (NodeZero (Neg T))
 findProofOrModel (Atom c : Neg (Atom d) : cs) _ _
   = if  c == d 
     then Right (NodeOne (Atom c : Neg (Atom d) : cs,
@@ -63,10 +65,11 @@ findProofOrModel (Exists rel c : cs) gamma is
                                 (applyExists cs gamma (Exists rel c)) gamma is)
           where
             g = NodeOne (Exists rel c : cs, "exists", Exists rel c)
-            f (m, is') = either (\(m', is'') -> Left (joinModels m' m'', is''))
+            f (m, is') = either (\(m', is'') -> Left (joinModels m' m''', is''))
                          (Right . g) (foldExists es (i : is'))
               where
-                m'' = joinModels ([i], [], [(rel, [(i, head is)])]) m
+                m''  = joinModels ([i], [], [(rel, [(i, head is)])]) m
+                m''' = joinModels (constructAtomicModel cs i) m''
 findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
 
 -- Implement a function that sorts concepts according to following rules:
