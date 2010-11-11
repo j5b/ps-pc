@@ -85,7 +85,7 @@ checkTree (NodeTwo step t1 t2) gamma
   Post: lists of concepts returned contain no duplicates
 -}
 checkProofStep :: ProofStep -> [Concept] -> (String, Bool, [[Concept]])
-checkProofStep (cs, "Bottom", Atom a) _
+checkProofStep (cs, "bottom", Atom a) _
   | Atom a `elem` cs && Neg (Atom a) `elem` cs =
       ("", True, [[Neg T]])
   | otherwise =
@@ -105,10 +105,10 @@ checkProofStep (cs, rule, c) gamma
   Pre: ProofStep concept exists
 -}
 checkRule :: ProofStep -> [Concept] -> (String, Bool, [[Concept]])
-checkRule (cs, "And", And l r) _ = ("", True, [nub $ delete (And l r) (l:r:cs)])
-checkRule (cs, "Or", Or l r) _ = ("", True, [nub (l:result), nub (r:result)])
+checkRule (cs, "and", And l r) _ = ("", True, [nub $ delete (And l r) (l:r:cs)])
+checkRule (cs, "or", Or l r) _ = ("", True, [nub (l:result), nub (r:result)])
   where result = delete (Or l r) cs
-checkRule (cs, "Exists", Exists r c) gamma = ("", True, [nub $ c:fsuccs ++ gamma])
+checkRule (cs, "exists", Exists r c) gamma = ("", True, [nub $ c:fsuccs ++ gamma])
   where fsuccs = [successor | Forall relation successor <- cs, relation == r]
 checkRule (cs, rule, c) _ =
   (rule ++ " rule cannot be applied to " ++ showConcept c ++ "", False, [cs])
