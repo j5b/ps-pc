@@ -18,7 +18,7 @@ import List
 -- The last concept in the tuple is the concept that the rule is applied to
 type Rule = String
 type ProofStep = ([Concept], Rule, Concept)
-data ProofTree = NodeZero Concept |            
+data ProofTree = NodeZero ProofStep |            
                  NodeOne ProofStep ProofTree |
                  NodeTwo ProofStep ProofTree ProofTree
                deriving (Show, Eq)
@@ -33,6 +33,6 @@ conceptEquals c1 c2 = (c1 \\ c2 == []) && (c2 \\ c1 == [])
 
 -- Returns the list of concepts before the rule is applied at root of tree
 getConcepts :: ProofTree -> [Concept]
-getConcepts (NodeZero c) = [c]
-getConcepts (NodeOne (cs, _, _) _) = cs
+getConcepts (NodeZero (cs, _, _))    = cs
+getConcepts (NodeOne (cs, _, _) _)   = cs
 getConcepts (NodeTwo (cs, _, _) _ _) = cs
