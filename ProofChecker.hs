@@ -20,15 +20,15 @@ import Data.List
 checkProof :: ProofTree -> [Concept] -> (String, Bool)
 checkProof prooftree gamma
   | length (nub cs) /= length cs =
-      error "Initial concepts must not contain duplicate concepts"
+      ("Initial concepts must not contain duplicate concepts", False)
   | length (nub gamma) /= glength =
-      error "Gamma must not contain duplicate concepts"
+      ("Gamma must not contain duplicate concepts", False)
   | not $ all isNNF cs =
-      error "Concepts are not in negation normal form"
+      ("Initial concepts are not in negation normal form", False)
   | not $ all isNNF gamma =
-      error "Concepts in gamma are not in negation normal form"
+      ("Concepts in gamma are not in negation normal form", False)
   | length (gamma `intersect` cs) /= glength =
-      error "Concepts in gamma are not in the initial set of concepts"
+      ("Concepts in gamma are not in the initial set of concepts", False)
   | otherwise =
       checkTree prooftree gamma
   where cs = getConcepts prooftree
@@ -40,9 +40,17 @@ checkProof prooftree gamma
   Pre: Gamma and initial set of concepts do not contain duplicates
 -}
 checkTree :: ProofTree -> [Concept] -> (String, Bool)
-checkTree (NodeZero (Neg T)) _ = ("", True)
-checkTree (NodeZero _) _ =
-  ("This proof tree does not show unsatisfiability", False)
+checkTree (NodeZero step) gamma
+  | not success =
+      (msg, False)
+  | cs /= [] =
+      ("Proof tree is not complete, applying the " ++ rule ++ " rule to {" ++
+       showConceptList initialconcepts ++ "} produces {" ++ showResults cs ++
+       "}", False)
+  | otherwise =
+      ("", True)
+  where (msg, success, cs) = checkProofStep step gamma
+        (initialconcepts, rule, _) = step
 checkTree (NodeOne step tree) gamma
   | not success =
       (msg, False)
@@ -55,7 +63,7 @@ checkTree (NodeOne step tree) gamma
        ") do not match the result of applying " ++ rule ++ " rule to (" ++
        showConceptList initialconcepts ++ ")", False)
   where (msg, success, c:cs) = checkProofStep step gamma
-        (initialconcepts, rule,_) = step
+        (initialconcepts, rule, _) = step
 checkTree (NodeTwo step t1 t2) gamma
   | not success =
       (msg, False)
@@ -79,6 +87,16 @@ checkTree (NodeTwo step t1 t2) gamma
         (initialconcepts, rule, _) = step
 
 {-
+  Returns a string of sets of concepts
+  WARNING: only accepts a maximum of 2 results
+-}
+showResults :: [[Concept]] -> String
+showResults [] = "Empty"
+showResults [cs] = showConceptList cs
+showResults [c1,c2] = showConceptList c1 ++ "} and {" ++ showConceptList c2
+showResults _ = "There should not be more than 2 results"
+
+{-
   Checks a single proof step, returns true and resulting concepts if correct
   Else returns error message, false and given list of concepts of the step
   Pre:  set of concept in proofstep and gamma contain no duplicates
@@ -87,7 +105,7 @@ checkTree (NodeTwo step t1 t2) gamma
 checkProofStep :: ProofStep -> [Concept] -> (String, Bool, [[Concept]])
 checkProofStep (cs, "bottom", Atom a) _
   | Atom a `elem` cs && Neg (Atom a) `elem` cs =
-      ("", True, [[Neg T]])
+      ("", True, [])
   | otherwise =
       (showConcept (Atom a) ++ " and " ++ showConcept (Neg (Atom a)) ++
        " do not both exist in the set of concepts {" ++ showConceptList cs ++
@@ -105,6 +123,9 @@ checkProofStep (cs, rule, c) gamma
   Pre: ProofStep concept exists
 -}
 checkRule :: ProofStep -> [Concept] -> (String, Bool, [[Concept]])
+checkRule (cs, "", Neg T) _ = ("", True, [])
+checkRule (cs, "", _) _ =
+  ("This proof tree does not show unsatisfiability", False, [cs])
 checkRule (cs, "and", And l r) _ = ("", True, [nub $ delete (And l r) (l:r:cs)])
 checkRule (cs, "or", Or l r) _ = ("", True, [nub (l:result), nub (r:result)])
   where result = delete (Or l r) cs

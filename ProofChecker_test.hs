@@ -11,12 +11,11 @@ import Signature
 import Proof
 import ProofChecker
 import Test.HUnit
---import Control.OldException
 
-bRule = "Bottom"
-aRule = "And"
-oRule = "Or"
-eRule = "Exists"
+bRule = "bottom"
+aRule = "and"
+oRule = "or"
+eRule = "exists"
 
 bConcept, aConcept, oConcept, eConcept, fConcept :: Concept
 bConcept = Neg (Atom "A")
@@ -35,25 +34,22 @@ tree :: ProofTree
 tree = NodeOne (manyConcepts ++ gamma , eRule, eConcept)
                (NodeTwo ([Atom "E", Atom "F", Atom "Z"] ++ gamma, oRule,
                          Or (Atom "X") (Atom "Y"))
-                        (NodeOne ([Atom "X", Atom "E", Atom "F", Atom "Z", Atom "U",
+                        (NodeZero ([Atom "X", Atom "E", Atom "F", Atom "Z", Atom "U",
                                    Neg (Atom "U"), And (Atom "V") (Atom "W"),
-                                   Forall "R" (Atom "Z")], bRule, Atom "U")
-                                 (NodeZero (Neg T)))
+                                   Forall "R" (Atom "Z")], bRule, Atom "U"))
                         (NodeOne ([Atom "Y", Atom "E", Atom "F", Atom "Z", Atom "U",
                                    Neg (Atom "U"), And (Atom "V") (Atom "W"),
                                    Forall "R" (Atom "Z")], aRule,
                                   And (Atom "V") (Atom "W"))
-                                 (NodeOne ([Atom "V", Atom "W", Atom "Y", Atom "E",
+                                 (NodeZero ([Atom "V", Atom "W", Atom "Y", Atom "E",
                                             Atom "F", Atom "Z", Atom "U",
                                             Neg (Atom "U"), Forall "R" (Atom "Z")],
-                                            bRule, Atom "U")
-                                          (NodeZero (Neg T)))))
+                                            bRule, Atom "U"))))
 
--- tests
 
 -- Tests for checkProofStep
 btest1 = TestCase (assertEqual "Correct bottom rule proof step"
-                   ("", True, [[Neg T]])
+                   ("", True, [])
                    $ checkProofStep ([Atom "A", bConcept], bRule, Atom "A") [])
 btest2 = TestCase (assertEqual "InCorrect bottom rule proof step"
                    ("Atom A and Not (Atom A) do not both exist in the set of"
@@ -62,7 +58,7 @@ btest2 = TestCase (assertEqual "InCorrect bottom rule proof step"
                    $ checkProofStep ([Neg (Atom "B"), Atom "A"], bRule, Atom "A")
                     gamma)
 btest3 = TestCase (assertEqual "Correct bottom rule proof step with gamma"
-                   ("", True, [[Neg T]])
+                   ("", True, [])
                    $ checkProofStep ([Atom "A", bConcept], bRule, Atom "A") gamma)
 
 bottomStepTests = TestList [TestLabel "bottomtest1" btest1,
@@ -126,12 +122,12 @@ testcheckProofStep = do runTestTT bottomStepTests
 
 -- Tests for checkTree
 leaftest1 = TestCase (assertEqual "Correct leaf" ("", True)
-                      $ checkTree (NodeZero (Neg T)) [])
+                      $ checkTree (NodeZero ([Neg T], "", Neg T)) [])
 leaftest2 = TestCase (assertEqual "InCorrect leaf"
                       ("This proof tree does not show unsatisfiability", False)
-                      $ checkTree (NodeZero (Atom "A")) gamma)
+                      $ checkTree (NodeZero ([Atom "A"], "", Atom "A")) gamma)
 leaftest3 = TestCase (assertEqual "Correct leaf with gamma" ("", True)
-                      $ checkTree (NodeZero (Neg T)) gamma)
+                      $ checkTree (NodeZero ([Neg T], "", Neg T)) gamma)
 
 leafTests = TestList [TestLabel "leaftest1" leaftest1,
                       TestLabel "leaftest2" leaftest2,
@@ -142,9 +138,8 @@ treetest1 = TestCase (assertEqual "Correct tree" ("", True)
 treetest2 = TestCase (assertEqual "InCorrect proof step"
                       ("Atom A and Not (Atom A) do not both exist in the " ++
                        "set of concepts {Not (Atom B), Atom A}", False)
-                      $ checkTree (NodeOne ([Neg (Atom "B"), Atom "A"], bRule,
-                                            Atom "A")
-                                           (NodeZero (Neg T))) gamma)
+                      $ checkTree (NodeZero ([Neg (Atom "B"), Atom "A"], bRule,
+                                             Atom "A")) gamma)
 
 treeTests = TestList [TestLabel "treetest1" treetest1,
                       TestLabel "treetest2" treetest2]
@@ -156,11 +151,29 @@ testcheckTree = do runTestTT leafTests
 -- Tests for checkProof
 prooftest1 = TestCase (assertEqual "Correct proof" ("", True) 
                        $ checkProof tree gamma)
-{-
-prooftest2 = TestCase (handle errorCalls (\_ -> return ()) performCall)
-  where performCall = do evaluate (proofChecker tree [Atom "N"])
-                         assertFailure "An error should be thrown"
--}
-checkProofTests = TestList [TestLabel "prooftreetest1" prooftest1]
+prooftest2 = TestCase (assertEqual "Duplicates in concepts proof"
+                       ("Initial concepts must not contain duplicate concepts",
+                        False) $ checkProof (NodeZero
+                       ([aConcept, aConcept], "", aConcept)) [Atom "A"])
+prooftest3 = TestCase (assertEqual "Duplicates in gamma proof"
+                       ("Gamma must not contain duplicate concepts", False)
+                       $ checkProof tree [Atom "A", Atom "A"])
+prooftest4 = TestCase (assertEqual "Initial concepts not NNF in proof"
+                       ("Initial concepts are not in negation normal form",
+                        False) $ checkProof (NodeZero
+                       ([Neg T, Neg aConcept], "", Neg T)) gamma)
+prooftest5 = TestCase (assertEqual "Concepts in gamma not NNF in proof"
+                       ("Concepts in gamma are not in negation normal form",
+                        False) $ checkProof tree [Neg aConcept])
+prooftest6 = TestCase (assertEqual "Gamma not in initial concepts proof"
+                       ("Concepts in gamma are not in the initial set of " ++
+                        "concepts", False) $ checkProof tree [Atom "P"])
+
+checkProofTests = TestList [TestLabel "prooftreetest1" prooftest1,
+                            TestLabel "prooftreetest2" prooftest2,
+                            TestLabel "prooftreetest3" prooftest3,
+                            TestLabel "prooftreetest4" prooftest4,
+                            TestLabel "prooftreetest5" prooftest5,
+                            TestLabel "prooftreetest5" prooftest6]
 
 testcheckProof = do runTestTT checkProofTests
