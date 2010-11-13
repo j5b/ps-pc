@@ -16,6 +16,7 @@ import Data.List
 
 import Model
 import Proof
+import ProofUtils
 import Signature
 
 -- Takes a knowledge base and a set of concepts and returns either a proof
@@ -33,12 +34,10 @@ findProofOrModel [] _ (i:is)
 findProofOrModel (T:cs) gamma is
   = findProofOrModel cs gamma is
 findProofOrModel (Neg T:cs) gamma is
-  = Right (NodeZero (Neg T))
+  = Right (NodeZero (Neg T : cs, "", Neg T))
 findProofOrModel (Atom c : Neg (Atom d) : cs) _ _
   = if  c == d 
-    then Right (NodeOne (Atom c : Neg (Atom d) : cs,
-                         "bottom",
-                         Atom c) (NodeZero (Neg T)))
+    then Right (NodeZero (Atom c : Neg (Atom d) : cs, "bottom", Atom c))
     else error "Can't deal with concepts in wrong order."
 findProofOrModel (And c d : cs) gamma is 
   = either Left (Right . g) (findProofOrModel (conceptSort (c:d:cs)) gamma is)
@@ -53,10 +52,6 @@ findProofOrModel (Or c d : cs) gamma is
 findProofOrModel (Exists rel c : cs) gamma is
   = foldExists (filter isExists (Exists rel c : cs)) is
     where
-      isExists :: Concept -> Bool
-      isExists (Exists rel c) = True
-      isExists _              = False
-      
       foldExists :: [Concept] -> [Individual]
                     -> Either (Model, [Individual]) ProofTree
       foldExists [] is = Left (([], [], []), is)
@@ -72,48 +67,27 @@ findProofOrModel (Exists rel c : cs) gamma is
                 m''' = joinModels (constructAtomicModel cs i) m''
 findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
 
--- Implement a function that sorts concepts according to following rules:
--- First to last: ("A, not A", "A and B", "A or B", "ER.C", "Other: single atoms, forall, etc.").
-
+-- A function that sorts concepts in the following order, first to last:
+-- 'A, not A', 'A and B', 'A or B', 'ER.C', others.
 conceptSort :: [Concept] -> [Concept]
-conceptSort cs 
-   = getContradictingConcpets (sortBy criteria cs)
+conceptSort = putContradictionsFirst . sortBy compareConcepts
       where
-        criteria x y 
-          | x == y = EQ
-          | otherwise = isContradiction x y
-             where
-               {-isContradiction (And a (Neg b)) y = if (a == b) then LT else criteria' (And a (Neg b)) y
-               isContradiction (And (Neg a) b) y = if (a == b) then LT else criteria' (And (Neg a) b) y
-	       isContradiction x (And (Neg c) d) = if (c == d) then GT else criteria' x (And (Neg c) d)
-               isContradiction x (And c (Neg d)) = if (c == d) then GT else criteria' x (And c (Neg d)) -}
-               isContradiction x y = criteria' x y
-
-	       criteria' (Atom a) _ = GT
-               criteria' _ (Atom b) = LT
-               criteria' (And a b) _ = LT
-               criteria' _ (And a b) = GT
-               criteria' (Or a b) _ = LT
-               criteria' _ (Or a b) = GT
-               criteria' (Exists rel c) _ = LT
-               criteria' _ (Exists rel c) = GT
-               criteria' x y 
-                  | x < y = LT
-                  | otherwise = GT -- already checked that not equal
-
-getContradictingConcpets :: [Concept] -> [Concept]
--- Helper function for conceptSort that puts A, not A concepts first
-getContradictingConcpets [] = []
-getContradictingConcpets cs 
-   = getThem cs cs
-     where
-       getThem [] xs = xs
-       getThem ((Neg c):cs) xs
-          | elem c xs = getThem cs (c:(Neg c):newlist)
-          | otherwise = getThem cs xs
-            where newlist = ((delete (Neg c) (delete c xs)))
-       getThem (c:cs) xs = getThem cs xs
-
+        compareConcepts :: Concept -> Concept -> Ordering
+        compareConcepts (And _ _) _    = LT
+        compareConcepts _ (And _ _)    = GT
+        compareConcepts (Or _ _) _     = LT
+        compareConcepts _ (Or _ _)     = GT
+        compareConcepts (Exists _ _) _ = LT
+        compareConcepts _ (Exists _ _) = GT
+        compareConcepts _ _            = EQ
+        
+        putContradictionsFirst :: [Concept] -> [Concept]
+        putContradictionsFirst cs = contradictions ++ (cs \\ contradictions)
+          where
+            contradictions = interleave cas $ map Neg cas
+            cas            = as `intersect` nas
+            as             = filter isAtom cs
+            nas            = map (\(Neg a) -> a) $ filter isNegAtom cs
 
 -- Joins two models.
 joinModels :: Model -> Model -> Model
@@ -132,9 +106,6 @@ constructAtomicModel :: [Concept] -> Individual -> Model
 constructAtomicModel cs i = ([i], unaryRelations, [])
   where
     unaryRelations = map (\(Atom a) -> (a, [i])) $ filter isAtom cs
-    isAtom :: Concept -> Bool
-    isAtom (Atom a) = True
-    isAtom _        = False
 
 -- Takes the knowledge base, a set of concepts and a there exists formula and
 -- maps them to concepts according to the Exists tableaux rule.
