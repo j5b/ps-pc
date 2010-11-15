@@ -12,6 +12,7 @@ import Data.Maybe
 import ModelChecker
 import Model
 import Signature
+import TestUtils
 
 label (a,b) = TestLabel a b
 template msg result target =
@@ -46,40 +47,6 @@ emptyTests = TestList $ map label [("", testEmpty1),
                                    ("", testEmpty4),
                                    ("", testEmpty5)]
 
-
--- simple concepts to test
-sc1 = top -- always true
-sc2 = bottom -- always false
-sc3 = atom "C" 
-sc4 = atom "D"
-sc5 = neg sc3
-sc6 = neg sc4
-sc7 = sc3 \/ sc4
-sc8 = sc3 /\ sc4
-sc9 = sc3 \/ (neg sc4)
-sc10 = sc3 /\ (neg sc4)
-sc11 = sc3 /\ top -- should be the same as concept3
-sc12 = sc3 /\ bottom -- alawys false
-sc13 = sc3 \/ top -- always true
-sc14 = sc3 \/ bottom -- should be the same as sc3
-sc15 = forall "R" top -- should always be true
-sc16 = forall "R" bottom -- should only be true if there are no successors
-sc17 = forall "R" sc3
-sc18 = forall "R" sc4
-sc19 = forall "R" (neg sc3)
-sc20 = forall "S" sc3
-sc21 = forall "S" (sc3 /\ sc4)
-sc22 = forall "S" (sc3 \/ sc4)
-sc23 = forall "S" (sc3 /\ bottom) -- should be only true if there are no successors
-sc24 = exists "R" top -- should always be true unless there are no successors
-sc25 = exists "R" bottom -- should always be false
-sc26 = exists "R" sc3
-sc27 = exists "R" sc4
-sc28 = exists "S" (neg sc4)
-sc29 = exists "S" (sc3 /\ sc4)
-sc30 = exists "S" (sc3 \/ sc4)
-sc31 = exists "S" (sc3 /\ bottom) -- should be always false
-
 -- first simple model
 
 model1 = (domain, unarys, binarys)
@@ -93,7 +60,7 @@ test11 = template "top is true" result target
         target = ("", True)
 test12 = template "bottom is false" result target
   where result = checkModel sc2 model1
-        target = ("Failed since we have to satisfy bottom for 1\n", False)
+        target = ("Failed to satisfy bottom for 1\n", False)
 test13 = template "C is true" result target
   where result = checkModel sc3 model1
         target = ("", True)
@@ -102,10 +69,10 @@ test14 = template "D is true" result target
         target = ("", True)
 test15 = template "not C is false" result target
   where result = checkModel sc5 model1
-        target = ("Failed not to satisfy C for 1\n", False)
+        target = ("Failed to not satisfy C for 1\n", False)
 test16 = template "not D is false" result target
   where result = checkModel sc6 model1
-        target = ("Failed not to satisfy D for 1\n", False)
+        target = ("Failed to not satisfy D for 1\n", False)
 test17 = template "C or D is true" result target
   where result = checkModel sc7 model1
         target = ("", True)
@@ -117,13 +84,13 @@ test19 = template "C or not D is true" result target
         target = ("", True)
 test110 = template "C and not D is false" result target
   where result = checkModel sc10 model1
-        target = ("Failed not to satisfy D for 1\n", False)
+        target = ("Failed to not satisfy D for 1\n", False)
 test111 = template "C and top is true" result target
   where result = checkModel sc11 model1
         target = checkModel sc3 model1
 test112 = template "C and bottom is false" result target
   where result = checkModel sc12 model1
-        target = ("Failed since we have to satisfy bottom for 1\n", False)
+        target = ("Failed to satisfy bottom for 1\n", False)
 test113 = template "C or top is false" result target
   where result = checkModel sc13 model1
         target = ("", True)
@@ -214,7 +181,165 @@ test1List = TestList $ map label [("", test11),
                                   ("", test130),
                                   ("", test131)]
 
+-- Complicated model still empty knowledge base
 
+model2 = (domain, unarys, binarys)
+  where domain = [1,2,3,4,5] -- more :)
+        unarys = [("C", [1,3,5]),
+                  ("D", [2,4,5])] -- more :)
+        binarys = [("R", [(1,2),(2,3),(3,4),(4,1)]),
+                   ("S", [(5,1),(5,2),(5,3),(5,4)])] -- more
+test21 = template "top is true" result target
+  where result = checkModel sc1 model2 
+        target = ("", True)
+test22 = template "bottom is false" result target
+  where result = checkModel sc2 model2
+        target = ("Failed to satisfy bottom for 1\n"++
+                  "Failed to satisfy bottom for 2\n"++
+                  "Failed to satisfy bottom for 3\n"++
+                  "Failed to satisfy bottom for 4\n"++
+                  "Failed to satisfy bottom for 5\n", False)
+test23 = template "C is true" result target
+  where result = checkModel sc3 model2
+        target = ("", True)
+test24 = template "D is true" result target
+  where result = checkModel sc4 model2
+        target = ("", True)
+test25 = template "not C is true" result target
+  where result = checkModel sc5 model2
+        target = ("", True)
+test26 = template "not D is true" result target
+  where result = checkModel sc6 model2
+        target = ("", True)
+test27 = template "C or D is true" result target
+  where result = checkModel sc7 model2
+        target = ("", True)
+test28 = template "C and D is true" result target
+  where result = checkModel sc8 model2
+        target = ("", True)
+test29 = template "C or not D is true" result target
+  where result = checkModel sc9 model2
+        target = ("", True)
+test210 = template "C and not D is true" result target
+  where result = checkModel sc10 model2
+        target = ("", True)
+test211 = template "C and top is true" result target
+  where result = checkModel sc11 model2
+        target = checkModel sc3 model2
+test212 = template "C and bottom is false" result target
+  where result = checkModel sc12 model2
+        target = ("Failed to satisfy bottom for 1\n"++
+                  "Failed to satisfy C for 2\n"++
+                  "Failed to satisfy bottom for 3\n"++
+                  "Failed to satisfy C for 4\n"++
+                  "Failed to satisfy bottom for 5\n", False)
+test213 = template "C or top is true" result target
+  where result = checkModel sc13 model2
+        target = ("", True)
+test214 = template "C or bottom is true" result target
+  where result = checkModel sc14 model2
+        target = ("", True)
+test215 = template "forall R top is true" result target
+  where result = checkModel sc15 model2
+        target = ("", True)
+test216 = template "forall R bottom is true" result target
+  where result = checkModel sc16 model2
+        target = ("", True)
+test217 = template "forall R C is true" result target
+  where result = checkModel sc17 model2
+        target = ("", True)
+test218 = template "forall R D is true" result target
+  where result = checkModel sc18 model2
+        target = ("", True)
+test219 = template "forall R not C is false" result target
+  where result = checkModel sc19 model2
+        target = ("", True)
+test220 = template "forall S C is true" result target
+  where result = checkModel sc20 model2
+        target = ("", True)
+test221 = template "forall S C and D is true" result target
+  where result = checkModel sc21 model2
+        target = ("", True)
+test222 = template "forall S C or D is true" result target
+  where result = checkModel sc22 model2
+        target = ("", True)
+test223 = template "forall S C and not T is true" result target
+  where result = checkModel sc23 model2
+        target = ("", True)
+test224 = template "exists R T is true" result target
+  where result = checkModel sc24 model2
+        target = ("", True)
+test225 = template "exists R not T is false" result target
+  where result = checkModel sc25 model2
+        target = ("Failed to satisfy bottom for 2\n"++
+                  "Failed to satisfy bottom for 3\n"++
+                  "Failed to satisfy bottom for 4\n"++
+                  "Failed to satisfy bottom for 1\n"++
+                  "No successors for relation R for 5\n", False)
+test226 = template "exists R C is true" result target
+  where result = checkModel sc26 model2
+        target = ("", True)
+test227 = template "exists R D is true" result target
+  where result = checkModel sc27 model2
+        target = ("", True)
+test228 = template "exists S not D is true" result target
+  where result = checkModel sc28 model2
+        target = ("", True)
+test229 = template "exists S C and D is false" result target
+  where result = checkModel sc29 model2
+        target = ("No successors for relation S for 1\n"++
+                  "No successors for relation S for 2\n"++
+                  "No successors for relation S for 3\n"++
+                  "No successors for relation S for 4\n"++
+                  "Failed to satisfy D for 1\n"++
+                  "Failed to satisfy C for 2\n"++
+                  "Failed to satisfy D for 3\n"++
+                  "Failed to satisfy C for 4\n", False)
+test230 = template "exists S C or D is true" result target
+  where result = checkModel sc30 model2
+        target = ("", True)
+test231 = template "exists S C and not T is false" result target
+  where result = checkModel sc31 model2
+        target = ("No successors for relation S for 1\n"++
+                  "No successors for relation S for 2\n"++
+                  "No successors for relation S for 3\n"++
+                  "No successors for relation S for 4\n"++
+                  "Failed to satisfy bottom for 1\n"++
+                  "Failed to satisfy C for 2\n"++
+                  "Failed to satisfy bottom for 3\n"++
+                  "Failed to satisfy C for 4\n", False)
+
+test2List = TestList $ map label [("", test21),
+                                  ("", test22),
+                                  ("", test23),
+                                  ("", test24),
+                                  ("", test25),
+                                  ("", test26),
+                                  ("", test27),
+                                  ("", test28),
+                                  ("", test29),
+                                  ("", test210),
+                                  ("", test211),
+                                  ("", test212),
+                                  ("", test213),
+                                  ("", test214),
+                                  ("", test215),
+                                  ("", test216),
+                                  ("", test217),
+                                  ("", test218),
+                                  ("", test219),
+                                  ("", test220),
+                                  ("", test221),
+                                  ("", test222),
+                                  ("", test223),
+                                  ("", test224),
+                                  ("", test225),
+                                  ("", test226),
+                                  ("", test227),
+                                  ("", test228),
+                                  ("", test229),
+                                  ("", test230),
+                                  ("", test231)]
 
 
 

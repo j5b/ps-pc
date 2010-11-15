@@ -7,15 +7,9 @@
    Description: short description
 -}
 
-{-
-   General comments
--}
+module TestUtils where
 
-{-
-   Always explain functions just above them so Hackage can help us generate documentation
-   "TODO:" Will denote a task to do
-   "WARNING:" Some important information to put in the documentation 
--}
+import Signature
 
 -- simple concepts to test sc for simple concept
 sc1 = top -- always true
