@@ -30,16 +30,16 @@ type Concepts = [Concept]
 
 type Answer = (String, Bool)
 
--- checks the input model
+-- checks the inpxut model
 checkInputModel :: Model -> Concepts -> Concepts -> Answer
 checkInputModel model [] givens =
   ("---- All concepts:\n"++msg++
    "---- Gamma only:\n", result) 
-  where concepts      = foldl1 (/\) $ givens
+  where concepts      = foldl1 (/\) givens
   	(msg, result) = checkModel concepts model 
 checkInputModel model gamma givens = 
   checkModel concepts model `combine`
-  (flip checkGamma model $ foldl1 (/\) gamma)
+  flip checkGamma model (foldl1 (/\) gamma)
   where concepts = foldl1 (/\) $ gamma ++ givens
         combine (part1, result1) (part2, result2) =
                 ("---- All concepts:\n"++part1++
