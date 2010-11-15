@@ -9,17 +9,19 @@ import Signature
 import Test.HUnit
 
 -- Some simple concepts here
---a, b, c, d, e, andAtom, negAtom, orAtom, exists :: Concept
 a = Atom "A"
 b = Atom "B"
 c = Atom "C"
 d = Atom "D"
 e = Atom "E"
 negAtom = Neg a
+negAtomb = Neg b
+negAtomc = Neg c
 andAtom = And a b
 orAtom = Or a b
 existsAtoma = Exists "R" a
 existsAtomb = Exists "R" b
+existsAtomc = Exists "R" c
 forallAtoma = Forall "R" a
 forallAtomb = Forall "R" b
 forallAtomc = Forall "R" c
@@ -35,6 +37,111 @@ forallexists = Forall "R1" existsAtoma
 
 -- Tests for individual functions
 
+-- conceptSort tests
+
+testConceptSortEmpty = 
+   TestCase (assertEqual "Empty set"
+   ([])                
+   (conceptSort []))
+
+-- Problem here with atoms not being at the end
+testConceptSortList = 
+   TestCase (assertEqual "Random list, but no contradictions"
+   ([andAtom, orExists, orforalls,  existsAtomb, existsAtomc, existsAtoma, forallAtomc, negAtom, forallAtoma, c, b ])                
+   (conceptSort [forallAtomc, andAtom, negAtom, existsAtomb, existsAtomc, orExists, c, b, existsAtoma, forallAtoma, orforalls]))
+
+-- if duplicate in contradictions, do we just take one pair?
+testConceptSortContradictions = 
+   TestCase (assertEqual "Random list with contradictions"
+   ([c, negAtomc, b, negAtomb, andAtom, orExists, orforalls,  existsAtomb, existsAtomc, existsAtoma, forallAtomc, negAtomc, forallAtoma, negAtomc, negAtomb ])                
+   (conceptSort [forallAtomc, andAtom, negAtomc, existsAtomb, existsAtomc, orExists, c, b, existsAtoma, negAtomc, forallAtoma, negAtomc, negAtomb, negAtomb, orforalls]))
+
+testConceptSortNotSorting = 
+   TestCase (assertEqual "Not sorting not Atoms"
+   ([orAtom, forallAtoma, Neg orAtom])                
+   (conceptSort [forallAtoma, orAtom, Neg orAtom]))
+
+conceptSortTests = TestList [TestLabel "conceptSort1" testConceptSortEmpty, 
+                            TestLabel "conceptSort2" testConceptSortList, 
+                            TestLabel "conceptSort3" testConceptSortContradictions, 
+                            TestLabel "conceptSort4" testConceptSortNotSorting]
+
+-- joinModels tests
+
+emptyModel = ([], [], [])
+simpleModel1 = ([1,2], [("A",[2])], [("R",[(1,2)])])
+simpleModel2 = ([1,3], [("A",[3])], [("R",[(1,3)])])
+simpleModel3 = ([1,4], [("A",[4])], [("R",[(1,4)])])
+simpleModel4 = ([1,2], [("B",[2])], [("R",[(1,2)])])
+model1 = ([1,2,3,4,6], [("B",[1, 3]), ("A",[4, 6]), ("C",[2]), ("C",[3])], [("R",[(1,2), (1, 3)]), ("R1",[(1,4), (2, 6)])])
+model2 = ([1,4,5,6,7,9,10], [("B",[1, 7]), ("A",[1, 7, 8]), ("C",[4, 10]), ("C",[4])], [("R",[(10,2), (1, 10)]), ("R1",[(1,5), (5, 6)])])
+
+testJoinModelsEmpty = 
+   TestCase (assertEqual "Empty model"
+   (emptyModel)                
+   (joinModels emptyModel emptyModel))
+
+testJoinModelsBase1 = 
+   TestCase (assertEqual "Base case 1"
+   (simpleModel2)                
+   (joinModels simpleModel2 emptyModel))
+
+testJoinModelsBase2 = 
+   TestCase (assertEqual "Base case 2"
+   (model1)                
+   (joinModels emptyModel model1))
+
+-- Simple with simple: should we apply sorting to individuals, tuples to get unique nomether order of calling?
+-- Also can it ever be that "C" is defined twice as below within a model?
+testJoinModelsSimple12 = 
+   TestCase (assertEqual "Simple models"
+   (([1,2,3],[("A",[3,2])],[("R",[(1,3),(1,2)])]))                
+   (joinModels simpleModel1 simpleModel2))
+
+testJoinModelsSimple21 = 
+   TestCase (assertEqual "Simple models reverse"
+   (([1,3,2],[("A",[2,3])],[("R",[(1,2),(1,3)])]))                
+   (joinModels simpleModel2 simpleModel1))
+
+testJoinModelsSimple13 = 
+   TestCase (assertEqual "Simple models"
+   (([1,2,4],[("A",[4,2])],[("R",[(1,4),(1,2)])]))                
+   (joinModels simpleModel1 simpleModel3))
+
+testJoinModelsSimple24 = 
+   TestCase (assertEqual "Simple models"
+   (([1,3,2],[("A",[3]),("B",[2])],[("R",[(1,2),(1,3)])]))                
+   (joinModels simpleModel2 simpleModel4))
+
+testJoinModelsSimple34 = 
+   TestCase (assertEqual "Simple models"
+   (([1,4,2],[("A",[4]),("B",[2])],[("R",[(1,2),(1,4)])]))                
+   (joinModels simpleModel2 simpleModel4))
+
+testJoinModelsComplex1  = 
+   TestCase (assertEqual "Complex models"
+   (([1,2,3,4,6],[("A",[4,6,2]),("B",[1,3]),("C",[2]),("C",[3])],[("R",[(1,2),(1,3)]),("R1",[(1,4),(2,6)])]))                
+   (joinModels simpleModel1 model1))
+
+testJoinModelsComplex2  = 
+   TestCase (assertEqual "Complex models"
+   (([1,4,2,3,6],[("A",[4,6]),("B",[1,3]),("C",[2]),("C",[3])],[("R",[(1,2),(1,3),(1,4)]),("R1",[(1,4),(2,6)])]))                
+   (joinModels simpleModel3 model1))
+
+testJoinModelsComplex3  = 
+   TestCase (assertEqual "Complex models"
+   (([1,3,4,5,6,7,9,10],[("A",[1,7,8,3]),("B",[1,7]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,3)]),("R1",[(1,5),(5,6)])]))                
+   (joinModels simpleModel2 model2))
+
+testJoinModelsComplex4 =
+   TestCase (assertEqual "Complex models"
+   (([1,2,4,5,6,7,9,10],[("B",[1,7,2]),("A",[1,7,8]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,2)]),("R1",[(1,5),(5,6)])]))                
+   (joinModels simpleModel4 model2))
+
+testJoinModelsComplex5  = 
+   TestCase (assertEqual "most complex models"
+   (([1,2,3,4,6,5,7,9,10],[("B",[1,7,3]),("A",[1,7,8,4,6]),("C",[4,10,2]),("C",[3])],[("R",[(10,2),(1,10),(1,2),(1,3)]),("R1",[(1,5),(5,6),(1,4),(2,6)])]))                
+   (joinModels model1 model2))
 
 
 -- Tests for models
