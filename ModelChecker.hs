@@ -74,7 +74,7 @@ checkModel concept model =
 checkConcept :: Concept -> Model -> Individual -> Answer
 -- Assuming that in NNF only not atoms occurs but not not concepts
 checkConcept (And f1 f2) model distinguished  = 
-  (msg1++msg2, result1 && result2)
+  if result1 then (msg2, result2) else (msg1, result1)
   where (msg1, result1) = checkConcept f1 model distinguished
         (msg2, result2) = checkConcept f2 model distinguished
 checkConcept (Or f1 f2) model distinguished =
@@ -114,10 +114,10 @@ checkConcept any model distinguished =
 
 -- Check if an atomic concept works for a distinguished individual (or no one) in a model
 checkAtomic :: Concept -> Model -> Individual -> Answer
-checkAtomic _ ([], _, _) _ = ("-Failed since we have an empty domain\n", False)
+checkAtomic _ ([], _, _) _ = ("Failed since we have an empty domain\n", False)
 checkAtomic T _ _ = ("", True)
 checkAtomic (Neg T) _ distinguished = (msg, False)
-  where msg    = "Failed since we have to satisfy bottom for "++
+  where msg    = "Failed to satisfy bottom for "++
                  show distinguished++"\n"
 checkAtomic (Atom atom) model distinguished = (msg, result)
   where result = isInUnary distinguished atom model
@@ -128,7 +128,7 @@ checkAtomic (Atom atom) model distinguished = (msg, result)
 checkAtomic (Neg (Atom atom)) model distinguished = (msg, result)
   where result = not $ isInUnary distinguished atom model
         msg    = if result then "" 
-                                else "Failed not to satisfy "++atom++
+                                else "Failed to not satisfy "++atom++
                                      " for "++show distinguished++
                                      "\n"
 
