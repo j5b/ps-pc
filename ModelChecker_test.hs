@@ -342,4 +342,137 @@ test2List = TestList $ map label [("", test21),
                                   ("", test231)]
 
 
+-- Model for Gamma not empty
 
+gammaModel = (domain, unarys, binarys)
+  where domain  = [1,2,3,4,5,6]
+        unarys  = [("C", [1,2,3,4,5,6]),
+                  ("D", [2,4,6])]
+        binarys = [("R", [(1,2),(2,3),(3,4),(4,5),(5,6),(6,1)]),
+                   ("S", [(2,4),(4,6),(6,2)])]
+
+test31 = template "top is true" result target
+  where result = snd $ checkInputModel gammaModel [sc1] [] 
+        target = True
+test32 = template "bottom is false" result target
+  where result = snd $ checkInputModel gammaModel [sc2] [] 
+        target = False
+test33 = template "C is true" result target
+  where result = snd $ checkInputModel gammaModel [sc3] [] 
+        target = True
+test34 = template "D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc4] [] 
+        target = False
+test35 = template "not C is false" result target
+  where result = snd $ checkInputModel gammaModel [sc5] [] 
+        target = False
+test36 = template "not D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc6] [] 
+        target = False
+test37 = template "C or D is true" result target
+  where result = snd $ checkInputModel gammaModel [sc7] [] 
+        target = True
+test38 = template "C and D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc8] [] 
+        target = False
+test39 = template "C or not D is true" result target
+  where result = snd $ checkInputModel gammaModel [sc9] [] 
+        target = True
+test310 = template "C and not D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc10] [] 
+        target = False
+test311 = template "C and top is true" result target
+  where result = snd $ checkInputModel gammaModel [sc11] [] 
+        target = True
+test312 = template "C and bottom is false" result target
+  where result = snd $ checkInputModel gammaModel [sc12] [] 
+        target = False
+test313 = template "C or top is true" result target
+  where result = snd $ checkInputModel gammaModel [sc13] [] 
+        target = True
+test314 = template "C or bottom is true" result target
+  where result = snd $ checkInputModel gammaModel [sc14] [] 
+        target = True
+test315 = template "forall R top is true" result target
+  where result = snd $ checkInputModel gammaModel [sc15] [] 
+        target = True
+test316 = template "forall R bottom is false" result target
+  where result = snd $ checkInputModel gammaModel [sc16] [] 
+        target = False
+test317 = template "forall R C is true" result target
+  where result = snd $ checkInputModel gammaModel [sc17] [] 
+        target = True
+test318 = template "forall R D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc18] [] 
+        target = False
+test319 = template "forall R not C is false" result target
+  where result = snd $ checkInputModel gammaModel [sc19] [] 
+        target = False
+test320 = template "forall S C is true" result target
+  where result = snd $ checkInputModel gammaModel [sc20] [] 
+        target = True
+test321 = template "forall S C and D is true" result target
+  where result = snd $ checkInputModel gammaModel [sc21] [] 
+        target = True
+test322 = template "forall S C or D is true" result target
+  where result = snd $ checkInputModel gammaModel [sc22] [] 
+        target = True
+test323 = template "forall S C and not T is false" result target
+  where result = snd $ checkInputModel gammaModel [sc23] [] 
+        target = False
+test324 = template "exists R T is true" result target
+  where result = snd $ checkInputModel gammaModel [sc24] [] 
+        target = True
+test325 = template "exists R not T is false" result target
+  where result = snd $ checkInputModel gammaModel [sc25] [] 
+        target = False
+test326 = template "exists R C is true" result target
+  where result = snd $ checkInputModel gammaModel [sc26] [] 
+        target = True
+test327 = template "exists R D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc27] [] 
+        target = False
+test328 = template "exists S not D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc28] [] 
+        target = False
+test329 = template "exists S C and D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc29] [] 
+        target = False
+test330 = template "exists S C or D is false" result target
+  where result = snd $ checkInputModel gammaModel [sc30] [] 
+        target = False
+test331 = template "exists S C and not T is false" result target
+  where result = snd $ checkInputModel gammaModel [sc31] [] 
+        target = False
+
+test3List = TestList $ map label [("", test31),
+                                  ("", test32),
+                                  ("", test33),
+                                  ("", test34),
+                                  ("", test35),
+                                  ("", test36),
+                                  ("", test37),
+                                  ("", test38),
+                                  ("", test39),
+                                  ("", test310),
+                                  ("", test311),
+                                  ("", test312),
+                                  ("", test313),
+                                  ("", test314),
+                                  ("", test315),
+                                  ("", test316),
+                                  ("", test317),
+                                  ("", test318),
+                                  ("", test319),
+                                  ("", test320),
+                                  ("", test321),
+                                  ("", test322),
+                                  ("", test323),
+                                  ("", test324),
+                                  ("", test325),
+                                  ("", test326),
+                                  ("", test327),
+                                  ("", test328),
+                                  ("", test329),
+                                  ("", test330),
+                                  ("", test331)]
