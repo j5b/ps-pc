@@ -68,20 +68,18 @@ findProofOrModel (Exists rel c : cs) gamma is
 findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
 
 -- A function that sorts concepts in the following order, first to last:
--- 'A, not A', 'A and B', 'A or B', 'ER.C', others, 'Atom A'
+-- 'A, not A', 'A and B', 'A or B', 'ER.C', others
 conceptSort :: [Concept] -> [Concept]
 conceptSort = putContradictionsFirst . sortBy compareConcepts
       where
         compareConcepts :: Concept -> Concept -> Ordering
-        compartConcepts (Atom _) _ = GT
-        compartConcepts _ (Atom _) = LT
         compareConcepts (And _ _) _    = LT
         compareConcepts _ (And _ _)    = GT
         compareConcepts (Or _ _) _     = LT
         compareConcepts _ (Or _ _)     = GT
         compareConcepts (Exists _ _) _ = LT
         compareConcepts _ (Exists _ _) = GT
-        compareConcepts _ _           = EQ
+        compareConcepts _ _            = EQ
         
         putContradictionsFirst :: [Concept] -> [Concept]
         putContradictionsFirst cs = contradictions ++ (cs \\ contradictions)
