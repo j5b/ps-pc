@@ -31,6 +31,8 @@ findProofOrModel :: [Concept] -> [Concept] -> [Individual]
                     -> Either (Model, [Individual]) ProofTree
 findProofOrModel [] _ (i:is)
   = Left (([i],[],[]), is)
+findProofOrModel [T] gamma (i:is)
+  = Left (([i],[],[]), is)
 findProofOrModel (T:cs) gamma is
   = findProofOrModel (cs ++ [T]) gamma is
 findProofOrModel (Neg T:cs) gamma is
