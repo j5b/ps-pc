@@ -32,7 +32,7 @@ findProofOrModel :: [Concept] -> [Concept] -> [Individual]
 findProofOrModel [] _ (i:is)
   = Left (([i],[],[]), is)
 findProofOrModel (T:cs) gamma is
-  = findProofOrModel cs gamma is
+  = findProofOrModel (cs ++ [T]) gamma is
 findProofOrModel (Neg T:cs) gamma is
   = Right (NodeZero (Neg T : cs, "", Neg T))
 findProofOrModel (Atom c : Neg (Atom d) : cs) _ _
