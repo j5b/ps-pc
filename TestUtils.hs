@@ -1,21 +1,12 @@
 {- 
-   Author: <authors name>
-   Maintainer: <maintainer's name>
-   Email: <maintainer's email>
+   Author:
    License: GPL 3.0
-   File: filename
-   Description: short description
+   Description: Some common test utilities
 -}
 
-{-
-   General comments
--}
+module TestUtils where
 
-{-
-   Always explain functions just above them so Hackage can help us generate documentation
-   "TODO:" Will denote a task to do
-   "WARNING:" Some important information to put in the documentation 
--}
+import Signature
 
 -- simple concepts to test sc for simple concept
 sc1 = top -- always true
@@ -55,3 +46,30 @@ nt1 = top \/ bottom
 nt2 = top /\ bottom
 nt3 = exists "R" bottom
 nt4 = exists "R" top /\ forall "R" bottom
+
+-- simple combinations of concepts
+a = Atom "A"
+b = Atom "B"
+c = Atom "C"
+d = Atom "D"
+e = Atom "E"
+negAtom = Neg a
+negAtomb = Neg b
+negAtomc = Neg c
+andAtom = And a b
+orAtom = Or a b
+existsAtoma = Exists "R" a
+existsAtomb = Exists "R" b
+existsAtomc = Exists "R" c
+forallAtoma = Forall "R" a
+forallAtomb = Forall "R" b
+forallAtomc = Forall "R" c
+andExists = And existsAtoma existsAtomb
+andforalls = And forallAtoma forallAtomb
+orExists = Or existsAtoma existsAtomb
+orforalls = Or forallAtoma forallAtomb
+negExists = Neg existsAtoma
+negForalls = Neg forallAtoma
+existsexists = Exists "R1" existsAtoma
+existsforalls = Exists "R1" forallAtoma
+forallexists = Forall "R1" existsAtoma
