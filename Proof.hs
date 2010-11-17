@@ -10,7 +10,7 @@
 module Proof where 
 
 import Signature
-import List
+import Data.List
 
 -- TODO: Add somehow knowledge base
 -- TODO: Build up the proof rules
