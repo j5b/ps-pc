@@ -7,6 +7,8 @@
    Description: tests for ProofChecker.hs
 -}
 
+module ProofChecker_test where 
+
 import Signature
 import Proof
 import ProofChecker
