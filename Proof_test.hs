@@ -7,6 +7,8 @@
    Description:  Tests the Proof.hs
 -}
 
+module Proof_test where 
+
 import Signature
 import Proof
 import Test.HUnit

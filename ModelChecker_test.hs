@@ -7,12 +7,20 @@
    Description: tests the model checker
 -}
 
+module ModelChecker_test where 
+
 import Test.HUnit
 import Data.Maybe
 import ModelChecker
 import Model
 import Signature
 import TestUtils
+
+testModelChecker = do putStrLn "==== Model Checker tests"
+                      runTestTT emptyTests
+                      runTestTT test1List
+                      runTestTT test2List
+                      runTestTT test3List
 
 label (a,b) = TestLabel a b
 template msg result target =

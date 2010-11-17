@@ -7,6 +7,8 @@
    Description: Tests the signature.hs file
 -}
 
+module Signature_test where
+
 import Signature
 import Test.HUnit
 
@@ -121,3 +123,8 @@ isnnfTest3 = TestCase (assertBool "not NNF" (not (isNNF (Neg simple3))))
 isnnfTests = TestList $ map testLabel [ ("isNNF test 1", isnnfTest1),
                                         ("isNNF test 2", isnnfTest2),
                                         ("isNNF test 3", isnnfTest3) ]
+
+testSignature = do putStrLn "==== Signature tests"
+                   runTestTT nnfTests
+                   runTestTT atomicTests
+                   runTestTT isnnfTests
