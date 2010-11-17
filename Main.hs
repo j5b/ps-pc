@@ -25,7 +25,7 @@ import Signature
 -- TODO: parse input and call the proof/model searcher and check the result
 --main :: IO()
 main = do putStr $ "Nothing happening " ++ "at "
-          putStr $ "the " ++ "moment"
+          putStr $ "the " ++ "moment\n"
 
 -- Dispatches call to either the model or proof checker.
 -- TODO: Make interfaces compatible.
@@ -34,3 +34,4 @@ check :: [Concept] -> [Concept] -> Either Model ProofTree -> (String, Bool)
 --       concepts to dispatch this call.
 check cs gamma (Left model) = checkInputModel model gamma cs
 check _ gamma (Right proof) = checkProof proof gamma
+
