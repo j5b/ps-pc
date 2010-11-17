@@ -9,5 +9,11 @@ Homepage:       http://code.google.com/p/ps-pc
 Bug-report:     http://code.google.com/p/issues/list
 Synopsis:       A tool to find counter-proofs or model for Description Logic. It can also check if proofs or models are correct
 Category:       Automated Proof/Model generator
-Tested-with:    ghc-6.10.4, ghc-6.12.1
+Tested-with:    GHC >=6.10.4
 
+Executable ps-pc
+  Main-Is:      Main.hs
+
+Source-repository head
+  Type:         hg
+  location:     https://ps-pc.googlecode.com/hg/
