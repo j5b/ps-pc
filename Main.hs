@@ -12,8 +12,8 @@
 
 import Data.Either
 import Data.List
-import System.IO
-import System(getArgs)
+-- import System.IO
+-- import System(getArgs)
 
 import Model
 import ModelChecker
