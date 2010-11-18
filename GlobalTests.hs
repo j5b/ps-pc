@@ -7,7 +7,7 @@
    Description: I will testing the whole lot of findPOM and the proof and model checker
 -}
 
-module NastyTests where
+module GlobalTests where
 
 import Test.HUnit
 import Control.Concurrent
@@ -61,7 +61,19 @@ testtemplate cs gamma = TestCase (template cs gamma)
 globaltest1 = testtemplate [] [nt1]
 globaltest2 = testtemplate [nt1] []
 globaltest3 = testtemplate [nt1] [nt1]
+globaltest4 = testtemplate [] [nt2]
+globaltest5 = testtemplate [nt2] []
+globaltest6 = testtemplate [nt2] [nt2]
+globaltest7 = testtemplate [] [nt3]
+globaltest8 = testtemplate [nt3] []
+globaltest9 = testtemplate [nt3] [nt3]
+globaltest10 = testtemplate [] [nt4]
+globaltest11 = testtemplate [nt4] []
+globaltest12 = testtemplate [nt4] [nt4]
 
-globaltests = TestList [globaltest1, globaltest2, globaltest3]
+globaltests = TestList [globaltest1, globaltest2, globaltest3,
+                        globaltest4, globaltest5, globaltest6, 
+                        globaltest7, globaltest8, globaltest9,
+                        globaltest10, globaltest11, globaltest12]
 
 testglobal  = runTestTT globaltests
