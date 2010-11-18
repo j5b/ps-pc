@@ -1,0 +1,44 @@
+The requirements are as in the inception report, with a few additions. We gave the following requirements in the inception report:
+\begin{itemize}
+\item Representation of concepts, models and proofs from description logic
+\item Implementation of a model/proof searching algorithm for description logic which is correct and which terminates
+\item Implementation of a model checking algorithm for description logic that checks
+if a model is correct
+\item Implementation of a proof checking algorithm for description logic that checks if a proof is correct
+\item Provide a standard output format for generated models and proofs 
+\end{itemize}
+The following requirements have been added, after we found them to be useful features
+in our discussions:
+\begin{itemize}
+\item Output of a helpful explanation in case a proof or model turns out to be incorrect.
+\item Provision of an interface to the model/proof checker that allows users to check their own proof model (i.e. independence of proof/model generation and checking).
+\end{itemize}
+These changes are supported by our supervisor.
+
+We still plan the same feature extensions, as listed below. The expressibility we want to
+add to our program is more specific now:
+
+\begin{itemize}
+\item Extend the program to more expressive logics with a known proof/model theory
+  \begin{itemize}
+    \item Add extensions that allow to refer to specific individuals in the domain and
+      specify their properties and relations (using either an \emph{Abox} or \emph{satisfaction operator} approach)
+    \item Possibly add an extension that allows to specify the number of relations
+  \end{itemize}
+\item Implementation of a parser for reading concepts in Description Logic
+\item Ability to represent models and proofs in a graphical representation
+\item User interface to the program
+\item Find the shortest proof and/or smallest model for a given concept
+\end{itemize}
+
+Our measure for progress -- regular meetings
+where we determine the progress -- has turned out to be very useful and we will continue
+measuring our progress in this way. This is one of the useful tools provided by our 
+blend of agile software development methods: eXtreme Programming, Scrum and Crystal Clear.
+Test-driven development, also adapted from this mix, plays an important part in measuring
+progress by giving us confidence that the parts of the program that have been written are
+working correctly and can be considered as complete for the respective iteration.
+
+As discussed earlier, we already implemented the
+core functionality for the $\mathcal{ALC}$-logic and we are very confident that we will
+be able to extend this as planned to the more complex logics mentioned above.
