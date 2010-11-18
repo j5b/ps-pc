@@ -161,7 +161,6 @@ testApplyExistsOther2 =
    ([bottom, top])                
    (applyExists [forall "R" top] [] (exists "R" bottom)))
 
--- Problem here
 testApplyExistsOther3 = 
    TestCase (assertEqual "More stuff"
    ([Atom "A",Forall "R" b,Atom "C", exists "R" d])                
