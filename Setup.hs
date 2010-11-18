@@ -1,6 +1,9 @@
 module Main (main) where
 
-import Distribution.Simple (defaultMain)
+import Distribution.Simple
+import Distribution.Simple.UserHooks
+import TestMain
 
 main :: IO ()
-main = defaultMain 
+main = defaultMainWithHooks $ simpleUserHooks {
+        runTests  = runTestsPSPC }
