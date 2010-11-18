@@ -16,6 +16,10 @@ isTop :: Concept -> Bool
 isTop (T) = True
 isTop _   = False
 
+isBot :: Concept -> Bool
+isBot (Neg T) = True
+isBot _       = False
+
 isAtom :: Concept -> Bool
 isAtom (Atom _) = True
 isAtom _        = False
@@ -33,8 +37,8 @@ isOr (Or _ _) = True
 isOr _        = False
 
 isAnd :: Concept -> Bool
-isAnd (Or _ _) = True
-isAnd _        = False
+isAnd (And _ _) = True
+isAnd _         = False
 
 isExists :: Concept -> Bool
 isExists (Exists _ _) = True

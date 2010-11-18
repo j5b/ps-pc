@@ -31,10 +31,8 @@ findProofOrModel :: [Concept] -> [Concept] -> [Individual]
                     -> Either (Model, [Individual]) ProofTree
 findProofOrModel [] _ (i:is)
   = Left (([i],[],[]), is)
-findProofOrModel [T] gamma (i:is)
+findProofOrModel (T : cs) gamma (i:is)
   = Left (([i],[],[]), is)
-findProofOrModel (T:cs) gamma is
-  = findProofOrModel (cs ++ [T]) gamma is
 findProofOrModel (Neg T:cs) gamma is
   = Right (NodeZero (Neg T : cs, "", Neg T))
 findProofOrModel (Atom c : Neg (Atom d) : cs) _ _
@@ -72,9 +70,11 @@ findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
 -- A function that sorts concepts in the following order, first to last:
 -- 'A, not A', 'A and B', 'A or B', 'ER.C', others
 conceptSort :: [Concept] -> [Concept]
-conceptSort = putContradictionsFirst . sortBy compareConcepts
+conceptSort = putFalsityFirst . putContradictionsFirst . sortBy compareConcepts
       where
         compareConcepts :: Concept -> Concept -> Ordering
+        compareConcepts (T) _          = GT
+        compareConcepts _ (T)          = LT
         compareConcepts (And _ _) _    = LT
         compareConcepts _ (And _ _)    = GT
         compareConcepts (Or _ _) _     = LT
@@ -82,6 +82,11 @@ conceptSort = putContradictionsFirst . sortBy compareConcepts
         compareConcepts (Exists _ _) _ = LT
         compareConcepts _ (Exists _ _) = GT
         compareConcepts _ _            = EQ
+
+	putFalsityFirst :: [Concept] -> [Concept]
+	putFalsityFirst concepts = falsities ++ (concepts \\ falsities)
+	  where
+	    falsities = filter isBot concepts
         
         putContradictionsFirst :: [Concept] -> [Concept]
         putContradictionsFirst cs = contradictions ++ (cs \\ contradictions)
