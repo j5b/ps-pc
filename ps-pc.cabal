@@ -11,17 +11,9 @@ Build-Type:     Simple
 Category:       Automated Proof/Model generator
 Tested-with:    GHC >=6.10.4
 
-Flag Test
-  Description:  Create a binary that runs tests
-  Default:      False
-
 Executable ps-pc
-  if flag(test)
-    Build-Depends:  base >=2.0, HUnit >=1.2
-    Main-Is:        TestMain.hs
-  else
-    Build-Depends:  base >=2.0
-    Main-Is:        Main.hs
+  Build-Depends:  base >=2.0
+  Main-Is:        Main.hs
 
 Source-repository head
   Type:         hg
