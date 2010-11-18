@@ -19,12 +19,12 @@ import Signature
 import ProofSearch
 import TestUtils
 
-untilTimeout = 5
+untilTimeout = 30
 
 -- run two threads and return the first one to finish
 compete :: IO a -> IO a -> IO a 
 compete first second = do mvar <- newEmptyMVar
-                          tids <- mapM (\action -> forkIO $ action  >>= putMVar mvar) [first,second]
+                          tids <- mapM (\action -> forkIO $ action >>= putMVar mvar) [first,second]
                           result <- takeMVar mvar
                           mapM_ killThread tids
                           return result
