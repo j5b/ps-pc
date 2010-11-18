@@ -58,10 +58,10 @@ template concepts gamma = do result <- timeout untilTimeout (templateSimple conc
                          
 testtemplate cs gamma = TestCase (template cs gamma)
 
-nastytest1 = testtemplate [] [nt1]
-nastytest2 = testtemplate [nt1] []
-nastytest3 = testtemplate [nt1] [nt1]
+globaltest1 = testtemplate [] [nt1]
+globaltest2 = testtemplate [nt1] []
+globaltest3 = testtemplate [nt1] [nt1]
 
-nastytests = TestList [nastytest1, nastytest2, nastytest3]
+globaltests = TestList [globaltest1, globaltest2, globaltest3]
 
-testnasty  = runTestTT nastytests
+testglobal  = runTestTT globaltests
