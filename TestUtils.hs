@@ -41,11 +41,12 @@ sc29 = exists "S" (sc3 /\ sc4)
 sc30 = exists "S" (sc3 \/ sc4)
 sc31 = exists "S" (sc3 /\ bottom) -- should be always false
 
--- nasty cases
+-- nasty concepts
 nt1 = top \/ bottom
 nt2 = top /\ bottom
 nt3 = exists "R" bottom
 nt4 = exists "R" top /\ forall "R" bottom
+nt5 = exists "R" (exists "R" top)
 
 -- simple combinations of concepts
 a = Atom "A"
