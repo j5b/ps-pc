@@ -20,7 +20,7 @@ printModel (dom, unarys, binarys) =
   "\n\tBinarys: "++show binarys
 
 printCG :: [Concept] -> [Concept] -> String
-printCG concepts gamma = "\tGamma: "++show gamma++"\n\tConcepts: "++show concepts
+printCG concepts gamma = "\n\tGamma: "++show gamma++"\n\tConcepts: "++show concepts
 
 testequality msg target result inputString = TestCase (assertEqual newMsg target result)
   where newMsg = "\nERROR DETECTED: "++msg++"\nFor input:"++inputString++"\n"
