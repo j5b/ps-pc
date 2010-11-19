@@ -104,51 +104,51 @@ testJoinModelsEmpty =
   testequality "Failed to join empty models" emptyModel $ joinModels emptyModel emptyModel
 
 testJoinModelsBase1 = 
-  testequality "Failed to join simple models" simpleModel2 $ joinModels simpleModel2 emptyModel
+  testequality "Failed to join simple models 1" simpleModel2 $ joinModels simpleModel2 emptyModel
 
 testJoinModelsBase2 = 
-  testequality "Failed to join simple models " model1 $ joinModels emptyModel model1
+  testequality "Failed to join simple models 2" model1 $ joinModels emptyModel model1
 
 -- Simple with simple: should we apply sorting to individuals, tuples to get unique nomether order of calling?
 -- Also can it ever be that "C" is defined twice as below within a model?
 testJoinModelsSimple12 = 
-  testequality "Failed to join simple models" target $ joinModels simpleModel1 simpleModel2
+  testequality "Failed to join simple models 3" target $ joinModels simpleModel1 simpleModel2
     where target = ([1,2,3],[("A",[3,2])],[("R",[(1,3),(1,2)])])
 
 testJoinModelsSimple21 = 
-  testequality "Failed to join simple models" target $ joinModels simpleModel2 simpleModel1
+  testequality "Failed to join simple models 4" target $ joinModels simpleModel2 simpleModel1
     where target = ([1,3,2],[("A",[2,3])],[("R",[(1,2),(1,3)])])
 
 testJoinModelsSimple13 = 
-  testequality "Failed to join simple models" target $ joinModels simpleModel1 simpleModel3
+  testequality "Failed to join simple models 5" target $ joinModels simpleModel1 simpleModel3
     where target = ([1,2,4],[("A",[4,2])],[("R",[(1,4),(1,2)])])
 
 testJoinModelsSimple24 = 
-  testequality "Failed to join simple models" target $ joinModels simpleModel2 simpleModel4
+  testequality "Failed to join simple models 6" target $ joinModels simpleModel2 simpleModel4
     where target = ([1,3,2],[("A",[3]),("B",[2])],[("R",[(1,2),(1,3)])])
 
 testJoinModelsSimple34 = 
-  testequality "Failed to join simple models" target $ joinModels simpleModel2 simpleModel4
+  testequality "Failed to join simple models 7" target $ joinModels simpleModel3 simpleModel4
     where target = ([1,4,2],[("A",[4]),("B",[2])],[("R",[(1,2),(1,4)])])
 
 testJoinModelsComplex1 = 
-  testequality "Failed to join complex models" target $ joinModels simpleModel1 model1
+  testequality "Failed to join complex models 8" target $ joinModels simpleModel1 model1
     where target = ([1,2,3,4,6],[("A",[4,6,2]),("B",[1,3]),("C",[2]),("C",[3])],[("R",[(1,2),(1,3)]),("R1",[(1,4),(2,6)])])
 
 testJoinModelsComplex2 = 
-  testequality "Failed to join complex models" target $ joinModels simpleModel3 model1
+  testequality "Failed to join complex models 9" target $ joinModels simpleModel3 model1
     where target = ([1,4,2,3,6],[("A",[4,6]),("B",[1,3]),("C",[2]),("C",[3])],[("R",[(1,2),(1,3),(1,4)]),("R1",[(1,4),(2,6)])])
 
 testJoinModelsComplex3 = 
-  testequality "Failed to join complex models" target $ joinModels simpleModel2 model2
+  testequality "Failed to join complex models 10" target $ joinModels simpleModel2 model2
     where target = ([1,3,4,5,6,7,9,10],[("A",[1,7,8,3]),("B",[1,7]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,3)]),("R1",[(1,5),(5,6)])])
 
 testJoinModelsComplex4 = 
-  testequality "Failed to join complex models" target $ joinModels simpleModel4 model2
+  testequality "Failed to join complex models 11" target $ joinModels simpleModel4 model2
     where target = ([1,2,4,5,6,7,9,10],[("B",[1,7,2]),("A",[1,7,8]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,2)]),("R1",[(1,5),(5,6)])])
 
 testJoinModelsComplex5 = 
-  testequality "Failed to join complex models" target $ joinModels model1 model2
+  testequality "Failed to join complex models 12" target $ joinModels model1 model2
     where target = ([1,2,3,4,6,5,7,9,10],[("B",[1,7,3]),("A",[1,7,8,4,6]),("C",[4,10,2]),("C",[3])],[("R",[(10,2),(1,10),(1,2),(1,3)]),("R1",[(1,5),(5,6),(1,4),(2,6)])])
 
 -- constructAtomicModel
@@ -195,79 +195,59 @@ testApplyExistsOther3 =
 
 -- base casses
 
-testEmptySet = 
-   TestCase (assertEqual "Corret empty set of concepts"
-   (Left ([1], [], []))                
-   (findPOM [] []))
+testEmptySet = testequality msg (Left ([1], [], [])) $ findPOM [] []
+  where msg = "Failed to find model for empty gamma and no concepts"
 
-testNegAtom =
-   TestCase (assertEqual "Corret simple atom negation model"
-   (Left ([1], [], []))                
-   (findPOM [negAtom] []))
+testNegAtom = testequality msg (Left ([1], [], [])) $ findPOM [negAtom] []
+  where msg = "Failed to find a model for the negation of an atom"
 
-testAndAtom =
-   TestCase (assertEqual "Corret simple atom conjunction model"
-   (Left ([1],[("A",[1]),("B",[1])],[]))                
-   (findPOM [andAtom] []))
+testAndAtom = testequality msg (Left ([1],[("A",[1]),("B",[1])],[])) $ findPOM [andAtom] []
+  where msg = "Failed to find a model for a conjunction"
 
-testOrAtom =
-   TestCase (assertEqual "Corret simple atom disjunction model"
-   (Left ([1],[("A",[1])],[]))                
-   (findPOM [orAtom] []))
+testOrAtom  = testequality msg (Left ([1],[("A",[1])],[])) $ findPOM [orAtom] []
+  where msg = "Failed to find a model for a disjunction"
 
-testExistsAtom =
-   TestCase (assertEqual "Corret simple atom exists model"
-   (Left ([1,2],[("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [existsAtoma] []))
+testExistsAtom = testequality msg (Left ([1,2],[("A",[2])],[("R",[(1,2)])])) $ findPOM [existsAtoma] []
+  where msg = "Failed to find a model for existential concept"
 
-testForallAtom =
-   TestCase (assertEqual "Corret simple atom forall model"
-   (Left ([1],[],[]))                
-   (findPOM [forallAtoma] []))
+testForallAtom = testequality msg (Left ([1],[],[])) $ findPOM [forallAtoma] []
+  where msg = "Failed to find a model for universal concept"
 
 -- test falsity here
 
-testMoreExists1 =
-   TestCase (assertEqual "more exists 1"
-   (Left ([1,2],[("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [a, existsAtoma] []))
+testMoreExists1 = testequality msg target $ findPOM [a, existsAtoma] []
+  where msg = "Failed to find a model for existential concept and an atom" 
+        target = Left ([1,2],[("A",[2])],[("R",[(1,2)])])
 
-testMoreExists2 =
-   TestCase (assertEqual "more exists 2"
-   (Left ([1,3,2],[("B",[3]),("A",[2])],[("R",[(1,2),(1,3)])]))                
-   (findPOM [a, existsAtoma, existsAtomb] []))
+testMoreExists2 = testequality msg target $ findPOM [a, existsAtoma, existsAtomb] []
+  where msg = "Failed to find a model for two existential concepts and an atom"
+        target = Left ([1,3,2],[("B",[3]),("A",[2])],[("R",[(1,2),(1,3)])])
 
-testMoreExists3 =
-   TestCase (assertEqual "more exists 3"
-   (Left ([1,2],[("B",[2])],[("R",[(1,2)])]))                
-   (findPOM [orAtom, existsAtomb] []))
+testMoreExists3 = testequality msg target $ findPOM [orAtom, existsAtomb] []
+  where msg = "Failed to find a model for existential concept and a disjunction"
+        target = Left ([1,2],[("B",[2])],[("R",[(1,2)])])
 
-testMoreExists4 =
-   TestCase (assertEqual "more exists 4"
-   (Left ([1,2],[("B",[2])],[("R",[(1,2)])]))                
-   (findPOM [orAtom, b, existsAtomb] []))
+testMoreExists4 = testequality msg target $ findPOM [orAtom, b, existsAtomb] []
+  where msg = "Failed to find a model for existential, disjunction and an atom 1"
+        target = Left ([1,2],[("B",[2])],[("R",[(1,2)])])
 
--- problem here: a should get assigned to some individual, it isn't!
-testMoreExists5 =
-   TestCase (assertEqual "more exists 5"
-   (Left ([1,2],[("A",[1]), ("B",[2])],[("R",[(1,2)])]))                
-   (findPOM [a, orAtom, existsAtomb] []))
+testMoreExists5 = testequality msg target $ findPOM [a, orAtom, existsAtomb] []
+  where msg = "Failed to find a model for existential, disjunction and an atom 2"
+        target= Left ([1,2],[("A",[1]), ("B",[2])],[("R",[(1,2)])])
 
-testMoreForall1 =
-   TestCase (assertEqual "more forall 1"
-   (Left ([1,2],[("B",[2]),("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [a, existsAtoma, forallAtomb] []))
+testMoreForall1 = testequality msg target $ findPOM [a, existsAtoma, forallAtomb] []
+  where msg = "Failed to find a model for existential, univeral, and atom"
+        target =Left ([1,2],[("B",[2]),("A",[2])],[("R",[(1,2)])])
 
--- problem here: it seems to generate a new arrow for each existsa, even though existsa is the same
-testMore1 =
-   TestCase (assertEqual "more 1"
-   (Left ([1,2],[("B",[2]),("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [a, existsAtoma, forallAtomb, existsAtoma, a, forallAtomb, a, a, a, forallAtomb, existsAtoma] []))
+testMore1 = testequality msg target result
+  where msg = "Failed to find a model for multiple universals, multiple existentials, and duplicate atomics"
+        target = Left ([1,2],[("B",[2]),("A",[2])],[("R",[(1,2)])])
+        result = findPOM [a, existsAtoma, forallAtomb, existsAtoma, a, forallAtomb, a, a, a, forallAtomb, existsAtoma] []
 
-testMore2 =
-   TestCase (assertEqual "more 2"
-   (Left ([1,3,2],[("C",[2,3]),("B",[3]),("A",[2])],[("R",[(1,2),(1,3)])]))                
-   (findPOM [a, existsAtoma, existsAtomb, forallAtomc] []))
+testMore2 = testequality msg target result
+  where msg = "Failed to find a model for univeral, multiple existentiuals, and atoms"
+        target = Left ([1,3,2],[("C",[2,3]),("B",[3]),("A",[2])],[("R",[(1,2),(1,3)])])
+        result = findPOM [a, existsAtoma, existsAtomb, forallAtomc] []
 
 -- some more complex ones
 
