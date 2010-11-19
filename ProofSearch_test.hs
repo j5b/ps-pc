@@ -70,25 +70,25 @@ morecomplexModelTests = maplabel "Finding complex models with POM Searcher"
 
 -- conceptSort tests
 
-testConceptSortEmpty = testequality "Sorting empty set" [] $ conceptSort []
+testConceptSortEmpty = testequality "Failed to sort empty set" [] $ conceptSort []
 
-testConceptSortList = 
-   TestCase (assertEqual "Failed to sort  some random list, but with no contradictions"
-   ([andAtom, orExists, orforalls,  existsAtomb, existsAtomc, existsAtoma, forallAtomc, negAtom, c, b, forallAtoma ])                
-   (conceptSort [forallAtomc, andAtom, negAtom, existsAtomb, existsAtomc, orExists, c, b, existsAtoma, forallAtoma, orforalls]))
+testConceptSortList = testequality msg target result
+  where msg = "Failed to sort  some random list, but with no contradictions" 
+        target = [andAtom, orExists, orforalls,  existsAtomb, existsAtomc, existsAtoma, forallAtomc, negAtom, c, b, forallAtoma]
+        result = conceptSort [forallAtomc, andAtom, negAtom, existsAtomb, existsAtomc, orExists, c, b, existsAtoma, forallAtoma, orforalls]
 
 -- if duplicate in contradictions, do we just take one pair?
-testConceptSortContradictions = 
-   TestCase (assertEqual "Failed to sort random list with contradictions"
-   ([c, negAtomc, b, negAtomb, andAtom, orExists, orforalls,  existsAtomb, existsAtomc, 
-          existsAtoma, forallAtomc, negAtomc, forallAtoma, negAtomc, negAtomb ])                
-   (conceptSort [forallAtomc, andAtom, negAtomc, existsAtomb, existsAtomc, 
-           orExists, c, b, existsAtoma, negAtomc, forallAtoma, negAtomc, negAtomb, negAtomb, orforalls]))
-
-testConceptSortNotSorting = 
-   TestCase (assertEqual "Failed to sort list with negation of atoms"
-   ([orAtom, forallAtoma, Neg orAtom])                
-   (conceptSort [forallAtoma, orAtom, Neg orAtom]))
+testConceptSortContradictions = testequality msg target result
+  where msg = "Failed to sort random list with contradictions"
+        target = [c, negAtomc, b, negAtomb, andAtom, orExists, orforalls,  existsAtomb, existsAtomc, 
+          existsAtoma, forallAtomc, negAtomc, forallAtoma, negAtomc, negAtomb ]
+        result = conceptSort [forallAtomc, andAtom, negAtomc, existsAtomb, existsAtomc, 
+           orExists, c, b, existsAtoma, negAtomc, forallAtoma, negAtomc, negAtomb, negAtomb, orforalls]  
+ 
+testConceptSortNotSorting = testequality msg target result
+  where msg = "Failed to sort list with negation of atoms"
+        target = [orAtom, forallAtoma, Neg orAtom]
+        result = conceptSort [forallAtoma, orAtom, Neg orAtom]
 
 -- joinModels tests
 
@@ -101,116 +101,93 @@ model1 = ([1,2,3,4,6], [("B",[1, 3]), ("A",[4, 6]), ("C",[2]), ("C",[3])], [("R"
 model2 = ([1,4,5,6,7,9,10], [("B",[1, 7]), ("A",[1, 7, 8]), ("C",[4, 10]), ("C",[4])], [("R",[(10,2), (1, 10)]), ("R1",[(1,5), (5, 6)])])
 
 testJoinModelsEmpty = 
-   TestCase (assertEqual "Failed to join empty models"
-   (emptyModel)                
-   (joinModels emptyModel emptyModel))
+  testequality "Failed to join empty models" emptyModel $ joinModels emptyModel emptyModel
 
 testJoinModelsBase1 = 
-   TestCase (assertEqual "Failed to join a simple models"
-   (simpleModel2)                
-   (joinModels simpleModel2 emptyModel))
+  testequality "Failed to join simple models" simpleModel2 $ joinModels simpleModel2 emptyModel
 
 testJoinModelsBase2 = 
-   TestCase (assertEqual "Base case 2"
-   (model1)                
-   (joinModels emptyModel model1))
+  testequality "Failed to join simple models " model1 $ joinModels emptyModel model1
 
 -- Simple with simple: should we apply sorting to individuals, tuples to get unique nomether order of calling?
 -- Also can it ever be that "C" is defined twice as below within a model?
 testJoinModelsSimple12 = 
-   TestCase (assertEqual "Simple models"
-   (([1,2,3],[("A",[3,2])],[("R",[(1,3),(1,2)])]))                
-   (joinModels simpleModel1 simpleModel2))
+  testequality "Failed to join simple models" target $ joinModels simpleModel1 simpleModel2
+    where target = ([1,2,3],[("A",[3,2])],[("R",[(1,3),(1,2)])])
 
 testJoinModelsSimple21 = 
-   TestCase (assertEqual "Simple models reverse"
-   (([1,3,2],[("A",[2,3])],[("R",[(1,2),(1,3)])]))                
-   (joinModels simpleModel2 simpleModel1))
+  testequality "Failed to join simple models" target $ joinModels simpleModel2 simpleModel1
+    where target = ([1,3,2],[("A",[2,3])],[("R",[(1,2),(1,3)])])
 
 testJoinModelsSimple13 = 
-   TestCase (assertEqual "Simple models"
-   (([1,2,4],[("A",[4,2])],[("R",[(1,4),(1,2)])]))                
-   (joinModels simpleModel1 simpleModel3))
+  testequality "Failed to join simple models" target $ joinModels simpleModel1 simpleModel3
+    where target = ([1,2,4],[("A",[4,2])],[("R",[(1,4),(1,2)])])
 
 testJoinModelsSimple24 = 
-   TestCase (assertEqual "Simple models"
-   (([1,3,2],[("A",[3]),("B",[2])],[("R",[(1,2),(1,3)])]))                
-   (joinModels simpleModel2 simpleModel4))
+  testequality "Failed to join simple models" target $ joinModels simpleModel2 simpleModel4
+    where target = ([1,3,2],[("A",[3]),("B",[2])],[("R",[(1,2),(1,3)])])
 
 testJoinModelsSimple34 = 
-   TestCase (assertEqual "Simple models"
-   (([1,4,2],[("A",[4]),("B",[2])],[("R",[(1,2),(1,4)])]))                
-   (joinModels simpleModel2 simpleModel4))
+  testequality "Failed to join simple models" target $ joinModels simpleModel2 simpleModel4
+    where target = ([1,4,2],[("A",[4]),("B",[2])],[("R",[(1,2),(1,4)])])
 
-testJoinModelsComplex1  = 
-   TestCase (assertEqual "Complex models"
-   (([1,2,3,4,6],[("A",[4,6,2]),("B",[1,3]),("C",[2]),("C",[3])],[("R",[(1,2),(1,3)]),("R1",[(1,4),(2,6)])]))                
-   (joinModels simpleModel1 model1))
+testJoinModelsComplex1 = 
+  testequality "Failed to join complex models" target $ joinModels simpleModel1 model1
+    where target = ([1,2,3,4,6],[("A",[4,6,2]),("B",[1,3]),("C",[2]),("C",[3])],[("R",[(1,2),(1,3)]),("R1",[(1,4),(2,6)])])
 
-testJoinModelsComplex2  = 
-   TestCase (assertEqual "Complex models"
-   (([1,4,2,3,6],[("A",[4,6]),("B",[1,3]),("C",[2]),("C",[3])],[("R",[(1,2),(1,3),(1,4)]),("R1",[(1,4),(2,6)])]))                
-   (joinModels simpleModel3 model1))
+testJoinModelsComplex2 = 
+  testequality "Failed to join complex models" target $ joinModels simpleModel3 model1
+    where target = ([1,4,2,3,6],[("A",[4,6]),("B",[1,3]),("C",[2]),("C",[3])],[("R",[(1,2),(1,3),(1,4)]),("R1",[(1,4),(2,6)])])
 
-testJoinModelsComplex3  = 
-   TestCase (assertEqual "Complex models"
-   (([1,3,4,5,6,7,9,10],[("A",[1,7,8,3]),("B",[1,7]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,3)]),("R1",[(1,5),(5,6)])]))                
-   (joinModels simpleModel2 model2))
+testJoinModelsComplex3 = 
+  testequality "Failed to join complex models" target $ joinModels simpleModel2 model2
+    where target = ([1,3,4,5,6,7,9,10],[("A",[1,7,8,3]),("B",[1,7]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,3)]),("R1",[(1,5),(5,6)])])
 
-testJoinModelsComplex4 =
-   TestCase (assertEqual "Complex models"
-   (([1,2,4,5,6,7,9,10],[("B",[1,7,2]),("A",[1,7,8]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,2)]),("R1",[(1,5),(5,6)])]))                
-   (joinModels simpleModel4 model2))
+testJoinModelsComplex4 = 
+  testequality "Failed to join complex models" target $ joinModels simpleModel4 model2
+    where target = ([1,2,4,5,6,7,9,10],[("B",[1,7,2]),("A",[1,7,8]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,2)]),("R1",[(1,5),(5,6)])])
 
-testJoinModelsComplex5  = 
-   TestCase (assertEqual "most complex models"
-   (([1,2,3,4,6,5,7,9,10],[("B",[1,7,3]),("A",[1,7,8,4,6]),("C",[4,10,2]),("C",[3])],[("R",[(10,2),(1,10),(1,2),(1,3)]),("R1",[(1,5),(5,6),(1,4),(2,6)])]))                
-   (joinModels model1 model2))
+testJoinModelsComplex5 = 
+  testequality "Failed to join complex models" target $ joinModels model1 model2
+    where target = ([1,2,3,4,6,5,7,9,10],[("B",[1,7,3]),("A",[1,7,8,4,6]),("C",[4,10,2]),("C",[3])],[("R",[(10,2),(1,10),(1,2),(1,3)]),("R1",[(1,5),(5,6),(1,4),(2,6)])])
 
 -- constructAtomicModel
 
 testConstructAtomicModelEmpty = 
-   TestCase (assertEqual "Empty set"
-   (([2], [], []))                
-   (constructAtomicModel [] 2))
+  testequality msg ([2], [], []) $ constructAtomicModel [] 2
+    where msg = "Failed to construct an atomic model containing 2 satisfying no concepts"
 
 testConstructAtomicModelSimple = 
-   TestCase (assertEqual "Simple set"
-   (([10],[("A",[10]),("C",[10])],[]))                
-   (constructAtomicModel [a, c, orAtom] 10))
+  testequality msg ([10],[("A",[10]),("C",[10])],[]) $ constructAtomicModel [a, c, orAtom] 10
+    where msg = "Failed to construct an atomic model containing 10 satisfying various but simple concepts"
 
 testConstructAtomicModelBigger = 
-   TestCase (assertEqual "Bigger set"
-   (([0],[("A",[0]),("C",[0]),("C",[0]),("B",[0])],[]))   
-   (constructAtomicModel [a, c, existsAtoma, c, negAtomc, b, negAtomb, andAtom, orExists] 0))
+  testequality msg ([0],[("A",[0]),("C",[0]),("C",[0]),("B",[0])],[]) result
+    where msg = "Failed to construct an atomic model containing 10 satisfying various and complex concepts"
+          result = constructAtomicModel [a, c, existsAtoma, c, negAtomc, b, negAtomb, andAtom, orExists] 0
 
 -- applyExists
 
 testApplyExistsEmpty = 
-   TestCase (assertEqual "Empty set"
-   ([a])                
-   (applyExists [] [] (exists "R" a)))
+  testequality msg [a] $ applyExists [] [] (exists "R" a)
+    where msg = "Failed to apply exists rule with no concepts"
 
 testApplyExistsSimple = 
-   TestCase (assertEqual "A lot of forall atoms"
-   ([a,b,c])                
-   (applyExists [forallAtoma, forallAtomb, orAtom, existsAtomc, forallAtomc] [] (exists "R" a)))
+  testequality msg [a,b,c] $ applyExists [forallAtoma, forallAtomb, orAtom, existsAtomc, forallAtomc] [] (exists "R" a)
+    where msg = "Failed to apply exists rule with a few forall concepts"
 
 testApplyExistsOther1 = 
-   TestCase (assertEqual "More stuff"
-   ([top, bottom])                
-   (applyExists [forall "R" bottom] [] (exists "R" top)))
+  testequality msg [top, bottom] $ applyExists [forall "R" bottom] [] (exists "R" top)
+    where msg = "Failed to apply exists rule with one forall concept p1"
 
 testApplyExistsOther2 = 
-   TestCase (assertEqual "More stuff"
-   ([bottom, top])                
-   (applyExists [forall "R" top] [] (exists "R" bottom)))
+  testequality msg [bottom, top] $ applyExists [forall "R" top] [] (exists "R" bottom)
+    where msg = "Failed to apply exists rule with one forall concept p2" 
 
 testApplyExistsOther3 = 
-   TestCase (assertEqual "More stuff"
-   ([Atom "A",Forall "R" b,Atom "C", exists "R" d])                
-   (applyExists [forall "R" c, exists "R" d ] [forall "R" b] (exists "R" a)))
-
+  testequality msg [Atom "A",Forall "R" b,Atom "C", exists "R" d] result
+    where msg = "Failed to apply exists rule with non empty gamma and a few concepts"
+          result = applyExists [forall "R" c, exists "R" d ] [forall "R" b] (exists "R" a)
 
 ------------------------------------- Tests of findPOM for models ----------------------------------------------------------------
 
