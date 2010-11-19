@@ -237,7 +237,7 @@ checkProofTests = TestList [TestLabel "prooftreetest1" prooftest1,
                             TestLabel "prooftreetest5" prooftest5,
                             TestLabel "prooftreetest6" prooftest6]
 
-testcheckProof = do runTestTT checkProofTests
+testcheckProof = runTestTT checkProofTests
 
 proofCheckerTests = do putStrLn "==== Proof Checker tests"
                        testcheckProofStep
