@@ -70,10 +70,7 @@ morecomplexModelTests = maplabel "Finding complex models with POM Searcher"
 
 -- conceptSort tests
 
-testConceptSortEmpty = 
-   TestCase (assertEqual "Sorting empty set"
-   ([])                
-   (conceptSort []))
+testConceptSortEmpty = testequality "Sorting empty set" [] $ conceptSort []
 
 testConceptSortList = 
    TestCase (assertEqual "Failed to sort  some random list, but with no contradictions"
