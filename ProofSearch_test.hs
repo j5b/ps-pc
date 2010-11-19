@@ -8,38 +8,38 @@ module ProofSearch_test where
 
 import ProofSearch
 import Signature
-import Test.HUnit
 import TestUtils
+
+import Test.HUnit
 
 allpomutests = do putStrLn "==== Testing utility function for proof and model searcher"
                   runTestTT conceptSortTests
                   runTestTT constructAtomicModelTests
                   runTestTT joinModelTests
 
-conceptSortTests = TestList [TestLabel "conceptSort1" testConceptSortEmpty, 
-                            TestLabel "conceptSort2" testConceptSortList, 
-                            TestLabel "conceptSort3" testConceptSortContradictions, 
-                            TestLabel "conceptSort4" testConceptSortNotSorting]
+conceptSortTests = maplabel "Sorting" [testConceptSortEmpty, testConceptSortList, 
+                                  testConceptSortContradictions, 
+                                  testConceptSortNotSorting]
 
-
-joinModelTests = TestList [testJoinModelsEmpty,
-                           testJoinModelsBase1,
-                           testJoinModelsBase2,
-                           testJoinModelsSimple12,
-                           testJoinModelsSimple21,
-                           testJoinModelsSimple13,
-                           testJoinModelsSimple24,
-                           testJoinModelsSimple34,
-                           testJoinModelsComplex1,
-                           testJoinModelsComplex2,
-                           testJoinModelsComplex3,
-                           testJoinModelsComplex4,
-                           testJoinModelsComplex5]
+joinModelTests = maplabel "Joining models" [testJoinModelsEmpty,
+                                       testJoinModelsBase1,
+                                       testJoinModelsBase2,
+                                       testJoinModelsSimple12,
+                                       testJoinModelsSimple21,
+                                       testJoinModelsSimple13,
+                                       testJoinModelsSimple24,
+                                       testJoinModelsSimple34,
+                                       testJoinModelsComplex1,
+                                       testJoinModelsComplex2,
+                                       testJoinModelsComplex3,
+                                       testJoinModelsComplex4,
+                                       testJoinModelsComplex5]
                            
 
-constructAtomicModelTests = TestList [TestLabel "constructAtomicModel1" testConstructAtomicModelEmpty, 
-                            TestLabel "constructAtomicModel2" testConstructAtomicModelSimple, 
-                            TestLabel "constructAtomicModel3" testConstructAtomicModelBigger]
+constructAtomicModelTests = 
+     maplabel "Constructing atomic models" [testConstructAtomicModelEmpty, 
+                                            testConstructAtomicModelSimple, 
+                                            testConstructAtomicModelBigger]
 
 allmodelgentests = do putStrLn "==== Testing the proof and model search results directly"
                       runTestTT simpleModelTests
@@ -47,33 +47,24 @@ allmodelgentests = do putStrLn "==== Testing the proof and model search results 
                       runTestTT simpleModelTestsKnowledgeBase
                       runTestTT morecomplexModelTests
 
-simpleModelTests = TestList [TestLabel "simplemodel1" testEmptySet,
-                            TestLabel "simplemodel2" testNegAtom,
-                            TestLabel "simplemodel3" testAndAtom,
-       			    TestLabel "simplemodel4" testOrAtom,
-			    TestLabel "simplemodel5" testExistsAtom,
-			    TestLabel "simplemodel6" testForallAtom]
+simpleModelTests = maplabel "Finding simple models with POM Searcher" [testEmptySet, testNegAtom,
+                             testAndAtom, testOrAtom,
+			     testExistsAtom, testForallAtom]
 
-moreModelTests = TestList [TestLabel "model1" testMoreExists1,
-                            TestLabel "model2" testMoreExists2,
-                            TestLabel "model3" testMoreExists3,
-       			    TestLabel "model4" testMoreExists4,
-			    TestLabel "model5" testMoreExists5,
-			    TestLabel "model6" testMoreForall1,
-			    TestLabel "model7" testMore1,
-			    TestLabel "model8" testMore2]
+moreModelTests = maplabel "Finding more models with POM Searcher" [testMoreExists1, testMoreExists2,
+                             testMoreExists3, testMoreExists4,
+			     testMoreExists5, testMoreForall1,
+			     testMore1, testMore2]
 
-simpleModelTestsKnowledgeBase = TestList [TestLabel "simplemodel1" testEmptySet',
-                            TestLabel "simplemodel2" testNegAtom',
-                            TestLabel "simplemodel3" testAndAtom',
-       			    TestLabel "simplemodel4" testOrAtom',
-			    TestLabel "simplemodel5" testExistsAtom',
-			    TestLabel "simplemodel6" testForallAtom']
+simpleModelTestsKnowledgeBase = 
+    maplabel "Finding models for non empty knowledge base with POM Searcher" 
+             [testEmptySet', testNegAtom',
+                             testAndAtom', testOrAtom',
+			     testExistsAtom', testForallAtom']
 
-morecomplexModelTests = TestList [TestLabel "model1" testMoreExists1',
-                            TestLabel "model2" testMoreExists2',
-                            TestLabel "model3" testMoreExists3',
-       			    TestLabel "model4" testMoreExists4']
+morecomplexModelTests = maplabel "Finding complex models with POM Searcher" 
+                                 [testMoreExists1', testMoreExists2', 
+                                 testMoreExists3', testMoreExists4']
 
 ------------------------------------- Tests for individual functions -------------------------------------------------------
 
@@ -85,20 +76,20 @@ testConceptSortEmpty =
    (conceptSort []))
 
 testConceptSortList = 
-   TestCase (assertEqual "Sorting some random list, but with no contradictions"
+   TestCase (assertEqual "Failed to sort  some random list, but with no contradictions"
    ([andAtom, orExists, orforalls,  existsAtomb, existsAtomc, existsAtoma, forallAtomc, negAtom, c, b, forallAtoma ])                
    (conceptSort [forallAtomc, andAtom, negAtom, existsAtomb, existsAtomc, orExists, c, b, existsAtoma, forallAtoma, orforalls]))
 
 -- if duplicate in contradictions, do we just take one pair?
 testConceptSortContradictions = 
-   TestCase (assertEqual "Random list with contradictions"
+   TestCase (assertEqual "Failed to sort random list with contradictions"
    ([c, negAtomc, b, negAtomb, andAtom, orExists, orforalls,  existsAtomb, existsAtomc, 
           existsAtoma, forallAtomc, negAtomc, forallAtoma, negAtomc, negAtomb ])                
    (conceptSort [forallAtomc, andAtom, negAtomc, existsAtomb, existsAtomc, 
            orExists, c, b, existsAtoma, negAtomc, forallAtoma, negAtomc, negAtomb, negAtomb, orforalls]))
 
 testConceptSortNotSorting = 
-   TestCase (assertEqual "Not sorting not Atoms"
+   TestCase (assertEqual "Failed to sort list with negation of atoms"
    ([orAtom, forallAtoma, Neg orAtom])                
    (conceptSort [forallAtoma, orAtom, Neg orAtom]))
 
@@ -113,12 +104,12 @@ model1 = ([1,2,3,4,6], [("B",[1, 3]), ("A",[4, 6]), ("C",[2]), ("C",[3])], [("R"
 model2 = ([1,4,5,6,7,9,10], [("B",[1, 7]), ("A",[1, 7, 8]), ("C",[4, 10]), ("C",[4])], [("R",[(10,2), (1, 10)]), ("R1",[(1,5), (5, 6)])])
 
 testJoinModelsEmpty = 
-   TestCase (assertEqual "Empty model"
+   TestCase (assertEqual "Failed to join empty models"
    (emptyModel)                
    (joinModels emptyModel emptyModel))
 
 testJoinModelsBase1 = 
-   TestCase (assertEqual "Base case 1"
+   TestCase (assertEqual "Failed to join a simple models"
    (simpleModel2)                
    (joinModels simpleModel2 emptyModel))
 

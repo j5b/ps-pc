@@ -8,6 +8,14 @@ module TestUtils where
 
 import Signature
 
+import Test.HUnit
+
+-- testing function YOU SHOULD USE TO MAKE YOUR FILE EASIER
+
+testequality msg target result = TestCase (assertEqual msg target result)
+
+maplabel label testlist = TestList $ map (\x -> (TestLabel label x)) testlist
+
 -- simple concepts to test sc for simple concept
 sc1 = top -- always true
 sc2 = bottom -- always false
