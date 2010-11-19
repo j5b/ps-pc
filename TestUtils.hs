@@ -7,12 +7,23 @@
 module TestUtils where
 
 import Signature
+import Model
 
 import Test.HUnit
 
 -- testing function YOU SHOULD USE TO MAKE YOUR FILE EASIER
 
-testequality msg target result = TestCase (assertEqual msg target result)
+printModel :: Model -> String
+printModel (dom, unarys, binarys) =
+  "\n\tDomain: "++show dom++
+  "\n\tUnarys: "++show unarys++
+  "\n\tBinarys: "++show binarys
+
+printCG :: [Concept] -> [Concept] -> String
+printCG concepts gamma = "\tGamma: "++show gamma++"\n\tConcepts: "++show concepts
+
+testequality msg target result inputString = TestCase (assertEqual newMsg target result)
+  where newMsg = "\nERROR DETECTED: "++msg++"\nFor input:"++inputString++"\n"
 
 maplabel label testlist = TestList $ map (\x -> (TestLabel label x)) testlist
 

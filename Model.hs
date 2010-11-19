@@ -8,7 +8,7 @@
 -}
 
 module Model (Model, Individual, Domain, BinaryRelation, UnaryRelation,
-              getDomain, getRelations, isEmpty,
+              getDomain, getRelations, isEmpty, 
               emptyModel, checkModelConsistency, isInUnary, isInBinary) where
 
 import Control.Monad
