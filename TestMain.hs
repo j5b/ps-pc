@@ -13,6 +13,7 @@ import Proof_test
 import ProofChecker_test
 import Signature_test
 import ModelChecker_test
+import ProofSearch_test
 
 import Distribution.Simple
 import Distribution.PackageDescription
@@ -25,6 +26,8 @@ runTestsPSPC args expected description buildinfo = do allsignaturetests
                                                       allproofsteptest
                                                       alltreetests
                                                       allproofcheckertests
+                                                      allpomutests
+                                                      allmodelgentests
                                                       return ()
 
 
