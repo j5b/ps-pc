@@ -31,6 +31,21 @@ manyConcepts = [bConcept, aConcept, oConcept, eConcept, fConcept]
 gamma = [Atom "U", Neg (Atom "U"), And (Atom "V") (Atom "W"),
          Or (Atom "X") (Atom "Y"), Forall "R" (Atom "Z")]
 
+bTree = NodeZero ([Atom "A", Neg (Atom "A")], bRule, Atom "A")
+aTree = NodeOne ([aConcept, Neg (Atom "A")], aRule, aConcept)
+		(NodeZero ([Atom "A", Atom "B", Neg (Atom "A")], bRule, Atom "A"))
+oTree = NodeTwo ([oConcept, Neg (Atom "C"), Neg (Atom "D")], oRule, oConcept)
+		(NodeZero ([Atom "C", Neg (Atom "C"), Neg (Atom "D")], bRule, Atom "C"))
+		(NodeZero ([Atom "D", Neg (Atom "C"), Neg (Atom "D")], bRule, Atom "D"))
+eTree1 = NodeOne ([Forall "R" (Neg (Atom "A")), eConcept, Forall "R" (Atom "A"),
+                  Forall "S" (Atom "B")], eRule, eConcept)
+         (NodeZero ([Atom "A", Atom "E", Neg (Atom "A")], bRule, Atom "A"))
+-- etree with gamma
+eTree2 = NodeOne ([Forall "R" (Neg (Atom "A")), eConcept, Forall "R" (Atom "A"),
+                  Forall "S" (Atom "B")], eRule, eConcept)
+         (NodeZero ([Atom "A", Atom "E", Neg (Atom "A"), Atom "N"],
+          bRule, Atom "A"))
+
 -- With gamma
 tree :: ProofTree
 tree = NodeOne (manyConcepts ++ gamma , eRule, eConcept)
@@ -47,6 +62,7 @@ tree = NodeOne (manyConcepts ++ gamma , eRule, eConcept)
                                             Atom "F", Atom "Z", Atom "U",
                                             Neg (Atom "U"), Forall "R" (Atom "Z")],
                                             bRule, Atom "U"))))
+
 
 
 -- Tests for checkProofStep
@@ -128,12 +144,54 @@ leaftest1 = TestCase (assertEqual "Correct leaf" ("", True)
 leaftest2 = TestCase (assertEqual "InCorrect leaf"
                       ("This proof tree does not show unsatisfiability", False)
                       $ checkTree (NodeZero ([Atom "A"], "", Atom "A")) gamma)
-leaftest3 = TestCase (assertEqual "Correct leaf with gamma" ("", True)
+leaftest3 = TestCase (assertEqual "Uncomplete end of proof"
+                      ("Proof tree is not complete, applying the and rule to {"
+                       ++ "(Atom A and Atom B)} produces {Atom A, Atom B}", False)
+                      $ checkTree (NodeZero ([aConcept], aRule, aConcept)) gamma)
+leaftest4 = TestCase (assertEqual "Correct leaf with gamma" ("", True)
                       $ checkTree (NodeZero ([Neg T], "", Neg T)) gamma)
 
 leafTests = TestList [TestLabel "leaftest1" leaftest1,
                       TestLabel "leaftest2" leaftest2,
-                      TestLabel "leaftest3" leaftest3]
+                      TestLabel "leaftest3" leaftest3,
+                      TestLabel "leaftest4" leaftest4]
+
+btreetest1 = TestCase (assertEqual "Correct simple bottom rule tree" ("", True)
+                       $ checkTree bTree [])
+btreetest2 = TestCase (assertEqual "Incorrect simple bottom rule tree"
+                       ("There should be 1 resulting set of concepts for " ++
+                        "NodeOne", False) $ checkTree
+                       (NodeOne ([bConcept, Atom "A"], bRule, Atom "A")
+                                (NodeZero ([bottom], "", bottom))) [])
+atreetest1 = TestCase (assertEqual "Correct simple and rule tree" ("", True)
+                       $ checkTree aTree [])
+atreetest2 = TestCase (assertEqual "Incorrect simple and rule tree"
+                       ("Next step's concepts (Atom A, Not (Atom B)) do " ++
+                        "not match the result of applying and rule to ((" ++
+                        "Atom A and Atom B), Not (Atom A))", False) $ checkTree
+                        (NodeOne ([aConcept, bConcept], aRule, aConcept)
+                        (NodeZero ([Atom "A", Neg (Atom "B")], bRule, Atom "B")
+                        )) [])
+otreetest1 = TestCase (assertEqual "Correct simple or rule tree" ("", True)
+                       $ checkTree oTree [])
+otreetest2 = TestCase (assertEqual "Incorrect simple or rule tree"
+                      ("Applying the and rule to {(Atom A and Atom B), " ++
+                       "Not (Atom A)} should not give 2 results", False)
+                      $ checkTree (NodeTwo ([aConcept, bConcept], aRule, aConcept)
+                      (NodeZero ([Atom "A", bConcept], bRule, Atom "A"))
+                      (NodeZero ([Atom "A", bConcept], bRule, Atom "A"))) [])
+etreetest1 = TestCase (assertEqual "Correct simple exists rule tree" ("", True)
+                       $ checkTree eTree1 [])
+
+etreetest2 = TestCase (assertEqual "Correct simple exists rule tree2" ("", True)
+                       $ checkTree eTree2 [Atom "N"])
+
+simpleTreeTests = TestList [TestLabel "simplebtreetest1" btreetest1,
+                            TestLabel "simplebtreetest2" btreetest2,
+                            TestLabel "simpleatreetest1" atreetest1,
+                            TestLabel "simpleatreetest2" atreetest2,
+                            TestLabel "simpleotreetest1" otreetest1,                            TestLabel "simpleotreetest2" otreetest2,
+                            TestLabel "simpleetreetest1" etreetest1,                            TestLabel "simpleetreetest2" etreetest2]
 
 treetest1 = TestCase (assertEqual "Correct tree" ("", True)
                       $ checkTree tree gamma)
@@ -147,6 +205,7 @@ treeTests = TestList [TestLabel "treetest1" treetest1,
                       TestLabel "treetest2" treetest2]
 
 testcheckTree = do runTestTT leafTests
+                   runTestTT simpleTreeTests
                    runTestTT treeTests
 
 
