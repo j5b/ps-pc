@@ -16,11 +16,12 @@ import Model
 import Signature
 import TestUtils
 
-testModelChecker = do putStrLn "==== Model Checker tests"
-                      runTestTT emptyTests
-                      runTestTT test1List
-                      runTestTT test2List
-                      runTestTT test3List
+allmodelcheckertests = do putStrLn "==== Testing the model checker for empty gamma"
+                          runTestTT emptyTests
+                          runTestTT test1List
+                          runTestTT test2List
+                          putStrLn "==== Testing the model checker for non-empty gamma"
+                          runTestTT test3List
 
 label (a,b) = TestLabel a b
 template msg result target =

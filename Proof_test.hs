@@ -13,6 +13,10 @@ import Signature
 import Proof
 import Test.HUnit
 
+allproofdttests = do putStrLn "==== Testing Proof Data type basic functions"
+                     runTestTT conceptEqualsTests
+                     runTestTT getConceptTests
+
 -- Some concepts/proof tres to use in tests
 bRule = "Bottom"
 aRule = "And"
@@ -21,20 +25,20 @@ eRule = "Exists"
 
 bConcept = Neg (Atom "A")
 aConcept = And (Atom "A") (Atom "B")
-oConcept = Or (Atom "C") (Atom "D")
-eConcept = Exists "R" (Atom "E")
-fConcept = Forall "R" (Atom "F")
+oConcept = Or (Atom "A") (Atom "B")
+eConcept = Exists "R" (Atom "A")
+fConcept = Forall "R" (Atom "B")
 
-leaf = NodeZero (Neg T)
+leaf = NodeZero ([Neg T], "", Neg T)
 bTree = NodeOne ([Atom "A", Neg (Atom "A")], bRule, Atom "A") leaf
 aTree = NodeOne ([aConcept, Neg (Atom "A")], aRule, aConcept)
 		(NodeOne ([Atom "A", Atom "B", Neg (Atom "A")], bRule, Atom "A") leaf)
-oTree = NodeTwo ([oConcept, Neg (Atom "C"), Neg (Atom "D")], oRule, oConcept)
-		(NodeOne ([Atom "C", Neg (Atom "C"), Neg (Atom "D")], bRule, Atom "C") leaf)
-		(NodeOne ([Atom "D", Neg (Atom "C"), Neg (Atom "D")], bRule, Atom "D") leaf)
+oTree = NodeTwo ([oConcept, Neg (Atom "A"), Neg (Atom "B")], oRule, oConcept)
+		(NodeOne ([Atom "A", Neg (Atom "A"), Neg (Atom "B")], bRule, Atom "A") leaf)
+		(NodeOne ([Atom "B", Neg (Atom "A"), Neg (Atom "B")], bRule, Atom "B") leaf)
 eTree = NodeOne ([Forall "R" (Neg (Atom "A")), eConcept, Forall "R" (Atom "A"),
                  Forall "S" (Atom "B")], eRule, eConcept)
-                (NodeOne ([Atom "A", Atom "C", Neg (Atom "A")], bRule, Atom "A") leaf)
+                (NodeOne ([Atom "A", Atom "A", Neg (Atom "A")], bRule, Atom "A") leaf)
 
 -- Tests for conceptEquals
 cEqualsTest1 = TestCase(assertBool "conceptEquals 2 empty lists"
@@ -61,8 +65,6 @@ conceptEqualsTests = TestList [TestLabel "conceptEquals [] []" cEqualsTest1,
                                TestLabel "conceptEquals unequal lists2" cEqualsTest5,
                                TestLabel "conceptEquals same order" cEqualsTest6]
 
-testconceptEquals = do runTestTT conceptEqualsTests
-
 -- Tests for getConcepts
 gConceptsTest1 = TestCase(assertEqual "getConcept from a Leaf node" [Neg T]
                           (getConcepts leaf))
@@ -71,7 +73,7 @@ gConceptsTest2 = TestCase(assertEqual "getConcept from a bTree"
 gConceptsTest3 = TestCase(assertEqual "getConcept from a aTree"
 			              [aConcept, Neg (Atom "A")] (getConcepts aTree))
 gConceptsTest4 = TestCase(assertEqual "getConcept from a oTree"
-			              [oConcept, Neg (Atom "C"), Neg (Atom "D")]
+			              [oConcept, Neg (Atom "A"), Neg (Atom "B")]
                           (getConcepts oTree))
 gConceptsTest5 = TestCase(assertEqual "getConcept from a eTree"
 			              [Forall "R" (Neg (Atom "A")), eConcept,
@@ -84,4 +86,3 @@ getConceptTests = TestList [TestLabel "getConcepts Leaf" gConceptsTest1,
                             TestLabel "getConcepts otree" gConceptsTest4,
                             TestLabel "getConcepts etree" gConceptsTest5]
 
-testgetConcepts = do runTestTT getConceptTests

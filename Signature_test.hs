@@ -124,7 +124,7 @@ isnnfTests = TestList $ map testLabel [ ("isNNF test 1", isnnfTest1),
                                         ("isNNF test 2", isnnfTest2),
                                         ("isNNF test 3", isnnfTest3) ]
 
-testSignature = do putStrLn "==== Signature tests"
-                   runTestTT nnfTests
-                   runTestTT atomicTests
-                   runTestTT isnnfTests
+allsignaturetests = do putStrLn "==== Testing basic Signature functions"
+                       runTestTT nnfTests
+                       runTestTT atomicTests
+                       runTestTT isnnfTests
