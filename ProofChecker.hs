@@ -52,19 +52,25 @@ checkTree (NodeZero step) gamma
   where (msg, success, cs) = checkProofStep step gamma
         (initialconcepts, rule, _) = step
 checkTree (NodeOne step tree) gamma
+--  | not $ rule `elem` ["and", "exists"] =
+--      ("Applying the " ++ rule ++ " to {" ++ showConceptList initialconcepts ++
+--       "} should not give 1 result", False)
   | not success =
       (msg, False)
-  | cs /= [] =
+  | length cs /= 1 =
       ("There should be 1 resulting set of concepts for NodeOne", False)
-  | conceptEquals c (getConcepts tree) =
+  | conceptEquals (head cs) (getConcepts tree) =
       checkTree tree gamma
   | otherwise =
       ("Next step's concepts (" ++ showConceptList (getConcepts tree) ++
        ") do not match the result of applying " ++ rule ++ " rule to (" ++
        showConceptList initialconcepts ++ ")", False)
-  where (msg, success, c:cs) = checkProofStep step gamma
+  where (msg, success, cs) = checkProofStep step gamma
         (initialconcepts, rule, _) = step
 checkTree (NodeTwo step t1 t2) gamma
+  | rule /= "or" =
+      ("Applying the " ++ rule ++ " rule to {" ++ showConceptList initialconcepts ++
+       "} should not give 2 results", False)
   | not success =
       (msg, False)
   | length cs /= 2 =
@@ -79,7 +85,7 @@ checkTree (NodeTwo step t1 t2) gamma
   | otherwise =
       ("Next step's set of concepts (" ++ showConceptList (getConcepts t1)
        ++ ") and (" ++ showConceptList (getConcepts t2) ++
-       ") do not match the results of applying the Or rule to (" ++
+       ") do not match the results of applying the or rule to (" ++
        showConceptList initialconcepts ++ ")", False)
   where (msg, success, cs) = checkProofStep step gamma
         (msg1, tsuccess1) = checkTree t1 gamma
