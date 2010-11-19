@@ -245,89 +245,76 @@ testMore1 = testequality msg target result
         result = findPOM [a, existsAtoma, forallAtomb, existsAtoma, a, forallAtomb, a, a, a, forallAtomb, existsAtoma] []
 
 testMore2 = testequality msg target result
-  where msg = "Failed to find a model for univeral, multiple existentiuals, and atoms"
+  where msg = "Failed to find a model for univeral, multiple existentials, and atoms"
         target = Left ([1,3,2],[("C",[2,3]),("B",[3]),("A",[2])],[("R",[(1,2),(1,3)])])
         result = findPOM [a, existsAtoma, existsAtomb, forallAtomc] []
 
 -- some more complex ones
 
-testMoreExists1' =
-   TestCase (assertEqual "more exists 1"
-   (Left ([1,3,2],[("A",[2,3]),("B",[2,3])],[("R",[(1,2),(1,3)])]))                
-   (findPOM [andExists, andforalls] []))
+testMoreExists1' = testequality msg target result
+  where msg = "Failed to find a model for conjunction of existentials and conjuctions of universals"
+        target = Left ([1,3,2],[("A",[2,3]),("B",[2,3])],[("R",[(1,2),(1,3)])])
+        result = findPOM [andExists, andforalls] []
 
-testMoreExists2' =
-   TestCase (assertEqual "more exists 2"
-   (Left ([1,3,4,2],[("A",[4]),("B",[2])],[("R1",[(1,3)]),("R",[(1,2),(3,4)])]))                
-   (findPOM [orExists, negExists, existsexists] []))
+testMoreExists2' = testequality msg target result 
+  where msg = "Failed to find a model for disjunction fo existentials, "++ 
+              "negation of existentials and double existentials"
+        target = Left ([1,3,4,2],[("A",[4]),("B",[2])],[("R1",[(1,3)]),("R",[(1,2),(3,4)])])
+        result = findPOM [orExists, negExists, existsexists] []
 
-testMoreExists3' =
-   TestCase (assertEqual "more exists 3"
-   (Left ([1,2],[("B",[2])],[("R",[(1,2)])]))                
-   (findPOM [forallexists, orforalls, orExists, negExists] []))
+testMoreExists3' = testequality msg target result
+  where msg = "Failed to find a model for universal existential, "++
+              "disjunction of universal, disjunction of existential and negation of existential"
+        target = Left ([1,2],[("B",[2])],[("R",[(1,2)])])
+        result = findPOM [forallexists, orforalls, orExists, negExists] []
 
 -- should lead to contradiction here i think but doesnt
-testMoreExists4' =
-   TestCase (assertEqual "more exists 4"
-   (Left ([1,2],[("B",[2])],[("R",[(1,2)])]))                
-   (findPOM [orExists, negExists, existsexists]  []))
+testMoreExists4' = testequality msg target result
+  where msg = "Failed to find a model for disjunction of existentials, "++
+              "negation of existentials, and existential of existential"
+        target = Left ([1,2],[("B",[2])],[("R",[(1,2)])])
+        result = findPOM [orExists, negExists, existsexists]  []
 
 --------- Tests for models for non empy knowledge base
 
-testEmptySet' = 
-   TestCase (assertEqual "Corret empty set of concepts"
-   (Left ([1], [], []))                
-   (findPOM [] []))
+testEmptySet' = testequality msg (Left ([1], [], [])) $ findPOM [] []
+  where msg = "Failed to find a model for empty gamma and no concepts"
 
-testNegAtom' =
-   TestCase (assertEqual "Corret simple atom negation model"
-   (Left ([1], [], []))                
-   (findPOM [] [negAtom]))
+testNegAtom' = testequality msg (Left ([1], [], [])) $ findPOM [] [negAtom]
+  where msg = "Failed to find a model for gamma negation of an atom"
 
-testAndAtom' =
-   TestCase (assertEqual "Corret simple atom conjunction model"
-   (Left ([1],[("A",[1]),("B",[1])],[]))                
-   (findPOM [] [andAtom]))
+testAndAtom' = testequality msg (Left ([1],[("A",[1]),("B",[1])],[])) $ findPOM [] [andAtom] 
+  where msg = "Failed to find a model for gamma conjunction"
 
-testOrAtom' =
-   TestCase (assertEqual "Corret simple atom disjunction model"
-   (Left ([1],[("A",[1])],[]))                
-   (findPOM [] [orAtom]))
+testOrAtom' = testequality msg (Left ([1],[("A",[1])],[])) $ findPOM [] [orAtom]
+  where msg = "Failed to find a model for gamma disjunction"
 
-testExistsAtom' =
-   TestCase (assertEqual "Corret simple atom exists model"
-   (Left ([1,2],[("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [] [existsAtoma]))
+testExistsAtom' = testequality msg target $ findPOM [] [existsAtoma]
+  where msg = "Failed to find a model for gamma existential"
+        target = Left ([1,2],[("A",[2])],[("R",[(1,2)])])
 
-testForallAtom' =
-   TestCase (assertEqual "Corret simple atom forall model"
-   (Left ([1],[],[]))                
-   (findPOM [] [forallAtoma]))
+testForallAtom' = testequality msg (Left ([1],[],[])) $ findPOM [] [forallAtoma]
+  where msg = "Failed to find a model for gamma universal"
 
-testMoreExists1'' =
-   TestCase (assertEqual "more exists 1"
-   (Left ([1,2],[("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [] [a, existsAtoma]))
+testMoreExists1'' = testequality msg target $ findPOM [] [a, existsAtoma]
+  where msg = "Failed to find a model for gamma universal and an atom"
+        target = Left ([1,2],[("A",[2])],[("R",[(1,2)])])
 
-testMoreExists2'' =
-   TestCase (assertEqual "more exists 2"
-   (Left ([1,2],[("A",[2]), ("B",[3])],[("R",[(1,2), (1,3)])]))                
-   (findPOM [] [a, existsAtomb, existsAtoma]))
+testMoreExists2'' = testequality msg target $ findPOM [] [a, existsAtomb, existsAtoma]
+  where msg = "Failed to find a model for gamma universal, exisential and an atom"
+        target = Left ([1,2],[("A",[2]), ("B",[3])],[("R",[(1,2), (1,3)])])
 
-testMoreExists3'' =
-   TestCase (assertEqual "more exists 3"
-   (Left ([1,2],[("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [] [orAtom, existsAtomb]))
+testMoreExists3'' = testequality msg target $ findPOM [] [orAtom, existsAtomb]
+  where msg = "Failed to find a model for gamma disjunction and existential 1"
+        target = Left ([1,2],[("A",[2])],[("R",[(1,2)])])
 
-testMoreExists4'' =
-   TestCase (assertEqual "more exists 4"
-   (Left ([1,2],[("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [] [orAtom, existsAtomb]))
+testMoreExists4'' = testequality msg target $ findPOM [] [orAtom, existsAtomb]
+  where msg = "Failed to find a model for gamma disjunction and existential 1"
+        target = Left ([1,2],[("A",[2])],[("R",[(1,2)])])
 
-testMoreForall1'' =
-   TestCase (assertEqual "more forall 1"
-   (Left ([1,2],[("A",[2])],[("R",[(1,2)])]))                
-   (findPOM [] [a, existsAtoma, forallAtomb]))
+testMoreForall1'' = testequality msg target $ findPOM [] [a, existsAtoma, forallAtomb]
+  where msg = "Failed to find a model for gamma atomic, existential and universal"
+        target =  Left ([1,2],[("A",[2])],[("R",[(1,2)])])
 
 
 
