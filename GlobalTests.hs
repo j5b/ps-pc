@@ -76,4 +76,5 @@ globaltests = TestList [globaltest1, globaltest2, globaltest3,
                         globaltest7, globaltest8, globaltest9,
                         globaltest10, globaltest11, globaltest12]
 
-testglobal  = runTestTT globaltests
+testglobal  = do putStrLn "Global tests"
+                 runTestTT globaltests

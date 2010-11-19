@@ -13,6 +13,8 @@ module TestMain (runTestsPSPC) where
 import ProofChecker_test
 import Signature_test
 import ModelChecker_test
+import GlobalTests
+
 import Distribution.Simple
 import Distribution.PackageDescription
 import Distribution.Simple.LocalBuildInfo
