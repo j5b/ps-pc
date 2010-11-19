@@ -4,22 +4,88 @@
    Description: test proof searching
 -}
 
+module ProofSearch_test where
+
 import ProofSearch
 import Signature
 import Test.HUnit
 import TestUtils
+
+allpomutests = do putStrLn "==== Testing utility function for proof and model searcher"
+                  runTestTT conceptSortTests
+                  runTestTT constructAtomicModelTests
+                  runTestTT joinModelTests
+
+conceptSortTests = TestList [TestLabel "conceptSort1" testConceptSortEmpty, 
+                            TestLabel "conceptSort2" testConceptSortList, 
+                            TestLabel "conceptSort3" testConceptSortContradictions, 
+                            TestLabel "conceptSort4" testConceptSortNotSorting]
+
+
+joinModelTests = TestList [testJoinModelsEmpty,
+                           testJoinModelsBase1,
+                           testJoinModelsBase2,
+                           testJoinModelsSimple12,
+                           testJoinModelsSimple21,
+                           testJoinModelsSimple13,
+                           testJoinModelsSimple24,
+                           testJoinModelsSimple34,
+                           testJoinModelsComplex1,
+                           testJoinModelsComplex2,
+                           testJoinModelsComplex3,
+                           testJoinModelsComplex4,
+                           testJoinModelsComplex5]
+                           
+
+constructAtomicModelTests = TestList [TestLabel "constructAtomicModel1" testConstructAtomicModelEmpty, 
+                            TestLabel "constructAtomicModel2" testConstructAtomicModelSimple, 
+                            TestLabel "constructAtomicModel3" testConstructAtomicModelBigger]
+
+allmodelgentests = do putStrLn "==== Testing the proof and model search results directly"
+                      runTestTT simpleModelTests
+                      runTestTT moreModelTests
+                      runTestTT simpleModelTestsKnowledgeBase
+                      runTestTT morecomplexModelTests
+
+simpleModelTests = TestList [TestLabel "simplemodel1" testEmptySet,
+                            TestLabel "simplemodel2" testNegAtom,
+                            TestLabel "simplemodel3" testAndAtom,
+       			    TestLabel "simplemodel4" testOrAtom,
+			    TestLabel "simplemodel5" testExistsAtom,
+			    TestLabel "simplemodel6" testForallAtom]
+
+moreModelTests = TestList [TestLabel "model1" testMoreExists1,
+                            TestLabel "model2" testMoreExists2,
+                            TestLabel "model3" testMoreExists3,
+       			    TestLabel "model4" testMoreExists4,
+			    TestLabel "model5" testMoreExists5,
+			    TestLabel "model6" testMoreForall1,
+			    TestLabel "model7" testMore1,
+			    TestLabel "model8" testMore2]
+
+simpleModelTestsKnowledgeBase = TestList [TestLabel "simplemodel1" testEmptySet',
+                            TestLabel "simplemodel2" testNegAtom',
+                            TestLabel "simplemodel3" testAndAtom',
+       			    TestLabel "simplemodel4" testOrAtom',
+			    TestLabel "simplemodel5" testExistsAtom',
+			    TestLabel "simplemodel6" testForallAtom']
+
+morecomplexModelTests = TestList [TestLabel "model1" testMoreExists1',
+                            TestLabel "model2" testMoreExists2',
+                            TestLabel "model3" testMoreExists3',
+       			    TestLabel "model4" testMoreExists4']
 
 ------------------------------------- Tests for individual functions -------------------------------------------------------
 
 -- conceptSort tests
 
 testConceptSortEmpty = 
-   TestCase (assertEqual "Empty set"
+   TestCase (assertEqual "Sorting empty set"
    ([])                
    (conceptSort []))
 
 testConceptSortList = 
-   TestCase (assertEqual "Random list, but no contradictions"
+   TestCase (assertEqual "Sorting some random list, but with no contradictions"
    ([andAtom, orExists, orforalls,  existsAtomb, existsAtomc, existsAtoma, forallAtomc, negAtom, c, b, forallAtoma ])                
    (conceptSort [forallAtomc, andAtom, negAtom, existsAtomb, existsAtomc, orExists, c, b, existsAtoma, forallAtoma, orforalls]))
 
@@ -35,11 +101,6 @@ testConceptSortNotSorting =
    TestCase (assertEqual "Not sorting not Atoms"
    ([orAtom, forallAtoma, Neg orAtom])                
    (conceptSort [forallAtoma, orAtom, Neg orAtom]))
-
-conceptSortTests = TestList [TestLabel "conceptSort1" testConceptSortEmpty, 
-                            TestLabel "conceptSort2" testConceptSortList, 
-                            TestLabel "conceptSort3" testConceptSortContradictions, 
-                            TestLabel "conceptSort4" testConceptSortNotSorting]
 
 -- joinModels tests
 
@@ -135,10 +196,6 @@ testConstructAtomicModelBigger =
    (([0],[("A",[0]),("C",[0]),("C",[0]),("B",[0])],[]))   
    (constructAtomicModel [a, c, existsAtoma, c, negAtomc, b, negAtomb, andAtom, orExists] 0))
 
-constructAtomicModelTests = TestList [TestLabel "constructAtomicModel1" testConstructAtomicModelEmpty, 
-                            TestLabel "constructAtomicModel2" testConstructAtomicModelSimple, 
-                            TestLabel "constructAtomicModel3" testConstructAtomicModelBigger]
-
 -- applyExists
 
 testApplyExistsEmpty = 
@@ -165,7 +222,6 @@ testApplyExistsOther3 =
    TestCase (assertEqual "More stuff"
    ([Atom "A",Forall "R" b,Atom "C", exists "R" d])                
    (applyExists [forall "R" c, exists "R" d ] [forall "R" b] (exists "R" a)))
-
 
 
 ------------------------------------- Tests of findPOM for models ----------------------------------------------------------------
@@ -205,13 +261,6 @@ testForallAtom =
    (findPOM [forallAtoma] []))
 
 -- test falsity here
-
-simpleModelTests = TestList [TestLabel "simpemodel1" testEmptySet,
-                            TestLabel "simpemodel2" testNegAtom,
-                            TestLabel "simpemodel3" testAndAtom,
-       			    TestLabel "simpemodel4" testOrAtom,
-			    TestLabel "simpemodel5" testExistsAtom,
-			    TestLabel "simpemodel6" testForallAtom]
 
 testMoreExists1 =
    TestCase (assertEqual "more exists 1"
@@ -255,15 +304,6 @@ testMore2 =
    (Left ([1,3,2],[("C",[2,3]),("B",[3]),("A",[2])],[("R",[(1,2),(1,3)])]))                
    (findPOM [a, existsAtoma, existsAtomb, forallAtomc] []))
 
-moreModelTests = TestList [TestLabel "model1" testMoreExists1,
-                            TestLabel "model2" testMoreExists2,
-                            TestLabel "model3" testMoreExists3,
-       			    TestLabel "model4" testMoreExists4,
-			    TestLabel "model5" testMoreExists5,
-			    TestLabel "model6" testMoreForall1,
-			    TestLabel "model7" testMore1,
-			    TestLabel "model8" testMore2]
-
 -- some more complex ones
 
 testMoreExists1' =
@@ -286,11 +326,6 @@ testMoreExists4' =
    TestCase (assertEqual "more exists 4"
    (Left ([1,2],[("B",[2])],[("R",[(1,2)])]))                
    (findPOM [orExists, negExists, existsexists]  []))
-
-morecomplexModelTests = TestList [TestLabel "model1" testMoreExists1',
-                            TestLabel "model2" testMoreExists2',
-                            TestLabel "model3" testMoreExists3',
-       			    TestLabel "model4" testMoreExists4']
 
 --------- Tests for models for non empy knowledge base
 
@@ -323,13 +358,6 @@ testForallAtom' =
    TestCase (assertEqual "Corret simple atom forall model"
    (Left ([1],[],[]))                
    (findPOM [] [forallAtoma]))
-
-simpleModelTestsKnowledgeBase = TestList [TestLabel "simpemodel1" testEmptySet',
-                            TestLabel "simpemodel2" testNegAtom',
-                            TestLabel "simpemodel3" testAndAtom',
-       			    TestLabel "simpemodel4" testOrAtom',
-			    TestLabel "simpemodel5" testExistsAtom',
-			    TestLabel "simpemodel6" testForallAtom']
 
 testMoreExists1'' =
    TestCase (assertEqual "more exists 1"
