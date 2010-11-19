@@ -57,3 +57,10 @@ interleave :: [a] -> [a] -> [a]
 interleave (x:xs) (y:ys) = x : y : interleave xs ys
 interleave xs     []     = xs
 interleave []     ys     = ys
+
+-- rules
+
+bRule = "bottom"
+aRule = "and"
+oRule = "or"
+eRule = "exists"
