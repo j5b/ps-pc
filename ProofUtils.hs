@@ -7,7 +7,11 @@
 
 module ProofUtils where
 
+import Data.List
+
+import Proof
 import Signature
+
 --
 -- Predicates for the Concept types.
 --

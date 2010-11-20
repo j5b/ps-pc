@@ -11,6 +11,8 @@ module ProofChecker where
 
 import Proof
 import Signature
+import ProofUtils
+
 import Data.List
 
 {-
