@@ -22,34 +22,47 @@ import Signature
 -- Takes a knowledge base and a set of concepts and returns either a proof
 -- showing inconsistency or a model.
 findPOM :: [Concept] -> [Concept] -> Either Model ProofTree
-findPOM cs gamma = either (Left . fst) Right
-                   (findProofOrModel (conceptSort $ map toNNF cs++gamma)
-                    (map toNNF gamma) [1..])
+findPOM cs gamma 
+   = either (Left . fst) Right
+     (findProofOrModel (conceptSort $ map toNNF cs'++gamma')
+     (map toNNF gamma') [1..] [])
+       where 
+         cs' = nub cs
+         gamma' = nub gamma
+         
 
 -- Maps a set of concepts to either a proof or model.
-findProofOrModel :: [Concept] -> [Concept] -> [Individual]
+findProofOrModel :: [Concept] -> [Concept] -> [Individual] -> [(Concept, Either Model ProofTree)]
                     -> Either (Model, [Individual]) ProofTree
-findProofOrModel [] _ (i:is)
+findProofOrModel [] _ (i:is) _
   = Left (([i],[],[]), is)
-findProofOrModel (T : cs) gamma (i:is)
+findProofOrModel (T : cs) _ (i:is) _
   = Left (([i],[],[]), is)
-findProofOrModel (Neg T:cs) gamma is
+findProofOrModel (Neg T:cs) _ is _
   = Right (NodeZero (Neg T : cs, "", Neg T))
-findProofOrModel (Atom c : Neg (Atom d) : cs) _ _
+findProofOrModel (Atom c : Neg (Atom d) : cs) _ _ _
   = if  c == d 
     then Right (NodeZero (Atom c : Neg (Atom d) : cs, "bottom", Atom c))
     else error "Can't deal with concepts in wrong order."
-findProofOrModel (And c d : cs) gamma is 
-  = either Left (Right . g) (findProofOrModel (conceptSort (c:d:cs)) gamma is)
+findProofOrModel (And c d : cs) gamma is memory
+  = either Left (Right . g) (f findInMemory)
     where
+      f [] = findProofOrModel newconcepts gamma is (((And c d : cs), findProofOrModel newconcepts gamma is memory) : memory) -- need to make this work
+      f ((_,expansion):xs) = expansion
       g = NodeOne (And c d : cs, "and", And c d)
-findProofOrModel (Or c d : cs) gamma is
-  = either Left g (findProofOrModel (conceptSort (c:cs)) gamma is)
+      newconcepts = conceptSort newcs
+      newcs
+        | (elem c cs) || (c == d) = myNub d cs
+        | otherwise = myNub d (c:cs)
+      findInMemory = filter ((==(And c d : cs)) . fst) memory
+         
+findProofOrModel (Or c d : cs) gamma is memory
+  = either Left g (findProofOrModel (conceptSort (myNub c cs)) gamma is)
     where
       g pf = either Left (Right . g' pf)
-             (findProofOrModel (conceptSort (d:cs)) gamma is)
+             (findProofOrModel (conceptSort (myNub d cs)) gamma is)
       g' = NodeTwo (Or c d : cs, "or", Or c d)
-findProofOrModel (Exists rel c : cs) gamma is
+findProofOrModel (Exists rel c : cs) gamma is memory
   = foldExists (filter isExists (Exists rel c : cs)) is
     where
       foldExists :: [Concept] -> [Individual]
@@ -65,7 +78,7 @@ findProofOrModel (Exists rel c : cs) gamma is
               where
                 m''  = joinModels ([i], [], [(rel, [(i, head is)])]) m
                 m''' = joinModels (constructAtomicModel cs i) m''
-findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
+findProofOrModel cs gamma (i:is) memory  = Left (constructAtomicModel cs i, is)
 
 -- A function that sorts concepts in the following order, first to last:
 -- 'A, not A', 'A and B', 'A or B', 'ER.C', others
@@ -116,6 +129,7 @@ constructAtomicModel cs i = ([i], unaryRelations, [])
 
 -- Takes the knowledge base, a set of concepts and a there exists formula and
 -- maps them to concepts according to the Exists tableaux rule.
+-- myNub here?
 applyExists :: [Concept] -> [Concept] -> Concept -> [Concept]
 applyExists cs gamma (Exists rel c)
   = conceptSort . nub $ c : gamma ++ 
