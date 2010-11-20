@@ -64,3 +64,14 @@ bRule = "bottom"
 aRule = "and"
 oRule = "or"
 eRule = "exists"
+
+-- Tests lists of concepts are equivalent in set theory
+-- If duplicates exists, tests there are the same number of duplicates
+conceptEquals :: [Concept] -> [Concept] -> Bool
+conceptEquals c1 c2 = (c1 \\ c2 == []) && (c2 \\ c1 == [])
+
+-- Returns the list of concepts at root of given tree
+getConcepts :: ProofTree -> [Concept]
+getConcepts (NodeZero (cs, _, _))    = cs
+getConcepts (NodeOne (cs, _, _) _)   = cs
+getConcepts (NodeTwo (cs, _, _) _ _) = cs
