@@ -9,8 +9,8 @@ module ProofUtils where
 
 import Data.List
 
-import Proof
 import Signature
+import Proof
 
 --
 -- Predicates for the Concept types.
@@ -79,3 +79,8 @@ getConcepts :: ProofTree -> [Concept]
 getConcepts (NodeZero (cs, _, _))    = cs
 getConcepts (NodeOne (cs, _, _) _)   = cs
 getConcepts (NodeTwo (cs, _, _) _ _) = cs
+
+-- nub, but only one elt
+-- should make complexity linear througout
+myNub :: Concept -> [Concept] -> [Concept]
+myNub c cs = if (elem c cs) then cs else (c:cs)
