@@ -17,6 +17,8 @@ import Signature
 %error { parseError }
 
 %token 
+      begin           { TokenBegin }
+      end             { TokenEnd }
       var             { TokenVar $$ }
       box             { TokenBox }
       dia             { TokenDia }
@@ -26,28 +28,26 @@ import Signature
       '('             { TokenOB }
       ')'             { TokenCB }
       'id:'           { TokenFormula }
-      begin           { TokenBegin }
-      end             { TokenEnd }
 
 %%
 
 File     : begin ConceptSeq end     { $2 }
 
 ConceptSeq
-         : 'id:' Concept            { [$1] }
+         : 'id:' Concept            { [$2] }
          | ConceptSeq 'id:' Concept { $1 ++ [$3] }
 
 Concept  : Concept '->' Concept1    {Or (Neg $1) $3}
          | Concept '&'  Concept1    {And $1 $3}
          | Concept1                 {$1}
 
-Concept1 : box Concept2           {Forall "R" ($2)}
-         | dia Concept2           {Exists "R" ($2)}
-         | '~' Concept2           {Neg $2}
-         | Concept2               {$1}
+Concept1 : box Concept2             {Forall "R" ($2)}
+         | dia Concept2             {Exists "R" ($2)}
+         | '~' Concept2             {Neg $2}
+         | Concept2                 {$1}
 
-Concept2 : var                     {Atom $1}
-         | '(' Concept ')'         {$2}
+Concept2 : var                      {Atom $1}
+         | '(' Concept ')'          {$2}
 {
 
 parseError :: [Token] -> a
