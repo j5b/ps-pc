@@ -11,9 +11,7 @@ module Proof_test where
 
 import Signature
 import Proof
-import TestUtils
 import ProofUtils
-
 import Test.HUnit
 
 allproofdttests = do putStrLn "==== Testing Proof Data type basic functions"
@@ -22,53 +20,66 @@ allproofdttests = do putStrLn "==== Testing Proof Data type basic functions"
 
 -- Some concepts/proof tres to use in tests
 
-leaf = NodeZero ([bottom], "", bottom)
-bTree = NodeOne ([atoma, notatoma], bRule, atoma) leaf
-aTree = NodeOne ([a_and_b, notatoma], aRule, a_and_b)
-		(NodeOne ([atoma, atomb, neg atoma], bRule, atoma) leaf)
-oTree = NodeTwo ([a_or_b, notatoma, notatomb], oRule, a_or_b)
-		(NodeOne ([atoma, notatoma, notatomb], bRule, atoma) leaf)
-		(NodeOne ([atomb, notatoma, notatomb], bRule, atomb) leaf)
-eTree = NodeOne ([forall_r notatoma, exists_r_a, forall_r_a,
-                  forall_s atomb], eRule, exists_r_a)
-                (NodeOne ([atoma, atoma, notatoma], bRule, atoma) leaf)
+bConcept = Neg (Atom "A")
+aConcept = And (Atom "A") (Atom "B")
+oConcept = Or (Atom "A") (Atom "B")
+eConcept = Exists "R" (Atom "A")
+fConcept = Forall "R" (Atom "B")
+
+leaf = NodeZero ([Neg T], "", Neg T)
+bTree = NodeOne ([Atom "A", Neg (Atom "A")], bRule, Atom "A") leaf
+aTree = NodeOne ([aConcept, Neg (Atom "A")], aRule, aConcept)
+		(NodeOne ([Atom "A", Atom "B", Neg (Atom "A")], bRule, Atom "A") leaf)
+oTree = NodeTwo ([oConcept, Neg (Atom "A"), Neg (Atom "B")], oRule, oConcept)
+		(NodeOne ([Atom "A", Neg (Atom "A"), Neg (Atom "B")], bRule, Atom "A") leaf)
+		(NodeOne ([Atom "B", Neg (Atom "A"), Neg (Atom "B")], bRule, Atom "B") leaf)
+eTree = NodeOne ([Forall "R" (Neg (Atom "A")), eConcept, Forall "R" (Atom "A"),
+                 Forall "S" (Atom "B")], eRule, eConcept)
+                (NodeOne ([Atom "A", Atom "A", Neg (Atom "A")], bRule, Atom "A") leaf)
 
 -- Tests for conceptEquals
 cEqualsTest1 = TestCase(assertBool "conceptEquals 2 empty lists"
                         (conceptEquals [] []))
 cEqualsTest2 = TestCase(assertBool "conceptEquals 1 empty list1"
-                        (not (conceptEquals [bottom] [])))
+                        (not (conceptEquals [Neg T] [])))
 cEqualsTest3 = TestCase(assertBool "conceptEquals 1 empty list2"
-                        (not(conceptEquals [] [bottom])))
+                        (not(conceptEquals [] [Neg T])))
 cEqualsTest4 = TestCase(assertBool "conceptEquals unequal lists1"
-                        (not (conceptEquals [bottom, atoma] [bottom])))
+                        (not ((conceptEquals [Neg T, Atom "A"] [Neg T]))))
 cEqualsTest5 = TestCase(assertBool "conceptEquals lists with same order"
 			            (conceptEquals c1 c2))
-  where c1 = [bottom, atoma, a_and_b, a_or_b, exists_r_a, forall_r_a]
-        c2 = [bottom, atoma, a_and_b, a_or_b, exists_r_a, forall_r_a]
+  where c1 = [Neg T, Atom "A", aConcept, oConcept, eConcept, Forall "R" (Atom "A")]
+        c2 = [Neg T, Atom "A", aConcept, oConcept, eConcept, Forall "R" (Atom "A")]
 cEqualsTest6 = TestCase(assertBool "conceptEquals different order"
                               (conceptEquals c1 c2 ))
-  where c1 = [bottom, atoma, a_and_b, a_or_b, exists_r_a, forall_r_a]
-        c2 = [a_or_b, forall_r_a, exists_r_a, bottom, atoma, a_and_b]
+  where c1 = [Neg T, Atom "A", aConcept, oConcept, eConcept, Forall "R" (Atom "A")]
+        c2 = [oConcept, Forall "R" (Atom "A"), eConcept, Neg T, Atom "A", aConcept]
 
-conceptEqualsTests = maplabel "Testing conceptEquals" list 
-  where list = [cEqualsTest1, cEqualsTest2, cEqualsTest3, cEqualsTest4, cEqualsTest5, cEqualsTest6]
+conceptEqualsTests = TestList [TestLabel "conceptEquals [] []" cEqualsTest1,
+                               TestLabel "conceptEquals [Neg T] []" cEqualsTest2,
+                               TestLabel "conceptEquals [] [Neg T]" cEqualsTest3,
+                               TestLabel "conceptEquals unequal lists1" cEqualsTest4,
+                               TestLabel "conceptEquals unequal lists2" cEqualsTest5,
+                               TestLabel "conceptEquals same order" cEqualsTest6]
 
 -- Tests for getConcepts
-gConceptsTest1 = TestCase(assertEqual "Failed to getConcept from a Leaf node" [bottom]
+gConceptsTest1 = TestCase(assertEqual "getConcept from a Leaf node" [Neg T]
                           (getConcepts leaf))
-gConceptsTest2 = TestCase(assertEqual "Failed to getConcept from a bottom node"
-			              [atoma, notatoma] (getConcepts bTree))
-gConceptsTest3 = TestCase(assertEqual "Failed to getConcept from an and node "
-			              [a_and_b, notatoma] (getConcepts aTree))
-gConceptsTest4 = TestCase(assertEqual "Failed to getConcept from an or node"
-			              [a_or_b, notatoma, notatomb]
+gConceptsTest2 = TestCase(assertEqual "getConcept from a bTree"
+			              [Atom "A", bConcept] (getConcepts bTree))
+gConceptsTest3 = TestCase(assertEqual "getConcept from a aTree"
+			              [aConcept, Neg (Atom "A")] (getConcepts aTree))
+gConceptsTest4 = TestCase(assertEqual "getConcept from a oTree"
+			              [oConcept, Neg (Atom "A"), Neg (Atom "B")]
                           (getConcepts oTree))
-gConceptsTest5 = TestCase(assertEqual "Failed to getConcept from an exist node"
-			              [forall_r notatoma, exists_r_a,
-                                      forall_r atoma, forall_s atomb]
+gConceptsTest5 = TestCase(assertEqual "getConcept from a eTree"
+			              [Forall "R" (Neg (Atom "A")), eConcept,
+                           Forall "R" (Atom "A"), Forall "S" (Atom "B")]
                           (getConcepts eTree))
 
-getConceptTests = maplabel "Testing getConcepts" list 
-  where list = [gConceptsTest1, gConceptsTest2, gConceptsTest3, gConceptsTest4, gConceptsTest5]
+getConceptTests = TestList [TestLabel "getConcepts Leaf" gConceptsTest1,
+                            TestLabel "getConcepts btree" gConceptsTest2,
+                            TestLabel "getConcepts atree" gConceptsTest3,
+                            TestLabel "getConcepts otree" gConceptsTest4,
+                            TestLabel "getConcepts etree" gConceptsTest5]
 
