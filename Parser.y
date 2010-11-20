@@ -12,7 +12,7 @@ import Data.Char
 import Signature
 }
 
-%name concept
+%name file
 %tokentype { Token }
 %error { parseError }
 
@@ -25,8 +25,17 @@ import Signature
       '~'             { TokenNeg }
       '('             { TokenOB }
       ')'             { TokenCB }
+      'id:'           { TokenFormula }
+      begin           { TokenBegin }
+      end             { TokenEnd }
 
 %%
+
+File     : begin ConceptSeq end     { $2 }
+
+ConceptSeq
+         : 'id:' Concept            { [$1] }
+         | ConceptSeq 'id:' Concept { $1 ++ [$3] }
 
 Concept  : Concept '->' Concept1    {Or (Neg $1) $3}
          | Concept '&'  Concept1    {And $1 $3}
@@ -53,6 +62,9 @@ data Token
       | TokenNeg
       | TokenOB
       | TokenCB
+      | TokenBegin
+      | TokenEnd
+      | TokenFormula
  deriving Show
 
 lexer :: String -> [Token]
@@ -64,6 +76,10 @@ lexer ('-':'>':cs)     = TokenImplies : lexer cs
 lexer ('~':cs)         = TokenNeg : lexer cs
 lexer ('(':cs)         = TokenOB : lexer cs
 lexer (')':cs)         = TokenCB : lexer cs
+lexer (c:':':cs)       = TokenFormula : lexer cs
+lexer ('b':'e':'g':'i':'n':cs)
+                       = TokenBegin : lexer cs
+lexer ('e':'n':'d':cs) = TokenEnd : lexer cs
 lexer (c:cs) 
       | isSpace    c = lexer cs
       | isAlphaNum c = lexVar (c:cs)
