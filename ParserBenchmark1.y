@@ -2,11 +2,12 @@
 {- 
    Author: Jannis, Ka Wai
    License: GPL 3.0
-   File: Grammar.hs
-   Description: The generated concept parser.
+   File: ParserBenchmark1.y/hs
+   Description: The generated concept parser for benchmarks from
+                http://iamwww.unibe.ch/~lwb/benchmarks/benchmarks.htm.
 -}
 
-module Parser where
+module ParserBenchmark1 where
 
 import Data.Char
 import Signature
