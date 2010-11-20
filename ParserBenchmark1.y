@@ -70,23 +70,27 @@ data Token
 
 lexer :: String -> [Token]
 lexer [] = []
-lexer ('b':'o':'x':cs) = TokenBox : lexer cs
-lexer ('d':'i':'a':cs) = TokenDia : lexer cs
-lexer ('&':cs)         = TokenAnd : lexer cs
-lexer ('-':'>':cs)     = TokenImplies : lexer cs
-lexer ('~':cs)         = TokenNeg : lexer cs
-lexer ('(':cs)         = TokenOB : lexer cs
-lexer (')':cs)         = TokenCB : lexer cs
-lexer (c:':':cs)       = TokenFormula : lexer cs
 lexer ('b':'e':'g':'i':'n':cs)
-                       = TokenBegin : lexer cs
-lexer ('e':'n':'d':cs) = TokenEnd : lexer cs
-lexer (c:cs) 
-      | isSpace    c = lexer cs
+             = TokenBegin : lexerConcepts cs
+lexer (c:cs) = lexer cs
+
+lexerConcepts :: String -> [Token]
+lexerConcepts [] = []
+lexerConcepts ('b':'o':'x':cs) = TokenBox : lexerConcepts cs
+lexerConcepts ('d':'i':'a':cs) = TokenDia : lexerConcepts cs
+lexerConcepts ('&':cs)         = TokenAnd : lexerConcepts cs
+lexerConcepts ('-':'>':cs)     = TokenImplies : lexerConcepts cs
+lexerConcepts ('~':cs)         = TokenNeg : lexerConcepts cs
+lexerConcepts ('(':cs)         = TokenOB : lexerConcepts cs
+lexerConcepts (')':cs)         = TokenCB : lexerConcepts cs
+lexerConcepts (c:':':cs)       = TokenFormula : lexerConcepts cs
+lexerConcepts ('e':'n':'d':cs) = [TokenEnd]
+lexerConcepts (c:cs) 
+      | isSpace    c = lexerConcepts cs
       | isAlphaNum c = lexVar (c:cs)
 
 lexVar cs =
    case span isAlphaNum cs of
-      (var,rest)   -> TokenVar var : lexer rest
+      (var,rest)   -> TokenVar var : lexerConcepts rest
 
 }
