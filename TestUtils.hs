@@ -27,69 +27,83 @@ testequality msg target result inputString = TestCase (assertEqual newMsg target
 
 maplabel label testlist = TestList $ map (\x -> (TestLabel label x)) testlist
 
+---- our concepts we will use
+
+-- basics + top and bottom
+
+atoma = atom "A"
+atomb = atom "B"
+atomc = atom "C"
+atomd = atom "D"
+notatoma = neg atoma
+notatomb = neg atomb
+notatomc = neg atomc
+notatomd = neg atomd
+
+-- disjunctions
+
+top_or_bottom = top \/ bottom
+a_or_b = atoma \/ atomb
+c_or_d = atomc \/ atomd
+c_or_nd = atomc \/ notatomd
+c_or_top = atomc \/ top
+c_or_bottom = atomc \/ bottom
+
+-- conjunctions
+
+top_and_bottom = top /\ bottom
+a_and_b = atoma /\ atomb
+c_and_d = atomc /\ atomd
+c_and_nd = atomc /\ notatomd
+c_and_top = atomc /\ top
+c_and_bottom = atomc /\ bottom
+
+-- universals simple
+
+forall_r_top = forall_r top
+forall_r_bottom = forall_r bottom
+forall_r_a = forall_r atoma
+forall_r_b = forall_r atomb
+forall_r_c = forall_r atomc
+forall_r_d = forall_r atomd 
+forall_r_nc = forall_r notatomc
+forall_s_c = forall_s atomc
+
+-- existential simple
+
+exists_r_top = exists_r top
+exists_r_bottom = exists_r bottom
+exists_r_a = exists_r atoma
+exists_r_b = exists_r atomb
+exists_r_c = exists_r atomc
+exists_r_d = exists_r atomd
+exists_s_nd = exists_s notatomd
+
+-- complicated for sagie's part
+
+andExists = exists_r_a /\ exists_r_b
+andforalls = forall_r_a /\ forall_r_b
+orExists = exists_r_a \/ exists_r_b
+orforalls = forall_r_a \/ forall_r_b
+negExists = neg exists_r_a
+negForalls = neg forall_r_a
+existsexists = exists_s exists_r_a
+existsforalls = exists_s forall_r_a
+forallexists = exists_s  exists_r_a
+
+-- THIS WILL GENERATE LOTS AND LOTS OF CONCEPTS
+
+forall_r = forall "R"
+forall_s = forall "S"
+exists_r = exists "R"
+exists_s = exists "S"
+
+simple_atom_list =
+  [top, bottom, atoma, atomb, atomc, atomd,
+   notatoma, notatomb, notatomc, notatomd]
+
 -- simple concepts to test sc for simple concept
-sc1 = top -- always true
-sc2 = bottom -- always false
-sc3 = atom "C" 
-sc4 = atom "D"
-sc5 = neg sc3
-sc6 = neg sc4
-sc7 = sc3 \/ sc4
-sc8 = sc3 /\ sc4
-sc9 = sc3 \/ (neg sc4)
-sc10 = sc3 /\ (neg sc4)
-sc11 = sc3 /\ top -- should be the same as sc3
-sc12 = sc3 /\ bottom -- alawys false
-sc13 = sc3 \/ top -- always true
-sc14 = sc3 \/ bottom -- should be the same as sc3
-sc15 = forall "R" top -- should always be true
-sc16 = forall "R" bottom -- should only be true if there are no successors
-sc17 = forall "R" sc3
-sc18 = forall "R" sc4
-sc19 = forall "R" (neg sc3)
-sc20 = forall "S" sc3
-sc21 = forall "S" (sc3 /\ sc4)
-sc22 = forall "S" (sc3 \/ sc4)
-sc23 = forall "S" (sc3 /\ bottom) -- should be only true if there are no successors
-sc24 = exists "R" top -- should always be true unless there are no successors
-sc25 = exists "R" bottom -- should always be false
-sc26 = exists "R" sc3
-sc27 = exists "R" sc4
-sc28 = exists "S" (neg sc4)
-sc29 = exists "S" (sc3 /\ sc4)
-sc30 = exists "S" (sc3 \/ sc4)
-sc31 = exists "S" (sc3 /\ bottom) -- should be always false
-
--- nasty concepts
-nt1 = top \/ bottom
-nt2 = top /\ bottom
-nt3 = exists "R" bottom
-nt4 = exists "R" top /\ forall "R" bottom
-nt5 = exists "R" (exists "R" top)
-
--- simple combinations of concepts
-a = Atom "A"
-b = Atom "B"
-c = Atom "C"
-d = Atom "D"
-e = Atom "E"
-negAtom = Neg a
-negAtomb = Neg b
-negAtomc = Neg c
-andAtom = And a b
-orAtom = Or a b
-existsAtoma = Exists "R" a
-existsAtomb = Exists "R" b
-existsAtomc = Exists "R" c
-forallAtoma = Forall "R" a
-forallAtomb = Forall "R" b
-forallAtomc = Forall "R" c
-andExists = And existsAtoma existsAtomb
-andforalls = And forallAtoma forallAtomb
-orExists = Or existsAtoma existsAtomb
-orforalls = Or forallAtoma forallAtomb
-negExists = Neg existsAtoma
-negForalls = Neg forallAtoma
-existsexists = Exists "R1" existsAtoma
-existsforalls = Exists "R1" forallAtoma
-forallexists = Forall "R1" existsAtoma
+sc28 = exists "S" notatomd
+sc29 = exists "S" (atomc /\ atomd)
+sc30 = exists "S" (atomc \/ atomd)
+sc31 = exists "S" (atomc /\ bottom) -- should be always false
