@@ -10,7 +10,10 @@
 module ProofChecker where
 
 import Proof
+import ProofUtils
 import Signature
+import ProofUtils
+
 import Data.List
 
 {-
