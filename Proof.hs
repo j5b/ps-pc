@@ -22,17 +22,3 @@ data ProofTree = NodeZero ProofStep |
                  NodeOne ProofStep ProofTree |
                  NodeTwo ProofStep ProofTree ProofTree
                deriving (Show, Eq)
-
-
--- Functions used in Proof Checker, may or may not be useful in other modules
-
--- Tests lists of concepts are equivalent in set theory
--- WARNING: comparing empty lists may not give desired result in the calling function
-conceptEquals :: [Concept] -> [Concept] -> Bool
-conceptEquals c1 c2 = (c1 \\ c2 == []) && (c2 \\ c1 == [])
-
--- Returns the list of concepts before the rule is applied at root of tree
-getConcepts :: ProofTree -> [Concept]
-getConcepts (NodeZero (cs, _, _))    = cs
-getConcepts (NodeOne (cs, _, _) _)   = cs
-getConcepts (NodeTwo (cs, _, _) _ _) = cs
