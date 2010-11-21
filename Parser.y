@@ -31,6 +31,10 @@ import Signature
       or              { TokenOr }
       '->'            { TokenImplies }
       not             { TokenNeg }
+      Forall          { TokenForall }
+      Exists          { TokenExists }
+      '.'             { TokenDot }
+      ';'             { TokenSemicolon }
       '('             { TokenOB }
       ')'             { TokenCB }
       formula         { TokenFormula }
@@ -38,18 +42,24 @@ import Signature
 %%
 
 File     : begin ConceptSeq end     { $2 }
+         | ConceptSeq               { $1 }
 
 ConceptSeq
          : formula Concept            { [$2] }
          | ConceptSeq formula Concept { $1 ++ [$3] }
+         | ConceptSeq ';' Concept     { $1 ++ [$3] }
+         | Concept                    { [$1] }
 
 Concept  : Concept '->' Concept1       {Or (Neg $1) $3}
          | Concept and Concept1        {And $1 $3}
+         | Concept or Concept1         {Or $1 $3}
          | and '(' Concept Concept ')' {And $3 $4}
          | or '(' Concept Concept ')'  {Or $3 $4}
          | Concept1                    {$1}
 
-Concept1 : box Concept2             {Forall "R" ($2)}
+Concept1 : Forall var '.' Concept   {Forall $2 $4}
+         | Exists var '.' Concept   {Exists $2 $4}
+         | box Concept2             {Forall "R" ($2)}
          | dia Concept2             {Exists "R" ($2)}
          | not Concept2             {Neg $2}
          | box '(' rel Concept ')'  {Forall $3 ($4)}
@@ -76,6 +86,10 @@ data Token
       | TokenOr
       | TokenImplies
       | TokenNeg
+      | TokenForall
+      | TokenExists
+      | TokenDot
+      | TokenSemicolon
       | TokenOB
       | TokenCB
       | TokenBegin
@@ -87,7 +101,29 @@ data Token
 lexer :: String -> String -> [Token]
 lexer "Benchmark1" s = lexerB1 s
 lexer "Benchmark2" s = lexerB2 s
-lexer _ _ = parseError []
+lexer "Input"      s = lexerI s
+lexer _            _ = parseError []
+
+-- Lexer for input grammar.
+lexerI :: String -> [Token]
+lexerI [] = []
+lexerI ('F':'o':'r':'a':'l':'l':cs) = TokenForall : lexerI cs
+lexerI ('E':'x':'i':'s':'t':'s':cs) = TokenExists : lexerI cs
+lexerI ('.':cs)                     = TokenDot : lexerI cs
+lexerI (';':cs)                     = TokenSemicolon : lexerI cs
+lexerI ('&':cs)                     = TokenAnd : lexerI cs
+lexerI ('|':cs)                     = TokenOr : lexerI cs
+lexerI ('-':'>':cs)                 = TokenImplies : lexerI cs
+lexerI ('~':cs)                     = TokenNeg : lexerI cs
+lexerI ('(':cs)                     = TokenOB : lexerI cs
+lexerI (')':cs)                     = TokenCB : lexerI cs
+lexerI (c:cs) 
+      | isSpace    c = lexerI cs
+      | isAlphaNum c = lexIVar (c:cs)
+
+lexIVar cs =
+   case span isAlphaNum cs of
+      (var,rest)   -> TokenVar var : lexerI rest
 
 -- Lexer for Benchmark 1 file
 lexerB1 :: String -> [Token]
