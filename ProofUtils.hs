@@ -9,8 +9,8 @@ module ProofUtils where
 
 import Data.List
 
-import Signature
 import Proof
+import Signature
 
 --
 -- Predicates for the Concept types.
@@ -80,7 +80,6 @@ getConcepts (NodeZero (cs, _, _))    = cs
 getConcepts (NodeOne (cs, _, _) _)   = cs
 getConcepts (NodeTwo (cs, _, _) _ _) = cs
 
--- nub, but only one elt
--- should make complexity linear througout
-myNub :: Concept -> [Concept] -> [Concept]
-myNub c cs = if (elem c cs) then cs else (c:cs)
+-- Adds an element to a list and makes sure it is unique.
+uniqueCons :: Concept -> [Concept] -> [Concept]
+uniqueCons c cs = c : filter (/=c) cs
