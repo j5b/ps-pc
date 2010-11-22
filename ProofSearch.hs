@@ -23,7 +23,7 @@ import Signature
 -- showing inconsistency or a model.
 findPOM :: [Concept] -> [Concept] -> Either Model ProofTree
 findPOM cs gamma = either (Left . fst) Right
-                   (findProofOrModel (conceptSort $ map toNNF cs++gamma)
+                   (findProofOrModel (conceptSort . nub $ map toNNF cs++gamma)
                     (map toNNF gamma) [1..])
 
 -- Maps a set of concepts to either a proof or model.
@@ -40,14 +40,18 @@ findProofOrModel (Atom c : Neg (Atom d) : cs) _ _
     then Right (NodeZero (Atom c : Neg (Atom d) : cs, "bottom", Atom c))
     else error "Can't deal with concepts in wrong order."
 findProofOrModel (And c d : cs) gamma is 
-  = either Left (Right . g) (findProofOrModel (conceptSort (c:d:cs)) gamma is)
+  = either Left (Right . g) (findProofOrModel (conceptSort newconcepts) gamma is)
     where
       g = NodeOne (And c d : cs, "and", And c d)
+      newconcepts = conceptSort newcs
+      newcs
+        | (elem c cs) || (c == d) = uniqueCons d cs
+        | otherwise = uniqueCons d (c:cs)
 findProofOrModel (Or c d : cs) gamma is
-  = either Left g (findProofOrModel (conceptSort (c:cs)) gamma is)
+  = either Left g (findProofOrModel (conceptSort $ uniqueCons c cs) gamma is)
     where
       g pf = either Left (Right . g' pf)
-             (findProofOrModel (conceptSort (d:cs)) gamma is)
+             (findProofOrModel (conceptSort $ uniqueCons d cs) gamma is)
       g' = NodeTwo (Or c d : cs, "or", Or c d)
 findProofOrModel (Exists rel c : cs) gamma is
   = foldExists (filter isExists (Exists rel c : cs)) is

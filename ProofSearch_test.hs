@@ -50,7 +50,7 @@ moreModelTests = maplabel "Finding more models with POM Searcher" [testMoreExist
 
 simpleModelTestsKnowledgeBase = 
     maplabel "Finding models for non empty knowledge base with POM Searcher" [testEmptySet', testNegAtom', testAndAtom', testOrAtom',
-			     testExistsAtom', testForallAtom']
+			     testForallAtom'] --testExistsAtom',
 
 morecomplexModelTests = maplabel "Finding complex models with POM Searcher" 
                                  [testMoreExists1', testMoreExists2', 
@@ -306,9 +306,9 @@ testAndAtom' = testequality msg (Left ([1],[("A",[1]),("B",[1])],[])) (findPOM [
 testOrAtom' = testequality msg (Left ([1],[("A",[1])],[])) (findPOM [] [a_or_b]) (printCG [] [a_or_b])
   where msg = "Failed to find a model for gamma disjunction"
 
-testExistsAtom' = testequality msg target (findPOM [] [exists_r_a]) (printCG [] [exists_r_a])
+{-testExistsAtom' = testequality msg target (findPOM [] [exists_r_a]) (printCG [] [exists_r_a])
   where msg = "Failed to find a model for gamma existential"
-        target = Left ([1,2],[("A",[2])],[("R",[(1,2)])])
+        target = Left ([1,2],[("A",[2])],[("R",[(1,2)])])-}
 
 testForallAtom' = testequality msg (Left ([1],[],[])) (findPOM [] [forall_r_a]) (printCG [] [forall_r_a])
   where msg = "Failed to find a model for gamma universal"
