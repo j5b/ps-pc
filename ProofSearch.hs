@@ -24,7 +24,7 @@ import Signature
 findPOM :: [Concept] -> [Concept] -> Either Model ProofTree
 findPOM cs gamma = either (Left . fst) Right
                    (findProofOrModel (conceptSort . nub $ map toNNF cs++gamma)
-                    (map toNNF gamma) [1..])
+                    (nub $ map toNNF gamma) [1..])
 
 -- Maps a set of concepts to either a proof or model.
 findProofOrModel :: [Concept] -> [Concept] -> [Individual]
@@ -35,23 +35,20 @@ findProofOrModel (T : cs) gamma (i:is)
   = Left (([i],[],[]), is)
 findProofOrModel (Neg T:cs) gamma is
   = Right (NodeZero (Neg T : cs, "", Neg T))
-findProofOrModel (Atom c : Neg (Atom d) : cs) _ _
-  = if  c == d 
+findProofOrModel (Atom c : Neg (Atom d) : cs) _ (i:is)
+  = if  c == d
     then Right (NodeZero (Atom c : Neg (Atom d) : cs, "bottom", Atom c))
-    else error "Can't deal with concepts in wrong order."
+    else Left (constructAtomicModel (Atom c : cs) i, is)
 findProofOrModel (And c d : cs) gamma is 
-  = either Left (Right . g) (findProofOrModel (conceptSort newconcepts) gamma is)
+  = either Left (Right . g) (findProofOrModel newcs gamma is)
     where
       g = NodeOne (And c d : cs, "and", And c d)
-      newconcepts = conceptSort newcs
-      newcs
-        | (elem c cs) || (c == d) = uniqueCons d cs
-        | otherwise = uniqueCons d (c:cs)
+      newcs = conceptSort $ c `uniqueCons` (d `uniqueCons` cs)
 findProofOrModel (Or c d : cs) gamma is
-  = either Left g (findProofOrModel (conceptSort $ uniqueCons c cs) gamma is)
+  = either Left g (findProofOrModel (conceptSort $ c `uniqueCons` cs) gamma is)
     where
       g pf = either Left (Right . g' pf)
-             (findProofOrModel (conceptSort $ uniqueCons d cs) gamma is)
+             (findProofOrModel (conceptSort $ d `uniqueCons` cs) gamma is)
       g' = NodeTwo (Or c d : cs, "or", Or c d)
 findProofOrModel (Exists rel c : cs) gamma is
   = foldExists (filter isExists (Exists rel c : cs)) is
