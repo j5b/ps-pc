@@ -25,19 +25,15 @@ import Signature
       rel             { TokenRel $$ }
       true            { TokenTrue }
       false           { TokenFalse }
-      box             { TokenBox }
-      dia             { TokenDia }
       and             { TokenAnd }
       or              { TokenOr }
       '->'            { TokenImplies }
       not             { TokenNeg }
       Forall          { TokenForall }
       Exists          { TokenExists }
-      '.'             { TokenDot }
       ';'             { TokenSemicolon }
       '('             { TokenOB }
       ')'             { TokenCB }
-      formula         { TokenFormula }
 
 %%
 
@@ -45,9 +41,7 @@ File     : begin ConceptSeq end     { $2 }
          | ConceptSeq               { $1 }
 
 ConceptSeq
-         : formula Concept            { [$2] }
-         | ConceptSeq formula Concept { $1 ++ [$3] }
-         | ConceptSeq ';' Concept     { $1 ++ [$3] }
+         : ConceptSeq ';' Concept     { $1 ++ [$3] }
          | Concept                    { [$1] }
 
 Concept  : Concept '->' Concept1       {Or (Neg $1) $3}
@@ -57,14 +51,10 @@ Concept  : Concept '->' Concept1       {Or (Neg $1) $3}
          | or '(' Concept Concept ')'  {Or $3 $4}
          | Concept1                    {$1}
 
-Concept1 : Forall var '.' Concept   {Forall $2 $4}
-         | Exists var '.' Concept   {Exists $2 $4}
-         | box Concept2             {Forall "R" ($2)}
-         | dia Concept2             {Exists "R" ($2)}
-         | not Concept2             {Neg $2}
-         | box '(' rel Concept ')'  {Forall $3 ($4)}
-         | dia '(' rel Concept ')'  {Exists $3 ($4)}
-         | Concept2                 {$1}
+Concept1 : Forall rel '(' Concept ')' {Forall $2 $4}
+         | Exists rel '(' Concept ')' {Exists $2 $4}
+         | not Concept2               {Neg $2}
+         | Concept2                   {$1}
 
 Concept2 : var                      {Atom $1}
          | true                     {top}
@@ -76,9 +66,7 @@ parseError :: [Token] -> a
 parseError _ = error "Parse error"
 
 data Token
-      = TokenBox
-      | TokenDia
-      | TokenTrue
+      = TokenTrue
       | TokenFalse
       | TokenVar String
       | TokenRel String
@@ -88,13 +76,11 @@ data Token
       | TokenNeg
       | TokenForall
       | TokenExists
-      | TokenDot
       | TokenSemicolon
       | TokenOB
       | TokenCB
       | TokenBegin
       | TokenEnd
-      | TokenFormula
  deriving Show
 
 -- Top level parser, first argument defines which parser to use
@@ -107,9 +93,8 @@ lexer _            _ = parseError []
 -- Lexer for input grammar.
 lexerI :: String -> [Token]
 lexerI [] = []
-lexerI ('F':'o':'r':'a':'l':'l':cs) = TokenForall : lexerI cs
-lexerI ('E':'x':'i':'s':'t':'s':cs) = TokenExists : lexerI cs
-lexerI ('.':cs)                     = TokenDot : lexerI cs
+lexerI ('F':'o':'r':'a':'l':'l':cs) = TokenForall : lexIRel cs
+lexerI ('E':'x':'i':'s':'t':'s':cs) = TokenExists : lexIRel cs
 lexerI (';':cs)                     = TokenSemicolon : lexerI cs
 lexerI ('&':cs)                     = TokenAnd : lexerI cs
 lexerI ('|':cs)                     = TokenOr : lexerI cs
@@ -125,23 +110,29 @@ lexIVar cs =
    case span isAlphaNum cs of
       (var,rest)   -> TokenVar var : lexerI rest
 
+lexIRel (' ':cs) = lexIRel cs
+lexIRel cs       =
+   case span isAlphaNum cs of
+      (rel,rest)   -> TokenRel rel : lexerI rest
+
 -- Lexer for Benchmark 1 file
 lexerB1 :: String -> [Token]
 lexerB1 [] = []
-lexerB1 ('b':'e':'g':'i':'n':cs)
-             = TokenBegin : lexerB1Concepts cs
+lexerB1 ('b':'e':'g':'i':'n':'\n':'1':':':cs)
+             = TokenBegin : lexerB1 cs
 lexerB1 (c:cs) = lexerB1 cs
 
 lexerB1Concepts :: String -> [Token]
 lexerB1Concepts [] = []
-lexerB1Concepts ('b':'o':'x':cs) = TokenBox : lexerB1Concepts cs
-lexerB1Concepts ('d':'i':'a':cs) = TokenDia : lexerB1Concepts cs
+lexerB1Concepts ('b':'o':'x':cs) = TokenForall : TokenRel "R" : lexerB1Concepts cs
+lexerB1Concepts ('d':'i':'a':cs) = TokenExists : TokenRel "R" : lexerB1Concepts cs
 lexerB1Concepts ('&':cs)         = TokenAnd : lexerB1Concepts cs
 lexerB1Concepts ('-':'>':cs)     = TokenImplies : lexerB1Concepts cs
 lexerB1Concepts ('~':cs)         = TokenNeg : lexerB1Concepts cs
 lexerB1Concepts ('(':cs)         = TokenOB : lexerB1Concepts cs
 lexerB1Concepts (')':cs)         = TokenCB : lexerB1Concepts cs
-lexerB1Concepts (c:':':cs)       = TokenFormula : lexerB1Concepts cs
+-- Only allows benchmark files with less than 10 concepts
+lexerB1Concepts (c:':':cs)       = TokenSemicolon : lexerB1Concepts cs
 lexerB1Concepts ('e':'n':'d':cs) = [TokenEnd]
 lexerB1Concepts (c:cs) 
       | isSpace    c = lexerB1Concepts cs
@@ -154,23 +145,39 @@ lexB1Var cs =
 -- Lexer for Benchmark 2 file
 lexerB2 :: String -> [Token]
 lexerB2 [] = []
-lexerB2 ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':'_':
-         'f':'o':'r':'m':'u':'l':'a':'e':'(':'c':'o':'n':'j':'e':'c':
-         't':'u':'r':'e':'s':',':' ':'E':'M':'L':')':'.':cs)
-               = TokenBegin : lexerB2Concepts cs
+lexerB2 ('b':'e':'g':'i':'n':'_':'p':'r':'o':'b':'l':'e':'m':cs)
+               = TokenBegin : lexB2FindConcepts cs
 lexerB2 (c:cs) = lexerB2 cs
 
+-- Finds 1st list of concepts
+lexB2FindConcepts :: String -> [Token]
+lexB2FindConcepts ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':
+                   '_':'f':'o':'r':'m':'u':'l':'a':'e':'(':'c':'o':'n':'j':'e':
+                   'c':'t':'u':'r':'e':'s':',':' ':'E':'M':'L':')':'.':cs)
+                         = lexerB2Concepts cs
+lexB2FindConcepts (c:cs) = lexB2FindConcepts cs
+
+-- Finds next list of Concepts if it exists
+lexB2ContConcepts :: String -> [Token]
+lexB2ContConcepts ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':
+                   '_':'f':'o':'r':'m':'u':'l':'a':'e':'(':'c':'o':'n':'j':'e':
+                   'c':'t':'u':'r':'e':'s':',':' ':'E':'M':'L':')':'.':cs)
+                         = TokenSemicolon : lexerB2Concepts cs
+lexB2ContConcepts ('e':'n':'d':'_':'p':'r':'o':'b':'l':'e':'m':'.':cs)
+                         = [TokenEnd]
+lexB2ContConcepts (c:cs) = lexB2ContConcepts cs
+
+-- Parses a list of concepts
 lexerB2Concepts :: String -> [Token]
 lexerB2Concepts [] = []
 lexerB2Concepts ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
-                     = TokenFormula : lexerB2Concept cs
-lexerB2Concepts ('e':'n':'d':'_':'o':'f':'_':'l':'i':'s':'t':'.':cs)
-                     = [TokenEnd]
+                       = lexerB2Concept cs
 lexerB2Concepts (c:cs) = lexerB2Concepts cs
 
+-- Parses a concept
 lexerB2Concept :: String -> [Token]
-lexerB2Concept ('b':'o':'x':'(':cs)     = TokenBox : TokenOB : lexB2Rel cs
-lexerB2Concept ('d':'i':'a':'(':cs)     = TokenDia : TokenCB : lexB2Rel cs
+lexerB2Concept ('b':'o':'x':'(':cs)     = TokenForall : lexB2Rel cs
+lexerB2Concept ('d':'i':'a':'(':cs)     = TokenExists : lexB2Rel cs
 lexerB2Concept ('a':'n':'d':cs)         = TokenAnd : lexerB2Concept cs
 lexerB2Concept ('o':'r':cs)             = TokenOr : lexerB2Concept cs
 lexerB2Concept ('n':'o':'t':cs)         = TokenNeg : lexerB2Concept cs
@@ -179,16 +186,24 @@ lexerB2Concept ('f':'a':'l':'s':'e':cs) = TokenFalse : lexerB2Concept cs
 lexerB2Concept ('(':cs)                 = TokenOB : lexerB2Concept cs
 lexerB2Concept (')':cs)                 = TokenCB : lexerB2Concept cs
 lexerB2Concept (',':cs)                 = lexerB2Concept cs
-lexerB2Concept (c:':':cs)               = TokenFormula : lexerB2Concept cs
-lexerB2Concept ('.':cs)                 = lexerB2Concepts cs
+lexerB2Concept ('.':cs)                 = lexB2NextConcept cs
 lexerB2Concept (c:cs) 
       | isSpace    c = lexerB2Concept cs
       | isAlphaNum c = lexB2Var (c:cs)
 
+-- Parse next concept in a list if it exists
+lexB2NextConcept :: String -> [Token]
+lexB2NextConcept ('e':'n':'d':'_':'o':'f':'_':'l':'i':'s':'t':'.':cs)
+                        = lexB2ContConcepts cs
+lexB2NextConcept ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
+                        = TokenSemicolon : lexerB2Concept cs
+lexB2NextConcept (c:cs) = lexB2NextConcept cs
+
 lexB2Rel :: String -> [Token]
-lexB2Rel cs =
+lexB2Rel (' ':cs) = lexB2Rel cs
+lexB2Rel cs       =
    case span isAlphaNum cs of
-      (rel,rest)   -> TokenRel rel : lexerB2Concept rest
+      (rel,rest)   -> TokenRel rel : TokenOB : lexerB2Concept rest
 
 lexB2Var cs =
    case span isAlphaNum cs of
