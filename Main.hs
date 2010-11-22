@@ -17,6 +17,7 @@ import Data.List
 
 import Model
 import ModelChecker
+--import Parser
 import Proof
 import ProofChecker
 import ProofSearch
