@@ -14,10 +14,13 @@ import Control.Concurrent
 import Control.Monad
 import Data.Maybe
 
-import Main
 import Signature
 import ProofSearch
 import TestUtils
+import ModelChecker
+import ProofChecker
+import Model
+import Proof
 
 untilTimeout = 30
 
@@ -58,23 +61,28 @@ template concepts gamma = do result <- timeout untilTimeout (templateSimple conc
                          
 testtemplate cs gamma = TestCase (template cs gamma)
 
-globaltest1 = testtemplate [] [nt1]
-globaltest2 = testtemplate [nt1] []
-globaltest3 = testtemplate [nt1] [nt1]
-globaltest4 = testtemplate [] [nt2]
-globaltest5 = testtemplate [nt2] []
-globaltest6 = testtemplate [nt2] [nt2]
-globaltest7 = testtemplate [] [nt3]
-globaltest8 = testtemplate [nt3] []
-globaltest9 = testtemplate [nt3] [nt3]
-globaltest10 = testtemplate [] [nt4]
-globaltest11 = testtemplate [nt4] []
-globaltest12 = testtemplate [nt4] [nt4]
+-- check if the result of computation is correct or not
+check :: [Concept] -> [Concept] -> Either Model ProofTree -> (String, Bool)
+check cs gamma (Left model) = checkInputModel model gamma cs
+check _ gamma (Right proof) = checkProof proof gamma
 
-globaltests = TestList [globaltest1, globaltest2, globaltest3,
+globaltest1 = testtemplate [] [atoma]
+globaltest2 = testtemplate [atoma] []
+globaltest3 = testtemplate [atoma] [atoma]
+globaltest4 = testtemplate [] [forall_r_top]
+globaltest5 = testtemplate [forall_r_top] []
+globaltest6 = testtemplate [forall_r_top] [forall_r_top]
+globaltest7 = testtemplate [] [exists_r_bottom]
+globaltest8 = testtemplate [exists_r_bottom] []
+globaltest9 = testtemplate [exists_r_bottom] [exists_r_bottom]
+globaltest10 = testtemplate [] [a_or_b]
+globaltest11 = testtemplate [a_or_b] []
+globaltest12 = testtemplate [a_or_b] [a_or_b]
+
+globaltests = maplabel "GlobalTests"  [globaltest1, globaltest2, globaltest3,
                         globaltest4, globaltest5, globaltest6, 
                         globaltest7, globaltest8, globaltest9,
                         globaltest10, globaltest11, globaltest12]
 
-testglobal  = do putStrLn "Global tests"
-                 runTestTT globaltests
+allglobaltests  = do putStrLn "==== Global tests"
+                     runTestTT globaltests
