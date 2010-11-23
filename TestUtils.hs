@@ -25,7 +25,8 @@ printCG concepts gamma = "\n\tGamma: "++show gamma++"\n\tConcepts: "++show conce
 testequality msg target result inputString = TestCase (assertEqual newMsg target result)
   where newMsg = "\nERROR DETECTED: "++msg++"\nFor input:"++inputString++"\n"
 
-maplabel label testlist = TestList $ map (\x -> (TestLabel label x)) testlist
+maplabel label testlist = TestList $ map labelMaker $ zip [1..] testlist
+  where labelMaker (a,b) = TestLabel (label++" "++show a) b
 
 ---- our concepts we will use
 
@@ -101,6 +102,13 @@ exists_s = exists "S"
 simple_atom_list =
   [top, bottom, atoma, atomb, atomc, atomd,
    notatoma, notatomb, notatomc, notatomd]
+
+all_tuples [] list = []
+all_tuples (elem:rest) list =
+  map (tupler elem) list++all_tuples rest list
+    where tupler elem another = (elem,another)
+
+--or_generator concepts1 concepts2 =
 
 -- simple concepts to test sc for simple concept
 sc28 = exists "S" notatomd
