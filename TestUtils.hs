@@ -108,7 +108,24 @@ all_tuples (elem:rest) list =
   map (tupler elem) list++all_tuples rest list
     where tupler elem another = (elem,another)
 
---or_generator concepts1 concepts2 =
+or_generator = map or_maker
+  where or_maker (a,b) = a \/ b 
+
+and_generator = map and_maker
+  where and_maker (a,b) = a /\ b
+
+forall_generator list = map forall_r list ++ map forall_s list
+
+exists_generator list = map exists_r list ++ map exists_r list
+
+generateConcepts = simple ++ foralls ++ exists ++ complex
+  where simple        = simple_atom_list ++ or_generator simpleTuples
+        simpleWithAnd = simple ++ and_generator simpleTuples
+        foralls       = forall_generator simpleWithAnd
+        exists        = exists_generator simpleWithAnd
+        simpleTuples  = all_tuples simple_atom_list simple_atom_list
+        complex       = forall_generator (foralls++exists) ++
+                        exists_generator (foralls++exists)
 
 -- simple concepts to test sc for simple concept
 sc28 = exists "S" notatomd
