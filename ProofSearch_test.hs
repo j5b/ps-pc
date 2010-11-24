@@ -233,19 +233,19 @@ testForallAtom = testequality msg (Left ([1],[],[])) (findPOM [forall_r_a] []) (
 
 testMoreExists1 = testequality msg target (findPOM [atoma, exists_r_a] []) (printCG [atoma, exists_r_a] [])
   where msg = "Failed to find a model for existential concept and an atom" 
-        target = Left ([1,2],[("A",[2])],[("R",[(1,2)])])
+        target = Left ([1,2],[("A",[2,1])],[("R",[(1,2)])])
 
 testMoreExists2 = testequality msg target (findPOM [atoma, exists_r_a, exists_r_b] []) (printCG [atoma, exists_r_a, exists_r_b] [])
   where msg = "Failed to find a model for two existential concepts and an atom"
-        target = Left ([1,3,2],[("B",[3]),("A",[2])],[("R",[(1,2),(1,3)])])
+        target = Left ([1,3,2],[("A",[2,1]),("B",[3])],[("R",[(1,2),(1,3)])])
 
 testMoreExists3 = testequality msg target (findPOM [a_or_b, exists_r_b] []) (printCG [a_or_b, exists_r_b] [])
   where msg = "Failed to find a model for existential concept and a disjunction"
-        target = Left ([1,2],[("B",[2])],[("R",[(1,2)])])
+        target = Left ([1,2],[("A",[1]),("B",[2])],[("R",[(1,2)])])
 
 testMoreExists4 = testequality msg target (findPOM [a_or_b, atomb, exists_r_b] []) (printCG [a_or_b, atomb, exists_r_b] [])
   where msg = "Failed to find a model for existential, disjunction and an atom 1"
-        target = Left ([1,2],[("B",[2])],[("R",[(1,2)])])
+        target = Left ([1,2],[("A",[1]),("B",[2,1])],[("R",[(1,2)])])
 
 testMoreExists5 = testequality msg target (findPOM [atoma, a_or_b, exists_r_b] []) (printCG [atoma, a_or_b, exists_r_b] [])
   where msg = "Failed to find a model for existential, disjunction and an atom 2"
@@ -253,24 +253,24 @@ testMoreExists5 = testequality msg target (findPOM [atoma, a_or_b, exists_r_b] [
 
 testMoreForall1 = testequality msg target (findPOM [atoma, exists_r_a, forall_r_b] []) (printCG [atoma, exists_r_a, forall_r_b] [])
   where msg = "Failed to find a model for existential, univeral, and atom"
-        target =Left ([1,2],[("B",[2]),("A",[2])],[("R",[(1,2)])])
+        target =Left ([1,2],[("A",[2,1]),("B",[2])],[("R",[(1,2)])])
 
 testMore1 = testequality msg target result (printCG concepts [])
   where msg = "Failed to find a model for multiple universals, multiple existentials, and duplicate atomics"
-        target = Left ([1,2],[("B",[2]),("A",[2])],[("R",[(1,2)])])
+        target = Left ([1,2],[("A",[2,1]),("B",[2])],[("R",[(1,2)])])
         result = findPOM concepts []
         concepts = [atoma, exists_r_a, forall_r_b, exists_r_a, atoma, forall_r_b, atoma, atoma, atoma, forall_r_b, exists_r_a]
 
 testMore2 = testequality msg target result (printCG [atoma, exists_r_a, exists_r_b, forall_r_c] [])
   where msg = "Failed to find a model for univeral, multiple existentials, and atoms"
-        target = Left ([1,3,2],[("C",[2,3]),("B",[3]),("A",[2])],[("R",[(1,2),(1,3)])])
+        target = Left ([1,3,2],[("A",[2,1]),("B",[3]),("C",[2,3])],[("R",[(1,2),(1,3)])])
         result = findPOM [atoma, exists_r_a, exists_r_b, forall_r_c] []
 
 -- some more complex ones
 
 testMoreExists1' = testequality msg target result (printCG [andExists, andforalls] [])
   where msg = "Failed to find a model for conjunction of existentials and conjuctions of universals"
-        target = Left ([1,3,2],[("A",[2,3]),("B",[2,3])],[("R",[(1,2),(1,3)])])
+        target = Left ([1,3,2],[("B",[2,3]),("A",[2,3])],[("R",[(1,2),(1,3)])])
         result = findPOM [andExists, andforalls] []
 
 testMoreExists2' = testequality msg target result (printCG [orExists, negExists, existsexists] [])
@@ -289,7 +289,7 @@ testMoreExists3' = testequality msg target result (printCG [forallexists, orfora
 testMoreExists4' = testequality msg target result (printCG [orExists, negExists, existsexists]  [])
   where msg = "Failed to find a model for disjunction of existentials, "++
               "negation of existentials, and existential of existential"
-        target = Left ([1,2],[("B",[2])],[("R",[(1,2)])])
+        target = Left ([1,3,4,2],[("A",[4]),("B",[2])],[("S",[(1,3)]),("R",[(1,2),(3,4)])])
         result = findPOM [orExists, negExists, existsexists] []
 
 --------- Tests for models for non empy knowledge base

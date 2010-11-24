@@ -278,7 +278,7 @@ test230 = testequality "Failed to show exists S C or D is true" result target $ 
   where result = checkModel (exists_s c_or_d) model2
         target = ("", True)
 test231 = testequality "Failed to show exists S C and not T is false" result target $ printModel model2
-  where result = checkModel (exists_s c_and_d) model2
+  where result = checkModel (exists_s c_and_bottom) model2
         target = ("No successors for relation S for 1\n"++
                   "No successors for relation S for 2\n"++
                   "No successors for relation S for 3\n"++
