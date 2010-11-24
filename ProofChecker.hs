@@ -10,7 +10,6 @@
 module ProofChecker where
 
 import Proof
-import ProofUtils
 import Signature
 import ProofUtils
 
@@ -55,30 +54,31 @@ checkTree (NodeZero step) gamma
   where (msg, success, cs) = checkProofStep step gamma
         (initialconcepts, rule, _) = step
 checkTree (NodeOne step tree) gamma
---  | not $ rule `elem` ["and", "exists"] =
---      ("Applying the " ++ rule ++ " to {" ++ showConceptList initialconcepts ++
---       "} should not give 1 result", False)
+  | not $ rule `elem` ["and", "exists"] =
+      ("Applying the " ++ rule ++ " rule to {" ++ showConceptList initialconcepts
+       ++ "} should not give 1 resulting set of concepts", False)
   | not success =
       (msg, False)
   | length cs /= 1 =
-      ("There should be 1 resulting set of concepts for NodeOne", False)
+      ("There should be 1 resulting set of concepts for applying the " ++ rule
+       ++ " rule to {" ++ showConceptList initialconcepts ++ "}", False)
   | conceptEquals (head cs) (getConcepts tree) =
       checkTree tree gamma
   | otherwise =
-      ("Next step's concepts (" ++ showConceptList (getConcepts tree) ++
-       ") do not match the result of applying " ++ rule ++ " rule to (" ++
-       showConceptList initialconcepts ++ ")", False)
+      ("Next step's concepts {" ++ showConceptList (getConcepts tree) ++
+       "} do not match the result of applying " ++ rule ++ " rule to {" ++
+       showConceptList initialconcepts ++ "}", False)
   where (msg, success, cs) = checkProofStep step gamma
         (initialconcepts, rule, _) = step
 checkTree (NodeTwo step t1 t2) gamma
   | rule /= "or" =
       ("Applying the " ++ rule ++ " rule to {" ++ showConceptList initialconcepts ++
-       "} should not give 2 results", False)
+       "} should not give 2 resulting sets of concepts", False)
   | not success =
       (msg, False)
   | length cs /= 2 =
-      ("There should be 2 resulting sets of concepts for applying Or rule to ("
-       ++ showConceptList initialconcepts ++ ")",
+      ("There should be 2 resulting sets of concepts for applying the or rule to {"
+       ++ showConceptList initialconcepts ++ "}",
        False)
   | conceptEquals (head cs) (getConcepts t1) &&
     conceptEquals (cs !! 1) (getConcepts t2) ||
@@ -86,10 +86,10 @@ checkTree (NodeTwo step t1 t2) gamma
     conceptEquals (head cs) (getConcepts t2)    =
       (msg1 ++ msg2, tsuccess1 && tsuccess2)
   | otherwise =
-      ("Next step's set of concepts (" ++ showConceptList (getConcepts t1)
-       ++ ") and (" ++ showConceptList (getConcepts t2) ++
-       ") do not match the results of applying the or rule to (" ++
-       showConceptList initialconcepts ++ ")", False)
+      ("Next step's set of concepts {" ++ showConceptList (getConcepts t1)
+       ++ "} and {" ++ showConceptList (getConcepts t2) ++
+       "} do not match the results of applying the or rule to {" ++
+       showConceptList initialconcepts ++ "}", False)
   where (msg, success, cs) = checkProofStep step gamma
         (msg1, tsuccess1) = checkTree t1 gamma
         (msg2, tsuccess2) = checkTree t2 gamma
