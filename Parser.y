@@ -118,8 +118,8 @@ lexIRel cs       =
 -- Lexer for Benchmark 1 file
 lexerB1 :: String -> [Token]
 lexerB1 [] = []
-lexerB1 ('b':'e':'g':'i':'n':'\n':'1':':':cs)
-             = TokenBegin : lexerB1 cs
+lexerB1 ('b':'e':'g':'i':'n':cs)
+             = TokenBegin : lexerB1Concepts cs
 lexerB1 (c:cs) = lexerB1 cs
 
 lexerB1Concepts :: String -> [Token]
@@ -132,7 +132,8 @@ lexerB1Concepts ('~':cs)         = TokenNeg : lexerB1Concepts cs
 lexerB1Concepts ('(':cs)         = TokenOB : lexerB1Concepts cs
 lexerB1Concepts (')':cs)         = TokenCB : lexerB1Concepts cs
 -- Only allows benchmark files with less than 10 concepts
-lexerB1Concepts (c:':':cs)       = TokenSemicolon : lexerB1Concepts cs
+lexerB1Concepts ('1':':':cs)     = lexerB1Concepts cs
+lexerB1Concepts (_:':':cs)       = TokenSemicolon : lexerB1Concepts cs
 lexerB1Concepts ('e':'n':'d':cs) = [TokenEnd]
 lexerB1Concepts (c:cs) 
       | isSpace    c = lexerB1Concepts cs
