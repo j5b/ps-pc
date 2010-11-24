@@ -177,6 +177,7 @@ lexerB2Concepts (c:cs) = lexerB2Concepts cs
 
 -- Parses a concept
 lexerB2Concept :: String -> [Token]
+lexerB2Concept [] = []
 lexerB2Concept ('b':'o':'x':'(':cs)     = TokenForall : lexB2Rel cs
 lexerB2Concept ('d':'i':'a':'(':cs)     = TokenExists : lexB2Rel cs
 lexerB2Concept ('a':'n':'d':cs)         = TokenAnd : lexerB2Concept cs
