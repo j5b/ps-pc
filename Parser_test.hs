@@ -51,7 +51,7 @@ allb2basictests = do putStrLn "==== Testing the parser for benchmark 2 concepts"
 
 -- Testing setup
 
-listallb1 = concat $ map labelMaker $ zip [1..] allb1Concepts
+listallb1 = concatMap labelMaker $ zip [1..] allb1Concepts
   where labelMaker (a,b) = show a ++ ": " ++ b ++ " "
 
 allb1Concepts = [b1not1, b1not2, b1and1, b1and2, b1implies1, b1implies2, b1box1,
