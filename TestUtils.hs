@@ -9,6 +9,7 @@ module TestUtils where
 import Signature
 import Model
 
+import Data.List
 import Test.HUnit
 
 -- testing function YOU SHOULD USE TO MAKE YOUR FILE EASIER
@@ -119,6 +120,7 @@ exists_generator list = map exists_r list ++ map exists_r list
 
 not_generator list = map neg list
 
+-- Over 3000 concepts
 generateConcepts = simple ++ foralls ++ exists ++ complex
   where simple        = simple_atom_list ++ simpleOr ++ simpleAnd ++ simpleNot
         simpleOr      = or_generator simpleTuples
@@ -130,6 +132,13 @@ generateConcepts = simple ++ foralls ++ exists ++ complex
         complex       = forall_generator (foralls++exists) ++
                         exists_generator (foralls++exists) ++
                         not_generator (foralls++exists)
+
+{- extract :: [Int] -> [a] -> [a]
+extract indices list 
+    | tooLargeIndices = error "Some of the indices provided were too large"
+    | otherwise       = extract' (sort $ nub indices) list
+    where maxIndex        = length list
+          tooLargeIndices =  -}
 
 -- simple concepts to test sc for simple concept
 sc28 = exists "S" notatomd
