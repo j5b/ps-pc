@@ -22,7 +22,6 @@ import Signature
       begin           { TokenBegin }
       end             { TokenEnd }
       var             { TokenVar $$ }
-      rel             { TokenRel $$ }
       true            { TokenTrue }
       false           { TokenFalse }
       and             { TokenAnd }
@@ -51,8 +50,8 @@ Concept  : Concept '->' Concept1       {Or (Neg $1) $3}
          | or '(' Concept Concept ')'  {Or $3 $4}
          | Concept1                    {$1}
 
-Concept1 : Forall rel '(' Concept ')' {Forall $2 $4}
-         | Exists rel '(' Concept ')' {Exists $2 $4}
+Concept1 : Forall var '(' Concept ')' {Forall $2 $4}
+         | Exists var '(' Concept ')' {Exists $2 $4}
          | not Concept2               {Neg $2}
          | Concept2                   {$1}
 
@@ -69,7 +68,6 @@ data Token
       = TokenTrue
       | TokenFalse
       | TokenVar String
-      | TokenRel String
       | TokenAnd
       | TokenOr
       | TokenImplies
@@ -93,8 +91,8 @@ lexer _            _ = parseError []
 -- Lexer for input grammar.
 lexerI :: String -> [Token]
 lexerI [] = []
-lexerI ('F':'o':'r':'a':'l':'l':cs) = TokenForall    : lexIRel cs
-lexerI ('E':'x':'i':'s':'t':'s':cs) = TokenExists    : lexIRel cs
+lexerI ('F':'o':'r':'a':'l':'l':cs) = TokenForall    : lexIVar cs
+lexerI ('E':'x':'i':'s':'t':'s':cs) = TokenExists    : lexIVar cs
 lexerI ('t':'o':'p':cs)             = TokenTrue      : lexerI cs
 lexerI ('b':'o':'t':cs)             = TokenFalse     : lexerI cs
 lexerI (';':cs)                     = TokenSemicolon : lexerI cs
@@ -108,14 +106,10 @@ lexerI (c:cs)
       | isSpace    c = lexerI cs
       | isAlphaNum c = lexIVar (c:cs)
 
+lexIVar (' ':cs) = lexIVar cs
 lexIVar cs =
    case span isAlphaNum cs of
       (var,rest)   -> TokenVar var : lexerI rest
-
-lexIRel (' ':cs) = lexIRel cs
-lexIRel cs       =
-   case span isAlphaNum cs of
-      (rel,rest)   -> TokenRel rel : lexerI rest
 
 -- Lexer for Benchmark 1 file
 lexerB1 :: String -> [Token]
@@ -126,8 +120,8 @@ lexerB1 (c:cs) = lexerB1 cs
 
 lexerB1Concepts :: String -> [Token]
 lexerB1Concepts [] = []
-lexerB1Concepts ('b':'o':'x':cs) = TokenForall : TokenRel "R" : lexerB1Concepts cs
-lexerB1Concepts ('d':'i':'a':cs) = TokenExists : TokenRel "R" : lexerB1Concepts cs
+lexerB1Concepts ('b':'o':'x':cs) = TokenForall : TokenVar "R" : lexerB1Concepts cs
+lexerB1Concepts ('d':'i':'a':cs) = TokenExists : TokenVar "R" : lexerB1Concepts cs
 lexerB1Concepts ('&':cs)         = TokenAnd : lexerB1Concepts cs
 lexerB1Concepts ('-':'>':cs)     = TokenImplies : lexerB1Concepts cs
 lexerB1Concepts ('~':cs)         = TokenNeg : lexerB1Concepts cs
@@ -180,8 +174,8 @@ lexerB2Concepts (c:cs) = lexerB2Concepts cs
 -- Parses a concept
 lexerB2Concept :: String -> [Token]
 lexerB2Concept [] = []
-lexerB2Concept ('b':'o':'x':'(':cs)     = TokenForall : lexB2Rel cs
-lexerB2Concept ('d':'i':'a':'(':cs)     = TokenExists : lexB2Rel cs
+lexerB2Concept ('b':'o':'x':'(':cs)     = TokenForall : lexB2Var cs
+lexerB2Concept ('d':'i':'a':'(':cs)     = TokenExists : lexB2Var cs
 lexerB2Concept ('a':'n':'d':cs)         = TokenAnd : lexerB2Concept cs
 lexerB2Concept ('o':'r':cs)             = TokenOr : lexerB2Concept cs
 lexerB2Concept ('n':'o':'t':cs)         = TokenNeg : lexerB2Concept cs
@@ -203,12 +197,7 @@ lexB2NextConcept ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
                         = TokenSemicolon : lexerB2Concept cs
 lexB2NextConcept (c:cs) = lexB2NextConcept cs
 
-lexB2Rel :: String -> [Token]
-lexB2Rel (' ':cs) = lexB2Rel cs
-lexB2Rel cs       =
-   case span isAlphaNum cs of
-      (rel,rest)   -> TokenRel rel : TokenOB : lexerB2Concept rest
-
+lexB2Var (' ':cs) = lexB2Var cs
 lexB2Var cs =
    case span isAlphaNum cs of
       (var,rest)   -> TokenVar var : lexerB2Concept rest
