@@ -90,6 +90,8 @@ toNNF (Neg (And f1 f2)) = Or (toNNF $ Neg f1) (toNNF $ Neg f2)
 toNNF (Neg (Or f1 f2)) = And (toNNF $ Neg f1) (toNNF $ Neg f2)
 toNNF (Neg (Exists str f)) = Forall str $ toNNF (Neg f)
 toNNF (Neg (Forall str f)) = Exists str $ toNNF (Neg f)
+toNNF (Forall str f) = Forall str $ toNNF f
+toNNF (Exists str f) = Exists str $ toNNF f
 toNNF concept = concept
 
 -- more clearer name if required
@@ -111,6 +113,6 @@ isNNF (Neg T) = True
 isNNF (Neg (Atom a)) = True
 isNNF (And f1 f2) = True
 isNNF (Or f1 f2) = True
-isNNF (Exists str f) = True
-isNNF (Forall str f) = True
+isNNF (Exists str f) = isNNF f
+isNNF (Forall str f) = isNNF f
 isNNF _ = False

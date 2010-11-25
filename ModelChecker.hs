@@ -35,12 +35,12 @@ checkInputModel :: Model -> Concepts -> Concepts -> Answer
 checkInputModel model [] givens =
   ("---- All concepts:\n"++msg++
    "---- Gamma only:\n", result) 
-  where concepts      = foldl1 (/\) (map toNNF givens)
+  where concepts      = foldl1 (/\) $ map toNNF givens
   	(msg, result) = checkModel concepts model 
 checkInputModel model gamma givens = 
   checkModel concepts model `combine`
-  checkGamma (foldl1 (/\) gamma) model
-  where concepts = foldl1 (/\) $ (map toNNF gamma) ++ (map toNNF givens)
+  checkGamma (foldl1 (/\) $ map toNNF gamma) model
+  where concepts = foldl1 (/\) $ map toNNF gamma ++ map toNNF givens
         combine (part1, result1) (part2, result2) =
                 ("---- All concepts:\n"++part1++
                  "---- Gamma only:\n"++part2, result1 && result2)
@@ -121,14 +121,10 @@ checkAtomic (Neg T) _ distinguished = (msg, False)
                  show distinguished++"\n"
 checkAtomic (Atom atom) model distinguished = (msg, result)
   where result = isInUnary distinguished atom model
-        msg    = if result then "" 
-                           else "Failed to satisfy "++atom++
-                                " for "++show distinguished++
-                                "\n"
+        msg    = if result then "" else "Failed to satisfy "++atom++
+                                        " for "++show distinguished++"\n"
 checkAtomic (Neg (Atom atom)) model distinguished = (msg, result)
   where result = not $ isInUnary distinguished atom model
-        msg    = if result then "" 
-                                else "Failed to not satisfy "++atom++
-                                     " for "++show distinguished++
-                                     "\n"
-
+        msg    = if result then "" else "Failed to not satisfy "++atom++
+                                        " for "++show distinguished++"\n"
+checkAtomic other _ _ = error $ "Non exhaustive pattern: "++show other
