@@ -13,6 +13,11 @@ import Parser
 import TestUtils
 import Test.HUnit
 
+allparsertests = do
+  allIbasictests
+  allb1basictests
+  b1parsefiletests
+  allb2basictests
 
 iTopBotTests = maplabel "Input parse top/bot test" [itoptest, ibottest]
 iNotTests    = maplabel "Input parse not test"     [inottest1, inottest2]
