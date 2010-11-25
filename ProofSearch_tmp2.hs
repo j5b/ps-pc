@@ -19,8 +19,8 @@ import Proof
 import ProofUtils
 import Signature
 
--- Introduce Maybe here in case we have an unexpanded entry to exists
-type Memory = [([Concept] , Either (Model, [Individual]) ProofTree, Maybe Model)]
+-- Either: Individual if unexpanded, ProofOrModel otherwise
+type Memory = [([Concept] , Either Individual (Either (Model, [Individual]) ProofTree))]
 
 -- Takes a knowledge base and a set of concepts and returns either a proof
 -- showing inconsistency or a model.
