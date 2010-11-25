@@ -174,8 +174,8 @@ lexerB2Concepts (c:cs) = lexerB2Concepts cs
 -- Parses a concept
 lexerB2Concept :: String -> [Token]
 lexerB2Concept [] = []
-lexerB2Concept ('b':'o':'x':'(':cs)     = TokenForall : lexB2Var cs
-lexerB2Concept ('d':'i':'a':'(':cs)     = TokenExists : lexB2Var cs
+lexerB2Concept ('b':'o':'x':'(':cs)     = TokenForall : lexB2Rel cs
+lexerB2Concept ('d':'i':'a':'(':cs)     = TokenExists : lexB2Rel cs
 lexerB2Concept ('a':'n':'d':cs)         = TokenAnd : lexerB2Concept cs
 lexerB2Concept ('o':'r':cs)             = TokenOr : lexerB2Concept cs
 lexerB2Concept ('n':'o':'t':cs)         = TokenNeg : lexerB2Concept cs
@@ -197,8 +197,14 @@ lexB2NextConcept ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
                         = TokenSemicolon : lexerB2Concept cs
 lexB2NextConcept (c:cs) = lexB2NextConcept cs
 
+lexB2Rel :: String -> [Token]
+lexB2Rel (' ':cs) = lexB2Rel cs
+lexB2Rel cs       =
+ case span isAlphaNum cs of
+   (rel,rest)   -> TokenVar rel : TokenOB : lexerB2Concept rest
+
 lexB2Var (' ':cs) = lexB2Var cs
 lexB2Var cs =
    case span isAlphaNum cs of
-      (var,rest)   -> TokenVar var : lexerB2Concept rest
+     (var,rest)   -> TokenVar var : lexerB2Concept rest
 }
