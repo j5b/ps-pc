@@ -133,13 +133,6 @@ generateConcepts = simple ++ foralls ++ exists ++ complex
                         exists_generator (foralls++exists) ++
                         not_generator (foralls++exists)
 
-{- extract :: [Int] -> [a] -> [a]
-extract indices list 
-    | tooLargeIndices = error "Some of the indices provided were too large"
-    | otherwise       = extract' (sort $ nub indices) list
-    where maxIndex        = length list
-          tooLargeIndices =  -}
-
 -- simple concepts to test sc for simple concept
 sc28 = exists "S" notatomd
 sc29 = exists "S" (atomc /\ atomd)
