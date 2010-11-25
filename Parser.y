@@ -191,6 +191,7 @@ lexerB2Concept (c:cs)
 
 -- Parse next concept in a list if it exists
 lexB2NextConcept :: String -> [Token]
+lexB2NextConcept []     = []
 lexB2NextConcept ('e':'n':'d':'_':'o':'f':'_':'l':'i':'s':'t':'.':cs)
                         = lexB2ContConcepts cs
 lexB2NextConcept ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
