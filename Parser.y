@@ -199,12 +199,12 @@ lexB2NextConcept (c:cs) = lexB2NextConcept cs
 
 lexB2Rel :: String -> [Token]
 lexB2Rel (' ':cs) = lexB2Rel cs
-lexB2Rel cs       =
+lexB2Rel cs =
  case span isAlphaNum cs of
    (rel,rest)   -> TokenVar rel : TokenOB : lexerB2Concept rest
 
 lexB2Var (' ':cs) = lexB2Var cs
 lexB2Var cs =
-   case span isAlphaNum cs of
-     (var,rest)   -> TokenVar var : lexerB2Concept rest
+  case span isAlphaNum cs of
+    (var,rest)   -> TokenVar var : lexerB2Concept rest
 }
