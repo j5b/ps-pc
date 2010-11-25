@@ -13,6 +13,24 @@ import Parser
 import TestUtils
 import Test.HUnit
 
+
+iTopBotTests = maplabel "Input parse top/bot test" [itoptest, ibottest]
+iNotTests    = maplabel "Input parse not test"     [inottest1, inottest2]
+iAndTests    = maplabel "Input parse and test"     [iandtest1, iandtest2]
+iOrTests     = maplabel "Input parse or test"      [iortest1, iortest2]
+iImpTests    = maplabel "Input parse implies test" [iimptest1, iimptest2]
+iForallTests = maplabel "Input parse forall test"  [iforalltest1, iforalltest2]
+iExistsTests = maplabel "Input parse dia test"     [iexiststest1, iexiststest2]
+
+allIbasictests = do putStrLn "==== Testing the parser for input concepts"
+                    runTestTT iTopBotTests
+                    runTestTT iNotTests
+                    runTestTT iAndTests
+                    runTestTT iOrTests
+                    runTestTT iImpTests
+                    runTestTT iForallTests
+                    runTestTT iExistsTests
+
 b1NotTests = maplabel "Benchmark 1 parse not test" [b1nottest1, b1nottest2]
 b1AndTests = maplabel "Benchmark 1 parse and test" [b1andtest1, b1andtest2]
 b1ImpTests = maplabel "Benchmark 1 parse implies test" [b1imptest1, b1imptest2]
@@ -50,6 +68,28 @@ allb2basictests = do putStrLn "==== Testing the parser for benchmark 2 concepts"
                      runTestTT b2FalseTests
 
 -- Testing setup
+
+listallI = concatMap labelMaker $ zip [1..] allIConcepts
+    where labelMaker (a,b) = show a ++ ": " ++ b ++ " "
+
+allIConcepts = [inot1, inot2, iand1, iand2, iimplies1, iimplies2, iforall1,
+                iforall2, iexists1, iexists2]
+
+inot1 = "~atom1"
+inot2 = "~(~atom1)"
+iand1 = "a & b"
+iand2 = "((a & b) & c)"
+ior1 = "a | b"
+ior2 = "(a | (b | c))"
+iimplies1 = "a -> b"
+iimplies2 = "a -> (b -> c)"
+iforall1 = "Forall R (a)"
+iforall2 = "Forall R (a & b)"
+iexists1 = "Exists R (a)"
+iexists2 = "Exists R (a & b)"
+itrue = "top"
+ifalse = "bot"
+
 
 listallb1 = concatMap labelMaker $ zip [1..] allb1Concepts
   where labelMaker (a,b) = show a ++ ": " ++ b ++ " "
@@ -89,6 +129,8 @@ b2dia1   = "dia(R, a)"
 b2dia2   = "dia(R, and(a, b))"
 
 -- Expected results
+toptarget     = [T]
+bottarget     = [Neg T]
 not1target     = [Neg (Atom "atom1")]
 not2target     = [Neg(Neg (Atom "atom1"))]
 and1target     = [And (Atom "a") (Atom "b")]
@@ -105,6 +147,78 @@ false1target   = [Neg T]
 false2target   = [And T (Neg T)]
 or1target      = [Or (Atom "a") (Atom "b")]
 or2target      = [Or (Atom "a") (Or (Atom "b") (Atom "c"))]
+
+-- Tests for parsing input concepts
+
+itoptest = testequality msg target result itrue
+  where msg    = "Failed to correctly parse a top concept from input"
+        result = file $ lexerI itrue
+        target = toptarget
+
+ibottest = testequality msg target result ifalse
+  where msg    = "Failed to correctly parse a bot concept from input"
+        result = file $ lexerI ifalse
+        target = bottarget
+
+inottest1 = testequality msg target result inot1
+  where msg    = "Failed to correctly parse a not concept from input"
+        result = file $ lexerI inot1
+        target = not1target
+
+inottest2 = testequality msg target result inot2
+  where msg    = "Failed to correctly parse a not concept from input"
+        result = file $ lexerI inot2
+        target = not2target
+
+iandtest1 = testequality msg target result iand1
+  where msg    = "Failed to correctly parse an and concept from input"
+        result = file $ lexerI iand1
+        target = and1target
+
+iandtest2 = testequality msg target result iand2
+  where msg    = "Failed to correctly parse an and concept from input"
+        result = file $ lexerI iand2
+        target = and2target
+
+iortest1 = testequality msg target result ior1
+  where msg    = "Failed to correctly parse an and concept from input"
+        result = file $ lexerI ior1
+        target = or1target
+
+iortest2 = testequality msg target result ior2
+  where msg    = "Failed to correctly parse an and concept from input"
+        result = file $ lexerI ior2
+        target = or2target
+
+iimptest1 = testequality msg target result iimplies1
+  where msg    = "Failed to correctly parse an and concept from input"
+        result = file $ lexerI iimplies1
+        target = implies1target
+
+iimptest2 = testequality msg target result iimplies2
+  where msg    = "Failed to correctly parse an implies concept from input"
+        result = file $ lexerI iimplies2
+        target = implies2target
+
+iforalltest1 = testequality msg target result iforall1
+  where msg    = "Failed to correctly parse a implies concept from input"
+        result = file $ lexerI iforall1
+        target = box1target
+
+iforalltest2 = testequality msg target result iforall2
+  where msg    = "Failed to correctly parse a box concept from input"
+        result = file $ lexerI iforall2
+        target = box2target
+
+iexiststest1 = testequality msg target result iexists1
+  where msg    = "Failed to correctly parse a dia concept from input"
+        result = file $ lexerI iexists1
+        target = dia1target
+
+iexiststest2 = testequality msg target result iexists2
+  where msg    = "Failed to correctly parse a dia concept from input"
+        result = file $ lexerI iexists2
+        target = dia2target
 
 -- Tests for parsing benchmark 1 concepts
 b1nottest1 = testequality msg target result b1not1

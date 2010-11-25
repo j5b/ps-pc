@@ -95,8 +95,8 @@ lexerI :: String -> [Token]
 lexerI [] = []
 lexerI ('F':'o':'r':'a':'l':'l':cs) = TokenForall    : lexIRel cs
 lexerI ('E':'x':'i':'s':'t':'s':cs) = TokenExists    : lexIRel cs
-lexerI ('t':'o':'p':cs)             = TokenTrue      : lexIRel cs
-lexerI ('b':'o':'t':cs)             = TokenFalse     : lexIRel cs
+lexerI ('t':'o':'p':cs)             = TokenTrue      : lexerI cs
+lexerI ('b':'o':'t':cs)             = TokenFalse     : lexerI cs
 lexerI (';':cs)                     = TokenSemicolon : lexerI cs
 lexerI ('&':cs)                     = TokenAnd       : lexerI cs
 lexerI ('|':cs)                     = TokenOr        : lexerI cs
