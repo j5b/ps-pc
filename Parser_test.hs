@@ -18,6 +18,7 @@ allparsertests = do
   allb1basictests
   b1parsefiletests
   allb2basictests
+  b2parsefiletests
 
 iTopBotTests = maplabel "Input parse top/bot test" [itoptest, ibottest]
 iNotTests    = maplabel "Input parse not test"     [inottest1, inottest2]
@@ -54,7 +55,6 @@ b1FileTests = maplabel "Benchmark 1 parse file test" [b1test1, b1test2]
 b1parsefiletests = do putStrLn "==== Testing the parser for benchmark 1 files"
                       runTestTT b1FileTests
 
-
 b2NotTests = maplabel "Benchmark 2 parse not test" [b2nottest1, b2nottest2]
 b2AndTests = maplabel "Benchmark 2 parse and test" [b2andtest1, b2andtest2]
 b2OrTests  = maplabel "Benchmark 2 parse or test" [b2ortest1, b2ortest2]
@@ -71,6 +71,11 @@ allb2basictests = do putStrLn "==== Testing the parser for benchmark 2 concepts"
                      runTestTT b2DiaTests
                      runTestTT bTrueTests
                      runTestTT b2FalseTests
+
+b2FileTests = maplabel "Benchmark 2 parse file test" [b2test1, b2test2]
+
+b2parsefiletests = do putStrLn "==== Testing the parser for benchmark 2 files"
+                      runTestTT b2FileTests
 
 -- Testing setup
 
@@ -133,9 +138,31 @@ b2box2   = "box(R, and(a, b))"
 b2dia1   = "dia(R, a)"
 b2dia2   = "dia(R, and(a, b))"
 
+b2file1 = "begin_problem(Unknown). text to be ignored. " ++
+          "list_of_special_formulae(conjectures, EML). " ++
+          "prop_formula(" ++ b2not1 ++ "). end_of_list. " ++
+          "This text should be ignored. " ++
+          "list_of_special_formulae(conjectures, EML). " ++
+          "prop_formula(" ++ b2true1 ++ "). end_of_list. end_problem."
+b2file2 = "begin_problem(Unknown). text to be ignored. " ++
+          "list_of_special_formulae(conjectures, EML). "++ allb2a ++
+          " end_of_list. This text should be ignored. " ++
+          "list_of_special_formulae(conjectures, EML). " ++ allb2b ++
+          " end_of_list. This text should be ignored. end_problem."
+  where allb2a = concat ["prop_formula(" ++ c ++ "). " | c <- allb2Conceptsa ]
+        allb2b = concat ["prop_formula(" ++ c ++ "). " | c <- allb2Conceptsb ]
+
+allb2Conceptsa = [b2true1, b2true2, b2false1, b2false2, b2or1, b2or2]
+allb2Conceptsb = [b2not1, b2not2, b2and1, b2and2, b2box1, b2box2, b2dia1, b2dia2]
+allb2Targets = concat [top1target, top2target, bot1target, bot2target,
+               or1target, or2target, not1target, not2target,and1target,
+               and2target, box1target, box2target, dia1target, dia2target]
+
 -- Expected results
-toptarget     = [T]
-bottarget     = [Neg T]
+top1target     = [T]
+top2target     = [Or T (Neg T)]
+bot1target     = [Neg T]
+bot2target     = [And T (Neg T)]
 not1target     = [Neg (Atom "atom1")]
 not2target     = [Neg(Neg (Atom "atom1"))]
 and1target     = [And (Atom "a") (Atom "b")]
@@ -146,10 +173,6 @@ box1target     = [Forall "R" (Atom "a")]
 box2target     = [Forall "R" (And (Atom "a") (Atom "b"))]
 dia1target     = [Exists "R" (Atom "a")]
 dia2target     = [Exists "R" (And (Atom "a") (Atom "b"))]
-true1target    = [T]
-true2target    = [Or T (Neg T)]
-false1target   = [Neg T]
-false2target   = [And T (Neg T)]
 or1target      = [Or (Atom "a") (Atom "b")]
 or2target      = [Or (Atom "a") (Or (Atom "b") (Atom "c"))]
 
@@ -158,12 +181,12 @@ or2target      = [Or (Atom "a") (Or (Atom "b") (Atom "c"))]
 itoptest = testequality msg target result itrue
   where msg    = "Failed to correctly parse a top concept from input"
         result = file $ lexerI itrue
-        target = toptarget
+        target = top1target
 
 ibottest = testequality msg target result ifalse
   where msg    = "Failed to correctly parse a bot concept from input"
         result = file $ lexerI ifalse
-        target = bottarget
+        target = bot1target
 
 inottest1 = testequality msg target result inot1
   where msg    = "Failed to correctly parse a not concept from input"
@@ -354,19 +377,31 @@ b2diatest2 = testequality msg target result b2dia2
 b2truetest1 = testequality msg target result b2true1
   where msg    = "Failed to correctly parse a true concept from Benchmark 2"
         result = file $ lexerB2Concept b2true1
-        target = true1target
+        target = top1target
 
 b2truetest2 = testequality msg target result b2true2
   where msg    = "Failed to correctly parse a true concept from Benchmark 2"
         result = file $ lexerB2Concept b2true2
-        target = true2target
+        target = top2target
 
 b2falsetest1 = testequality msg target result b2false1
   where msg    = "Failed to correctly parse a false concept from Benchmark 2"
         result = file $ lexerB2Concept b2false1
-        target = false1target
+        target = bot1target
 
 b2falsetest2 = testequality msg target result b2false2
   where msg    = "Failed to correctly parse a false concept from Benchmark 2"
         result = file $ lexerB2Concept b2false2
-        target = false2target
+        target = bot2target
+
+-- Tests for parsing benchmark 2 files
+b2test1 = testequality msg target result b2file1
+  where msg    = "Failed to correctly parse a file from Benchmark 2"
+        result = file $ lexerB2 b2file1
+        target = not1target ++ top1target
+
+b2test2 = testequality msg target result b2file2
+  where msg    = "Failed to correctly parse a file from Benchmark 2"
+        result = file $ lexerB2 b2file2
+        target = allb2Targets
+
