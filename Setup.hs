@@ -7,6 +7,5 @@ import TestMain
 
 main :: IO ()
 main = defaultMainWithHooks $ simpleUserHooks {
-        confHook  = (\_ _ -> return (error "No local build info generated during configure. Over-ride empty configure hook.")),
         runTests  = runTestPSPC }
 
