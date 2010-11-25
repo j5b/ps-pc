@@ -83,3 +83,12 @@ getConcepts (NodeTwo (cs, _, _) _ _) = cs
 -- Adds an element to a list and makes sure it is unique.
 uniqueCons :: Concept -> [Concept] -> [Concept]
 uniqueCons c cs = c : filter (/=c) cs
+
+myfst :: (a,b,c) -> a
+myfst (a,b,c) = a
+
+mysnd :: (a,b,c) -> b
+mysnd (a,b,c) = b
+
+mytrd :: (a,b,c) -> c
+mytrd (a,b,c) = c
