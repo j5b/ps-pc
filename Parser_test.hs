@@ -25,7 +25,7 @@ iAndTests    = maplabel "Input parse and test"     [iandtest1, iandtest2]
 iOrTests     = maplabel "Input parse or test"      [iortest1, iortest2]
 iImpTests    = maplabel "Input parse implies test" [iimptest1, iimptest2]
 iForallTests = maplabel "Input parse forall test"  [iforalltest1, iforalltest2]
-iExistsTests = maplabel "Input parse dia test"     [iexiststest1, iexiststest2]
+iExistsTests = maplabel "Input parse exists test"  [iexiststest1, iexiststest2]
 
 allIbasictests = do putStrLn "==== Testing the parser for input concepts"
                     runTestTT iTopBotTests
