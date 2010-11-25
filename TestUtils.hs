@@ -100,8 +100,7 @@ exists_r = exists "R"
 exists_s = exists "S"
 
 simple_atom_list =
-  [top, bottom, atoma, atomb, atomc, atomd,
-   notatoma, notatomb, notatomc, notatomd]
+  [top, bottom, atoma, atomb, notatoma, notatomb]
 
 all_tuples [] list = []
 all_tuples (elem:rest) list =
@@ -118,14 +117,19 @@ forall_generator list = map forall_r list ++ map forall_s list
 
 exists_generator list = map exists_r list ++ map exists_r list
 
+not_generator list = map neg list
+
 generateConcepts = simple ++ foralls ++ exists ++ complex
-  where simple        = simple_atom_list ++ or_generator simpleTuples
-        simpleWithAnd = simple ++ and_generator simpleTuples
-        foralls       = forall_generator simpleWithAnd
-        exists        = exists_generator simpleWithAnd
+  where simple        = simple_atom_list ++ simpleOr ++ simpleAnd ++ simpleNot
+        simpleOr      = or_generator simpleTuples
+        simpleAnd     = and_generator simpleTuples
+        simpleNot     = not_generator simpleOr ++ not_generator simpleAnd
+        foralls       = forall_generator simple
+        exists        = exists_generator simple
         simpleTuples  = all_tuples simple_atom_list simple_atom_list
         complex       = forall_generator (foralls++exists) ++
-                        exists_generator (foralls++exists)
+                        exists_generator (foralls++exists) ++
+                        not_generator (foralls++exists)
 
 -- simple concepts to test sc for simple concept
 sc28 = exists "S" notatomd
