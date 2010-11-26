@@ -50,7 +50,7 @@ findProofOrModel (And c d : cs) gamma is memory
       (result, newmem') 
         = if (findInMemory == [])
           then (either Left (Right . g) proofOrModel, newmem'')
-          else (fromLeft . snd (head findInMemory), memory)
+          else (fromLeft $ snd (head findInMemory), memory)
       (proofOrModel, newmem'') = findProofOrModel newcs gamma is memory
       g = NodeOne (And c d : cs, "and", And c d)
       newcs = conceptSort $ c `uniqueCons` (d `uniqueCons` cs)
@@ -62,7 +62,7 @@ findProofOrModel (Or c d : cs) gamma is memory
       (result, newmem')
         = if (findInMemory == [])
           then (either (fst . f) (fst . g) proofOrModel, either (snd . f) (snd . g) proofOrModel)
-          else (fromLeft . snd (head findInMemory), memory)
+          else (fromLeft $ snd (head findInMemory), memory)
       (proofOrModel, newmem'') = findProofOrModel (conceptSort $ c `uniqueCons` cs) gamma is memory
       (proofOrModel2, newmem''') = findProofOrModel (conceptSort $ d `uniqueCons` cs) gamma is newmem''
       f proof = (Left proof, newmem'')
@@ -76,24 +76,25 @@ findProofOrModel (Exists rel c : cs) gamma is memory
         (result, newmem') 
            = if (findInMemory == [])
              then foldExists (filter isExists (Exists rel c : cs)) is memory -- make sure to put a just in memory + change it if you find 
-             else if (isRight . snd . head findInMemory)
-                  then createLoopModel (Exists rel c : cs) (fromRight . snd . head findInMemory) -- make sure to change Just to nothing
-                  else (fromLeft . snd (head findInMemory), memory)
+             else if (isRight $ snd $ head findInMemory)
+                  then createLoopModel (Exists rel c : cs) (fromRight $ snd $ head findInMemory) is memory -- make sure to change Just to nothing, not sure about pred here
+                  else (fromLeft $ snd (head findInMemory), memory)
         findInMemory = filter ((==(Exists rel c : cs)) . fst) memory
-           where
-               foldExists :: [Concept] -> [Individual] -> Memory
-                             -> (Either (Model, [Individual]) ProofTree, Memory)
-               foldExists [] is currmem = (Left (([], [], []), is), currmem)
-               foldExists (Exists rel c : es) (i:is) curmem
-               = either f (Right . g) (findProofOrModel
-                                        (applyExists cs gamma (Exists rel c)) gamma is ((Exists rel c : es), Right i):curmem) -- not sure if i is correct ..
-               where
-                   g = NodeOne (Exists rel c : cs, "exists", Exists rel c)
-                   f (m, is') = either (\(m', is'') -> Left (joinModels m' m''', is''))
-                         (Right . g) (foldExists es (i : is'))
-                  where
-                      m''  = joinModels ([i], [], [(rel, [(i, head is)])]) m
-                      m''' = joinModels (constructAtomicModel cs i) m''
+        foldExists :: [Concept] -> [Individual] -> Memory
+                      -> (Either (Model, [Individual]) ProofTree, Memory)
+        foldExists [] is currmem = (Left (([], [], []), is), currmem) -- Return of findProomOrModel: (Either (Model, [Individual]) ProofTree, Memory)
+        foldExists (Exists rel c : es) (i:is) curmem = (either (fst . f) (fst . g) proofOrModel, either (snd . f) (snd . g) proofOrModel)  
+                where
+                   (proofOrModel, newmem') = findProofOrModel (applyExists cs gamma (Exists rel c)) gamma is (((Exists rel c : es), Right i):curmem) -- not sure if i is correct ..
+                   g pf = (Right . g', newmem')
+                   g' = NodeOne (Exists rel c : cs, "exists", Exists rel c)
+                   f (m, is') = (either (\(m', is'') -> Left (joinModels m' m''', is''))
+                                  (Right . g) proofOrModel2, newmem'')
+                      where
+                          (proofOrModel2, newmem'') = foldExists es (i : is') newmem'
+                          m''  = joinModels ([i], [], [(rel, [(i, head is)])]) m
+                          m''' = joinModels (constructAtomicModel cs i) m''
+
 findProofOrModel cs gamma (i:is) memory = (Left (constructAtomicModel cs i, is), memory)
 
 -- A function that sorts concepts in the following order, first to last:
@@ -156,4 +157,14 @@ applyExists cs gamma (Exists rel c)
     isMatchingForall _ _                 = False
 
 -- Constructs a model when a loop exists
-createLoopModel :: 
+-- Should have all exists sotred here, so create a loop model for all the exists
+createLoopModel :: [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
+createLoopModel (Exists rel c : es) i is memory 
+  = (either (Left . g) Right (fst . createLoopModel es i is newmem), newmem)
+    where 
+       g model = joinModels model (Left ([i] [] [(rel, [i, (pred . head is)])]))
+       newmem = (newmodel: (filter ((/=(Exists rel c: es)) . fst) memory)) --could use delete here
+       newmodel = Left ([i] [] [(rel, [i, (pred . head is)])])
+createLoopModel es i pred memory = (Left ([] [] []), memory)
+                                               
+                                                   

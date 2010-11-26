@@ -10,6 +10,7 @@ module ProofUtils where
 import Data.List
 
 import Proof
+import Model
 import Signature
 
 --
@@ -92,3 +93,15 @@ mysnd (a,b,c) = b
 
 mytrd :: (a,b,c) -> c
 mytrd (a,b,c) = c
+
+fromLeft :: Either a b -> a
+fromLeft (Left a) = a
+fromLeft _ = error "fromLeft: Should not get a right here"
+
+fromRight :: Either a b -> b
+fromRight (Right b) = b
+fromRight _ = error "fromRight: Should not get a left here"
+
+isRight :: Either a b -> Bool
+isRight (Right _) = True
+isRight _ = False
