@@ -75,19 +75,21 @@ findProofOrModel (Exists rel c : cs) gamma is memory
         newmem = if (findInMemory == []) then (((Exists rel c : cs), Left result):newmem') else newmem'
         (result, newmem') 
            = if (findInMemory == [])
-             then foldExists (filter isExists (Exists rel c : cs)) is memory -- make sure to put a just in memory + change it if you find 
+             then foldExists (filter isExists (Exists rel c : cs)) is memory
              else if (isRight $ snd $ head findInMemory)
-                  then createLoopModel (Exists rel c : cs) (fromRight $ snd $ head findInMemory) is memory -- make sure to change Just to nothing, not sure about pred here
+                  then createLoopModel (Exists rel c : cs) gamma (fromRight $ snd $ head findInMemory) is memory -- Need pred here - change!
                   else (fromLeft $ snd (head findInMemory), memory)
         findInMemory = filter ((==(Exists rel c : cs)) . fst) memory
         foldExists :: [Concept] -> [Individual] -> Memory
                       -> (Either (Model, [Individual]) ProofTree, Memory)
-        foldExists [] is currmem = (Left (([], [], []), is), currmem) -- Return of findProomOrModel: (Either (Model, [Individual]) ProofTree, Memory)
-        foldExists (Exists rel c : es) (i:is) curmem = (either (fst . f) (fst . g) proofOrModel, either (snd . f) (snd . g) proofOrModel)  
-                where
-                   (proofOrModel, newmem') = findProofOrModel (applyExists cs gamma (Exists rel c)) gamma is (((Exists rel c : es), Right i):curmem) -- not sure if i is correct ..
-                   g pf = (Right . g', newmem')
-                   g' = NodeOne (Exists rel c : cs, "exists", Exists rel c)
+        foldExists [] is currmem = (Left (([], [], []), is), currmem)
+        foldExists (Exists rel c : es) (i:is) curmem 
+           = if (isRight proofOrModel)
+             then (Right g, newmem')
+             else (fst . f, snd . f)
+                where 
+                   (proofOrModel, newmem') = findProofOrModel (applyExists cs gamma (Exists rel c)) gamma is (((Exists rel c : es), Right i):curmem) -- check if i correct
+                   g = NodeOne (Exists rel c : es, "exists", Exists rel c)
                    f (m, is') = (either (\(m', is'') -> Left (joinModels m' m''', is''))
                                   (Right . g) proofOrModel2, newmem'')
                       where
@@ -157,14 +159,18 @@ applyExists cs gamma (Exists rel c)
     isMatchingForall _ _                 = False
 
 -- Constructs a model when a loop exists
--- Should have all exists sotred here, so create a loop model for all the exists
-createLoopModel :: [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
-createLoopModel (Exists rel c : es) i is memory 
-  = (either (Left . g) Right (fst . createLoopModel es i is newmem), newmem)
-    where 
-       g model = joinModels model (Left ([i] [] [(rel, [i, (pred . head is)])]))
-       newmem = (newmodel: (filter ((/=(Exists rel c: es)) . fst) memory)) --could use delete here
-       newmodel = Left ([i] [] [(rel, [i, (pred . head is)])])
-createLoopModel es i pred memory = (Left ([] [] []), memory)
+-- Should have all exists sotred here, need to call proofOrModel for any further exists
+createLoopModel :: [Concept] -> [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
+createLoopModel (Exists rel c : cs) gamma n (i:is) memory 
+  = (either (Left . g) Right proofOrModel, newmem) 
+    where
+       g (model, indivs) = (joinModels model newmodel, indivs)
+       newmodel = ([i], [], [(rel, [(i, n)])]) -- Pred here!
+       (proofOrModel, newmem) = findProofOrModel cs gamma is newmem' 
+       newmem' = (((Exists rel c : cs), (Left (Left (newmodel, is)))):(newmem''))
+       newmem'' = filter isNotExists memory
+         where
+           isNotExists =  (/=(Exists rel c : cs)) . fst
+createLoopModel _ _ _ _ _ = error "createLoopModel is called with wrong params: probably with no exists"
                                                
                                                    
