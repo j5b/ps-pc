@@ -20,7 +20,7 @@ import ProofUtils
 import Signature
 
 -- Either: Individual if unexpanded, ProofOrModel otherwise
-type Memory = [([Concept] , Either Individual (Either (Model, [Individual]) ProofTree))]
+type Memory = [([Concept] , Either (Either (Model, [Individual]) ProofTree) Individual)]
 
 -- Takes a knowledge base and a set of concepts and returns either a proof
 -- showing inconsistency or a model.
@@ -32,14 +32,13 @@ findPOM cs gamma = either (Left . fst) Right
 -- Maps a set of concepts to either a proof or model.
 findProofOrModel :: [Concept] -> [Concept] -> [Individual] -> Memory
                     -> (Either (Model, [Individual]) ProofTree, Memory)
--- in base cases where we use new individuals we might also use cashing, look at sort
+-- do we want cashing is base cases?! look at sorting
 findProofOrModel [] _ (i:is) memory
   = (Left (([i],[],[]), is), memory)
 findProofOrModel (T : cs) _ (i:is) memory
   = (Left (([i],[],[]), is), memory)
 findProofOrModel (Neg T:cs) _ is memory
   = (Right (NodeZero (Neg T : cs, "", Neg T)), memory)
--- change this one here to do cashing
 findProofOrModel (Atom c : Neg (Atom d) : cs) _ (i:is) memory
   = if  c == d
     then (Right (NodeZero (Atom c : Neg (Atom d) : cs, "bottom", Atom c)), memory)
@@ -47,46 +46,47 @@ findProofOrModel (Atom c : Neg (Atom d) : cs) _ (i:is) memory
 findProofOrModel (And c d : cs) gamma is memory
   = (result, newmem)
     where
-      newmem = if (findInMemory == []) then (((And c d:cs), result, Nothing):newmem') else newmem'
+      newmem = if (findInMemory == []) then (((And c d:cs), Left result):newmem') else newmem'
       (result, newmem') 
         = if (findInMemory == [])
           then (either Left (Right . g) proofOrModel, newmem'')
-          else (mysnd (head findInMemory), memory)
+          else (fromLeft . snd (head findInMemory), memory)
       (proofOrModel, newmem'') = findProofOrModel newcs gamma is memory
       g = NodeOne (And c d : cs, "and", And c d)
       newcs = conceptSort $ c `uniqueCons` (d `uniqueCons` cs)
-      findInMemory = filter ((==(And c d : cs)) . myfst) memory
+      findInMemory = filter ((==(And c d : cs)) . fst) memory
 findProofOrModel (Or c d : cs) gamma is memory
   = (result, newmem)
     where
-      newmem = if (findInMemory == []) then (((Or c d : cs), result, Nothing):newmem') else memory --newmem' here
-      (result, newmem') 
+      newmem = if (findInMemory == []) then (((Or c d : cs), Left result):newmem') else newmem'
+      (result, newmem')
         = if (findInMemory == [])
           then (either (fst . f) (fst . g) proofOrModel, either (snd . f) (snd . g) proofOrModel)
-          else (mysnd (head findInMemory), memory)
+          else (fromLeft . snd (head findInMemory), memory)
       (proofOrModel, newmem'') = findProofOrModel (conceptSort $ c `uniqueCons` cs) gamma is memory
       (proofOrModel2, newmem''') = findProofOrModel (conceptSort $ d `uniqueCons` cs) gamma is newmem''
       f proof = (Left proof, newmem'')
       g pf = (either Left (Right . g' pf) (proofOrModel2), newmem''')
       g' = NodeTwo (Or c d : cs, "or", Or c d)
-      findInMemory = filter ((==(Or c d : cs)) . myfst) memory
+      findInMemory = filter ((==(Or c d : cs)) . fst) memory
 findProofOrModel (Exists rel c : cs) gamma is memory
   = (result, newmem)
       where
-        newmem = if (findInMemory == []) then (((Exists rel c : cs), result, Nothing):newmem') else newmem'
+        newmem = if (findInMemory == []) then (((Exists rel c : cs), Left result):newmem') else newmem'
         (result, newmem') 
            = if (findInMemory == [])
-             then foldExists (filter isExists (Exists rel c : cs)) is -- make sure to put a just in memory + change it if you find 
-             else if (isJust . mytrd . head findInMemory)
-                  then createLoopModel (Exists rel c : cs) memory -- make sure to change Just to nothing
-                  else (mysnd (head findInMemory), memory)
+             then foldExists (filter isExists (Exists rel c : cs)) is memory -- make sure to put a just in memory + change it if you find 
+             else if (isRight . snd . head findInMemory)
+                  then createLoopModel (Exists rel c : cs) (fromRight . snd . head findInMemory) -- make sure to change Just to nothing
+                  else (fromLeft . snd (head findInMemory), memory)
+        findInMemory = filter ((==(Exists rel c : cs)) . fst) memory
            where
-               foldExists :: [Concept] -> [Individual]
-                             -> Either (Model, [Individual]) ProofTree
-               foldExists [] is = Left (([], [], []), is)
-               foldExists (Exists rel c : es) (i:is)
+               foldExists :: [Concept] -> [Individual] -> Memory
+                             -> (Either (Model, [Individual]) ProofTree, Memory)
+               foldExists [] is currmem = (Left (([], [], []), is), currmem)
+               foldExists (Exists rel c : es) (i:is) curmem
                = either f (Right . g) (findProofOrModel
-                                        (applyExists cs gamma (Exists rel c)) gamma is)
+                                        (applyExists cs gamma (Exists rel c)) gamma is ((Exists rel c : es), Right i):curmem) -- not sure if i is correct ..
                where
                    g = NodeOne (Exists rel c : cs, "exists", Exists rel c)
                    f (m, is') = either (\(m', is'') -> Left (joinModels m' m''', is''))
@@ -154,3 +154,6 @@ applyExists cs gamma (Exists rel c)
     isMatchingForall :: String -> Concept -> Bool
     isMatchingForall rel' (Forall rel c) = rel == rel'
     isMatchingForall _ _                 = False
+
+-- Constructs a model when a loop exists
+createLoopModel :: 
