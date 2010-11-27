@@ -166,17 +166,13 @@ lexB2Concept ('f':'a':'l':'s':'e':cs) = TokenFalse : lexB2Concept cs
 lexB2Concept ('(':cs)                 = TokenOB : lexB2Concept cs
 lexB2Concept (')':cs)                 = TokenCB : lexB2Concept cs
 lexB2Concept (',':cs)                 = lexB2Concept cs
-lexB2Concept ('.':cs)                 = lexB2NextConcept cs
+lexB2Concept ('.':cs)                 = lexB2Concept cs
+lexB2Concept ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
+                                      = TokenSemicolon : lexB2Concept cs
+lexB2Concept ('e':'n':'d':'_':'o':'f':'_':'l':'i':'s':'t':'.':cs)
+                                      = lexB2ContConcepts cs
 lexB2Concept (c:cs) 
       | isSpace    c = lexB2Concept cs
       | isAlphaNum c = var : lexB2Concept rest
   where (var, rest) = lexVar (c:cs)
-
--- Parse next concept in a list if it exists
-lexB2NextConcept :: String -> [Token]
-lexB2NextConcept []     = []
-lexB2NextConcept ('e':'n':'d':'_':'o':'f':'_':'l':'i':'s':'t':'.':cs)
-                        = lexB2ContConcepts cs
-lexB2NextConcept ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
-                        = TokenSemicolon : lexB2Concept cs
-lexB2NextConcept (c:cs) = lexB2NextConcept cs
+}
