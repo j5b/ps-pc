@@ -251,52 +251,52 @@ iexiststest2 = testequality msg target result iexists2
 -- Tests for parsing benchmark 1 concepts
 b1nottest1 = testequality msg target result b1not1
   where msg    = "Failed to correctly parse a not concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1not1
+        result = file $ lexB1Concepts b1not1
         target = not1target
 
 b1nottest2 = testequality msg target result b1not2
   where msg    = "Failed to correctly parse a not concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1not2
+        result = file $ lexB1Concepts b1not2
         target = not2target
 
 b1andtest1 = testequality msg target result b1and1
   where msg    = "Failed to correctly parse an and concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1and1
+        result = file $ lexB1Concepts b1and1
         target = and1target
 
 b1andtest2 = testequality msg target result b1and2
   where msg    = "Failed to correctly parse an and concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1and2
+        result = file $ lexB1Concepts b1and2
         target = and2target
 
 b1imptest1 = testequality msg target result b1implies1
   where msg    = "Failed to correctly parse an and concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1implies1
+        result = file $ lexB1Concepts b1implies1
         target = implies1target
 
 b1imptest2 = testequality msg target result b1implies2
   where msg    = "Failed to correctly parse an implies concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1implies2
+        result = file $ lexB1Concepts b1implies2
         target = implies2target
 
 b1boxtest1 = testequality msg target result b1box1
   where msg    = "Failed to correctly parse a implies concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1box1
+        result = file $ lexB1Concepts b1box1
         target = box1target
 
 b1boxtest2 = testequality msg target result b1box2
   where msg    = "Failed to correctly parse a box concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1box2
+        result = file $ lexB1Concepts b1box2
         target = box2target
 
 b1diatest1 = testequality msg target result b1dia1
   where msg    = "Failed to correctly parse a dia concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1dia1
+        result = file $ lexB1Concepts b1dia1
         target = dia1target
 
 b1diatest2 = testequality msg target result b1dia2
   where msg    = "Failed to correctly parse a dia concept from Benchmark 1"
-        result = file $ lexerB1Concepts b1dia2
+        result = file $ lexB1Concepts b1dia2
         target = dia2target
 
 -- Tests for parsing benchmark 1 files
@@ -326,72 +326,72 @@ btest3 = testequality msg target result "k_branch_n.txt"
 -- Tests for parsing benchmark 2 concepts
 b2nottest1 = testequality msg target result b2not1
   where msg    = "Failed to correctly parse a not concept from Benchmark 2"
-        result = file $ lexerB2Concept b2not1
+        result = file $ lexB2Concept b2not1
         target = not1target
 
 b2nottest2 = testequality msg target result b2not2
   where msg    = "Failed to correctly parse a not concept from Benchmark 2"
-        result = file $ lexerB2Concept b2not2
+        result = file $ lexB2Concept b2not2
         target = not2target
 
 b2andtest1 = testequality msg target result b2and1
   where msg    = "Failed to correctly parse an and concept from Benchmark 2"
-        result = file $ lexerB2Concept b2and1
+        result = file $ lexB2Concept b2and1
         target = and1target
 
 b2andtest2 = testequality msg target result b2and2
   where msg    = "Failed to correctly parse an and concept from Benchmark 2"
-        result = file $ lexerB2Concept b2and2
+        result = file $ lexB2Concept b2and2
         target = and2target
 
 b2ortest1 = testequality msg target result b2or1
   where msg    = "Failed to correctly parse an or concept from Benchmark 2"
-        result = file $ lexerB2Concept b2or1
+        result = file $ lexB2Concept b2or1
         target = or1target
 
 b2ortest2 = testequality msg target result b2or2
   where msg    = "Failed to correctly parse an or concept from Benchmark 2"
-        result = file $ lexerB2Concept b2or2
+        result = file $ lexB2Concept b2or2
         target = or2target
 
 b2boxtest1 = testequality msg target result b2box1
   where msg    = "Failed to correctly parse a box concept from Benchmark 2"
-        result = file $ lexerB2Concept b2box1
+        result = file $ lexB2Concept b2box1
         target = box1target
 
 b2boxtest2 = testequality msg target result b2box2
   where msg    = "Failed to correctly parse a box concept from Benchmark 2"
-        result = file $ lexerB2Concept b2box2
+        result = file $ lexB2Concept b2box2
         target = box2target
 
 b2diatest1 = testequality msg target result b2dia1
   where msg    = "Failed to correctly parse a dia concept from Benchmark 2"
-        result = file $ lexerB2Concept b2dia1
+        result = file $ lexB2Concept b2dia1
         target = dia1target
 
 b2diatest2 = testequality msg target result b2dia2
   where msg    = "Failed to correctly parse a dia concept from Benchmark 2"
-        result = file $ lexerB2Concept b2dia2
+        result = file $ lexB2Concept b2dia2
         target = dia2target
 
 b2truetest1 = testequality msg target result b2true1
   where msg    = "Failed to correctly parse a true concept from Benchmark 2"
-        result = file $ lexerB2Concept b2true1
+        result = file $ lexB2Concept b2true1
         target = top1target
 
 b2truetest2 = testequality msg target result b2true2
   where msg    = "Failed to correctly parse a true concept from Benchmark 2"
-        result = file $ lexerB2Concept b2true2
+        result = file $ lexB2Concept b2true2
         target = top2target
 
 b2falsetest1 = testequality msg target result b2false1
   where msg    = "Failed to correctly parse a false concept from Benchmark 2"
-        result = file $ lexerB2Concept b2false1
+        result = file $ lexB2Concept b2false1
         target = bot1target
 
 b2falsetest2 = testequality msg target result b2false2
   where msg    = "Failed to correctly parse a false concept from Benchmark 2"
-        result = file $ lexerB2Concept b2false2
+        result = file $ lexB2Concept b2false2
         target = bot2target
 
 -- Tests for parsing benchmark 2 files
