@@ -85,7 +85,7 @@ findProofOrModel (Exists rel c : cs) gamma is memory
         foldExists [] is currmem = (Left (([], [], []), is), currmem)
         foldExists (Exists rel c : es) (i:is) curmem 
            = if (isRight proofOrModel)
-             then (Right g, newmem')
+             then (Right (g proofOrModel), newmem')
              else (fst . f, snd . f)
                 where 
                    (proofOrModel, newmem') = findProofOrModel (applyExists cs gamma (Exists rel c)) gamma is (((Exists rel c : es), Right i):curmem) -- check if i correct

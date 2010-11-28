@@ -34,7 +34,7 @@ import Signature
 
 %%
 
-File     : File ';' Concept            { $1 ++ [$3] }
+File     : File ';' Concept            { $3 : $1 }
          | Concept                     { [$1] }
 
 Concept  : Concept '->' Concept1       {Or (Neg $1) $3}
@@ -73,7 +73,7 @@ data Token
       | TokenCB
  deriving Show
 
--- Returns TokenVar and rest of string for inputs, benchmark 1 and 2
+-- Returns a TokenVar and rest of string for all the lexers.
 lexVar :: String -> (Token, String)
 lexVar (' ':cs) = lexVar cs
 lexVar cs =
@@ -101,32 +101,33 @@ lexerI (c:cs)
       | isAlphaNum c = var : (lexerI rest)
   where (var, rest) = lexVar (c:cs)
 
--- Lexer for Benchmark 1 file
+-- Lexer for Benchmark 1 file.
 lexerB1 :: String -> [Token]
 lexerB1 [] = []
 lexerB1 ('b':'e':'g':'i':'n':cs)
                = lexB1Concepts cs
 lexerB1 (c:cs) = lexerB1 cs
 
--- Only allows benchmark files with less than 10 concepts
+-- Tokenizes a list of concepts.
+-- Only allows benchmark files with less than 10 concepts.
 lexB1Concepts :: String -> [Token]
 lexB1Concepts []               = []
 lexB1Concepts ('b':'o':'x':cs) = TokenForall : TokenVar "R" : lexB1Concepts cs
 lexB1Concepts ('d':'i':'a':cs) = TokenExists : TokenVar "R" : lexB1Concepts cs
-lexB1Concepts ('&':cs)         = TokenAnd : lexB1Concepts cs
-lexB1Concepts ('-':'>':cs)     = TokenImplies : lexB1Concepts cs
-lexB1Concepts ('~':cs)         = TokenNeg : lexB1Concepts cs
-lexB1Concepts ('(':cs)         = TokenOB : lexB1Concepts cs
-lexB1Concepts (')':cs)         = TokenCB : lexB1Concepts cs
+lexB1Concepts ('&':cs)         = TokenAnd                   : lexB1Concepts cs
+lexB1Concepts ('-':'>':cs)     = TokenImplies               : lexB1Concepts cs
+lexB1Concepts ('~':cs)         = TokenNeg                   : lexB1Concepts cs
+lexB1Concepts ('(':cs)         = TokenOB                    : lexB1Concepts cs
+lexB1Concepts (')':cs)         = TokenCB                    : lexB1Concepts cs
 lexB1Concepts ('1':':':cs)     = lexB1Concepts cs
-lexB1Concepts (_:':':cs)       = TokenSemicolon : lexB1Concepts cs
+lexB1Concepts (_:':':cs)       = TokenSemicolon             : lexB1Concepts cs
 lexB1Concepts ('e':'n':'d':cs) = []
 lexB1Concepts (c:cs) 
       | isSpace    c = lexB1Concepts cs
       | isAlphaNum c = var : lexB1Concepts rest
   where (var, rest) = lexVar (c:cs)
 
--- Lexer for Benchmark 2 file
+-- Lexer for Benchmark 2 file.
 lexerB2 :: String -> [Token]
 lexerB2 [] = []
 lexerB2 ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':
@@ -135,7 +136,7 @@ lexerB2 ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':
                = lexB2Concepts cs
 lexerB2 (c:cs) = lexerB2 cs
 
--- Finds next list of Concepts if it exists
+-- Removes rubbish inbetween concepts.
 lexB2ContConcepts :: String -> [Token]
 lexB2ContConcepts []     = []
 lexB2ContConcepts ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':
@@ -144,27 +145,27 @@ lexB2ContConcepts ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':
                          = TokenSemicolon : lexB2Concepts cs
 lexB2ContConcepts (c:cs) = lexB2ContConcepts cs
 
--- Parses a list of concepts
+-- Tokenizes a list of concepts.
 lexB2Concepts :: String -> [Token]
 lexB2Concepts [] = []
 lexB2Concepts ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
                      = lexB2Concept cs
 lexB2Concepts (c:cs) = lexB2Concepts cs
 
--- Parses a concept
+-- Tokenizes a concept.
 lexB2Concept :: String -> [Token]
 lexB2Concept [] = []
 lexB2Concept ('b':'o':'x':'(':cs)     = TokenForall : var : TokenOB : lexB2Concept rest
   where (var, rest) = lexVar cs
 lexB2Concept ('d':'i':'a':'(':cs)     = TokenExists : var : TokenOB : lexB2Concept rest
   where (var, rest) = lexVar cs
-lexB2Concept ('a':'n':'d':cs)         = TokenAnd : lexB2Concept cs
-lexB2Concept ('o':'r':cs)             = TokenOr : lexB2Concept cs
-lexB2Concept ('n':'o':'t':cs)         = TokenNeg : lexB2Concept cs
-lexB2Concept ('t':'r':'u':'e':cs)     = TokenTrue : lexB2Concept cs
-lexB2Concept ('f':'a':'l':'s':'e':cs) = TokenFalse : lexB2Concept cs
-lexB2Concept ('(':cs)                 = TokenOB : lexB2Concept cs
-lexB2Concept (')':cs)                 = TokenCB : lexB2Concept cs
+lexB2Concept ('a':'n':'d':cs)         = TokenAnd       : lexB2Concept cs
+lexB2Concept ('o':'r':cs)             = TokenOr        : lexB2Concept cs
+lexB2Concept ('n':'o':'t':cs)         = TokenNeg       : lexB2Concept cs
+lexB2Concept ('t':'r':'u':'e':cs)     = TokenTrue      : lexB2Concept cs
+lexB2Concept ('f':'a':'l':'s':'e':cs) = TokenFalse     : lexB2Concept cs
+lexB2Concept ('(':cs)                 = TokenOB        : lexB2Concept cs
+lexB2Concept (')':cs)                 = TokenCB        : lexB2Concept cs
 lexB2Concept (',':cs)                 = lexB2Concept cs
 lexB2Concept ('.':cs)                 = lexB2Concept cs
 lexB2Concept ('p':'r':'o':'p':'_':'f':'o':'r':'m':'u':'l':'a':cs)
