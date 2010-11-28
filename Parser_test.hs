@@ -1,5 +1,5 @@
 {- 
-   Author: Ka Wai
+   Author: Ka Wai, Jannis
    License: GPL 3.0
    File: Parser_test.hs
    Description: tests for the parser Parser.y/hs
@@ -308,7 +308,7 @@ b1test1 = testequality msg target result b1file1
 b1test2 = testequality msg target result b1file2
   where msg    = "Failed to correctly parse a dia concept from Benchmark 1"
         result = file $ lexerB1 b1file2
-        target = [Neg (Atom "atom1"), Neg(Neg (Atom "atom1")), And (Atom "a")
+        target = reverse [Neg (Atom "atom1"), Neg(Neg (Atom "atom1")), And (Atom "a")
                   (Atom "b"), And (And (Atom "a") (Atom "b")) (Atom "c"),
                   Or (Neg (Atom "a")) (Atom "b"), Or (Neg (Atom "a"))
                   (Or (Neg(Atom "b")) (Atom "c")), Forall "R" (Atom "a"),
@@ -398,10 +398,10 @@ b2falsetest2 = testequality msg target result b2false2
 b2test1 = testequality msg target result b2file1
   where msg    = "Failed to correctly parse a file from Benchmark 2"
         result = file $ lexerB2 b2file1
-        target = not1target ++ top1target
+        target = top1target ++ not1target
 
 b2test2 = testequality msg target result b2file2
   where msg    = "Failed to correctly parse a file from Benchmark 2"
         result = file $ lexerB2 b2file2
-        target = allb2Targets
+        target = reverse allb2Targets
 
