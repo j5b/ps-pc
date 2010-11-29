@@ -109,7 +109,7 @@ simple_atom_list num
   | num > 26  = error "Not enough characters"
   | otherwise = atoms ++ negs
   where chars = take num "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        atoms = map (Atom . show) chars
+        atoms = map (Atom . (:[])) chars
         negs  = map Neg atoms
 
 all_tuples [] list = []

@@ -67,7 +67,8 @@ testtemplate cs gamma = TestCase (template cs gamma)
 
 -- check if the result of computation is correct or not
 check :: [Concept] -> [Concept] -> Either Model ProofTree -> IO (String, Bool)
-check cs gamma (Left model) = do putStrLn " #### MODEL:"
+check cs gamma (Left model) = do putStrLn " #### MODEL:\n"
+                                 putStrLn $ "Model obtained: "++show model++"\n"
                                  return $ checkInputModel model gamma cs
 check _ gamma (Right proof) = do putStrLn " #### PROOF:"
                                  return $ checkProof proof (map toNNF gamma)
