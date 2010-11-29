@@ -13,6 +13,7 @@ Tested-with:    GHC >=6.10.4
 
 Executable ps-pc
   Build-Depends:  base >=2.0
+  Build-Tools:    happy
   Main-Is:        Main.hs
 
 Source-repository head

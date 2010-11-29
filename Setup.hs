@@ -7,5 +7,5 @@ import TestMain
 
 main :: IO ()
 main = defaultMainWithHooks $ simpleUserHooks {
-        runTests = runTestsPSPC }
+         runTests = runTestsPSPC }
 
