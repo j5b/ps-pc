@@ -37,10 +37,14 @@ atoma = atom "A"
 atomb = atom "B"
 atomc = atom "C"
 atomd = atom "D"
+atome = atom "E"
+atomf = atom "F"
 notatoma = neg atoma
 notatomb = neg atomb
 notatomc = neg atomc
 notatomd = neg atomd
+notatome = neg atome
+notatomf = neg atomf
 
 -- disjunctions
 
@@ -100,8 +104,13 @@ forall_s = forall "S"
 exists_r = exists "R"
 exists_s = exists "S"
 
-simple_atom_list =
-  [top, bottom, atoma, atomb, notatoma, notatomb]
+simple_atom_list :: Int -> [Concept]
+simple_atom_list num 
+  | num > 26  = error "Not enough characters"
+  | otherwise = atoms ++ negs
+  where chars = take num "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        atoms = map (Atom . show) chars
+        negs  = map Neg atoms
 
 all_tuples [] list = []
 all_tuples (elem:rest) list =
@@ -118,20 +127,20 @@ forall_generator list = map forall_r list ++ map forall_s list
 
 exists_generator list = map exists_r list ++ map exists_r list
 
-not_generator list = map neg list
-
--- Over 3000 concepts
-generateConcepts = simple ++ foralls ++ exists ++ complex
-  where simple        = simple_atom_list ++ simpleOr ++ simpleAnd ++ simpleNot
+generateConcepts num  = simple ++ foralls ++ exists ++ complex
+  where simple_atoms  = simple_atom_list num
+        simple        = simple_atoms ++ simpleOr ++ simpleAnd
         simpleOr      = or_generator simpleTuples
         simpleAnd     = and_generator simpleTuples
-        simpleNot     = not_generator simpleOr ++ not_generator simpleAnd
-        foralls       = forall_generator simple
-        exists        = exists_generator simple
-        simpleTuples  = all_tuples simple_atom_list simple_atom_list
+        foralls       = forall_generator $ simple ++ [top,bottom]
+        exists        = exists_generator $ simple ++ [top,bottom]
+        simpleTuples  = all_tuples simple_atoms simple_atoms
         complex       = forall_generator (foralls++exists) ++
-                        exists_generator (foralls++exists) ++
-                        not_generator (foralls++exists)
+                        exists_generator (foralls++exists)
+
+containsExists (Exists str concept) = True
+containsExists (Forall str concept) = containsExists concept
+containsExists _ = False
 
 -- simple concepts to test sc for simple concept
 sc28 = exists "S" notatomd

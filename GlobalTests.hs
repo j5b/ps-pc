@@ -40,13 +40,15 @@ timeout sec action = compete (fmap Just action) (threadDelay (sec*1000000) >> re
 
 -- return the result without taking care for timeouts
 templateSimple :: [Concept] -> [Concept] -> IO (Maybe String)
-templateSimple concepts gamma  =
-    if snd checkResult then return Nothing else return $ Just errorMsg
+templateSimple concepts gamma  = do checkResult <- (check concepts gamma searchResult)
+                                    if snd checkResult 
+                                       then return Nothing 
+                                       else return . Just $ errorMsg++fst checkResult
     where searchResult         = findPOM (map toNNF concepts) (map toNNF gamma)
-          checkResult          = check concepts gamma searchResult
+--          checkResult          = check concepts gamma searchResult
           errorMsg             = "For gamma: "++show gamma++"\n"++
                                  "For concepts: "++show concepts++"\n"++
-                                 "A failure was detected:\n\t"++fst checkResult
+                                 "A failure was detected:\n\t"
 
 -- return the result with taking care for timeouts
 template :: [Concept] -> [Concept] -> Assertion
@@ -64,9 +66,11 @@ template concepts gamma = do result <- timeout untilTimeout (templateSimple conc
 testtemplate cs gamma = TestCase (template cs gamma)
 
 -- check if the result of computation is correct or not
-check :: [Concept] -> [Concept] -> Either Model ProofTree -> (String, Bool)
-check cs gamma (Left model) = checkInputModel model gamma cs
-check _ gamma (Right proof) = checkProof proof (map toNNF gamma)
+check :: [Concept] -> [Concept] -> Either Model ProofTree -> IO (String, Bool)
+check cs gamma (Left model) = do putStrLn " #### MODEL:"
+                                 return $ checkInputModel model gamma cs
+check _ gamma (Right proof) = do putStrLn " #### PROOF:"
+                                 return $ checkProof proof (map toNNF gamma)
 
 -- Extract the element of the list at the positions given by indicies
 -- the elements are given in order for more performance (n+klogk if better than nk)
@@ -90,33 +94,23 @@ generateIndices _ 0 _ = []
 generateIndices randomGen num max = (mod randomint max) : generateIndices nextgen (num-1) max
   where (randomint, nextgen) = next randomGen 
 
-generateTest :: StdGen -> Int -> Test
-generateTest randomGen sampleSize = testtemplate givens gamma
+generateTest :: StdGen -> Int -> Int -> Test
+generateTest randomGen num sampleSize = testtemplate givens gamma
   where (seed1, gen2) = next randomGen
         (seed2, _ )   = next gen2
         indicesGamma  = generateIndices (mkStdGen seed1) sampleSize maxlength
         indicesGivens = generateIndices (mkStdGen seed2) sampleSize maxlength
-        gamma         = extract indicesGamma generateConcepts
-        givens        = extract indicesGivens generateConcepts
-        maxlength     = length generateConcepts 
+        concepts      = generateConcepts num
+        gamma         = extract indicesGamma $ filter (not . containsExists) concepts
+        givens        = extract indicesGivens concepts
+        maxlength     = length $ filter (not . containsExists) concepts
 
-globaltest1 = testtemplate [] [atoma]
-globaltest2 = testtemplate [atoma] []
-globaltest3 = testtemplate [atoma] [atoma]
-globaltest4 = testtemplate [] [forall_r_top]
-globaltest5 = testtemplate [forall_r_top] []
-globaltest6 = testtemplate [forall_r_top] [forall_r_top]
-globaltest7 = testtemplate [] [exists_r_bottom]
-globaltest8 = testtemplate [exists_r_bottom] []
-globaltest9 = testtemplate [exists_r_bottom] [exists_r_bottom]
-globaltest10 = testtemplate [] [a_or_b]
-globaltest11 = testtemplate [a_or_b] []
-globaltest12 = testtemplate [a_or_b] [a_or_b]
-
-globaltests = maplabel "GlobalTests"  [globaltest1, globaltest2, globaltest3,
-                        globaltest4, globaltest5, globaltest6, 
-                        globaltest7, globaltest8, globaltest9,
-                        globaltest10, globaltest11, globaltest12]
+globaltests = maplabel "GlobalTests" testlist
+  where testlist = take numTests $ map generator [1..]
+        numTests = 100
+        sampleSize = 10
+        simpleSize = 8
+        generator x = generateTest (mkStdGen x) simpleSize sampleSize
 
 allglobaltests  = do putStrLn "==== Global tests"
                      runTestTT globaltests
