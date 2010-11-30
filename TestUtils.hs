@@ -95,7 +95,7 @@ negExists = neg exists_r_a
 negForalls = neg forall_r_a
 existsexists = exists_s exists_r_a
 existsforalls = exists_s forall_r_a
-forallexists = exists_s  exists_r_a
+forallexists = forall_s  exists_r_a
 
 -- THIS WILL GENERATE LOTS AND LOTS OF CONCEPTS
 

@@ -19,6 +19,7 @@ allparsertests = do
   b1parsefiletests
   allb2basictests
   b2parsefiletests
+  allparsimpletests
 
 iTopBotTests = maplabel "Input parse top/bot test" [itoptest, ibottest]
 iNotTests    = maplabel "Input parse not test"     [inottest1, inottest2]
@@ -76,6 +77,13 @@ b2FileTests = maplabel "Benchmark 2 parse file test" [b2test1, b2test2]
 
 b2parsefiletests = do putStrLn "==== Testing the parser for benchmark 2 files"
                       runTestTT b2FileTests
+
+parsimpletests = maplabel "Simple parser tests" [partest1, partest2, partest3, 
+                                                 partest4, partest5, partest6,
+                                                 partest7, partest8, partest9]
+
+allparsimpletests = do putStrLn "==== Testing the parser itself for simple cases"
+                       runTestTT parsimpletests
 
 -- Testing setup
 
@@ -404,4 +412,61 @@ b2test2 = testequality msg target result b2file2
   where msg    = "Failed to correctly parse a file from Benchmark 2"
         result = file $ lexerB2 b2file2
         target = reverse allb2Targets
+
+-- Parsers tests
+
+-- started with simple test to make sure I understand the internals of parsing
+partest1 = testequality msg target result $ show input
+  where msg    = "Failed to parse TokenTrue"
+        result = file input
+        target = [top]
+        input  = [TokenTrue]
+
+partest2 = testequality msg target result $ show input
+  where msg    = "Failed to parse TokenFalse"
+        result = file input
+        target = [bottom]
+        input  = [TokenFalse] 
+
+partest3 = testequality msg target result $ show input
+   where msg    = "Failed to parse TokenVar String"
+         result = file input
+         target = [atoma]
+         input  = [TokenVar "A"]
+
+partest4 = testequality msg target result $ show input
+   where msg    = "Failed to parse TokenAnd"
+         result = file input
+         target = [a_and_b]
+         input  = [TokenAnd, TokenOB, TokenVar "A", TokenVar "B", TokenCB]
+
+partest5 = testequality msg target result $ show input
+   where msg    = "Failed to parse TokenOr"
+         result = file input
+         target = [a_or_b]
+         input  = [TokenOr, TokenOB, TokenVar "A", TokenVar "B", TokenCB]
+
+partest6 = testequality msg target result $ show input
+   where msg    = "Failed to parse TokenImplies"
+         result = file input
+         target = [Or (Neg $ Atom "A") (Atom "B")]
+         input  = [TokenVar "A", TokenImplies, TokenVar "B"]
+
+partest7 = testequality msg target result $ show input
+   where msg    = "Failed to parse TokenNeg"
+         result = file input
+         target = [notatoma]
+         input  = [TokenNeg, TokenVar "A"]
+
+partest8 = testequality msg target result $ show input
+   where msg    = "Failed to parse TokenForall"
+         result = file input
+         target = [forall_r_a]
+         input  = [TokenForall, TokenVar "R", TokenOB, TokenVar "A", TokenCB]
+
+partest9 = testequality msg target result $ show input
+   where msg    = "Failed to parse TokenExists"
+         result = file input
+         target = [exists_r_a]
+         input  = [TokenExists, TokenVar "R", TokenOB, TokenVar "A", TokenCB]
 
