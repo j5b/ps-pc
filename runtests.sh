@@ -1,11 +1,11 @@
 #! /bin/bash
 
-if [ -e Parser.hs ]
+if [ -e Parser.y ]
 then
-    echo "Parser.hs found, which is good"
-else
-    echo "Compiling Parser.hs"
+    echo "Building parser."
     happy Parser.y
+    runhaskell Setup.hs configure
+    runhaskell Setup.hs test
+else
+    echo "Error: Parser not found."
 fi
-runhaskell Setup.hs configure
-runhaskell Setup.hs test
