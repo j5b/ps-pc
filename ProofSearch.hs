@@ -92,7 +92,7 @@ findProofOrModel (Exists rel c : cs) gamma is memory
                    f (Left (m, is')) = (either (\(m', is'') -> Left (joinModels m' m''', is''))
                                   (Right . g) proofOrModel2, newmem'')
                       where
-                          (proofOrModel2, newmem'') = foldExists es (i : is') newmem'
+                          (proofOrModel2, newmem'') = foldExists es is' newmem' -- foldExists es (i : is') newmem'
                           m''  = joinModels ([i], [], [(rel, [(i, head is)])]) m
                           m''' = joinModels (constructAtomicModel cs i) m''
 findProofOrModel cs gamma (i:is) memory = (Left (constructAtomicModel cs i, is), memory)
