@@ -77,7 +77,8 @@ findProofOrModel (Exists rel c : cs) gamma is memory
            = if (findInMemory == [])
              then foldExists (filter isExists (Exists rel c : cs)) is memory
              else if (isRight $ snd $ head findInMemory)
-                  then createLoopModel (Exists rel c : cs) gamma (fromRight $ snd $ head findInMemory) is memory -- Need pred here - change!
+                  then createLoopModel (Exists rel c : cs) (filter isExists (Exists rel c : cs)) 
+                             gamma (fromRight $ snd $ head findInMemory) is memory -- Need pred here - change!
                   else (fromLeft $ snd (head findInMemory), memory)
         findInMemory = filter ((==(Exists rel c : cs)) . fst) memory
         foldExists [] is memory = (Left (([], [], []), is), memory)
@@ -87,12 +88,12 @@ findProofOrModel (Exists rel c : cs) gamma is memory
              else (fst (f proofOrModel), snd (f proofOrModel))
                 where 
                    (proofOrModel, newmem') = findProofOrModel (applyExists cs gamma (Exists rel c)) 
-                                                 gamma is (((Exists rel c : cs), Right i):memory) -- check if i correct
+                                                 gamma (i:is) (((Exists rel c : cs), Right i):memory)
                    g proof = NodeOne (Exists rel c : cs, "exists", Exists rel c) proof
                    f (Left (m, is')) = (either (\(m', is'') -> Left (joinModels m' m''', is''))
                                   (Right . g) proofOrModel2, newmem'')
                       where
-                          (proofOrModel2, newmem'') = foldExists es is' newmem' -- foldExists es (i : is') newmem'
+                          (proofOrModel2, newmem'') = findProofOrModel es gamma is' newmem' -- (Left (([], [], []), is), newmem') -- foldExists es is' newmem'
                           m''  = joinModels ([i], [], [(rel, [(i, head is)])]) m
                           m''' = joinModels (constructAtomicModel cs i) m''
 findProofOrModel cs gamma (i:is) memory = (Left (constructAtomicModel cs i, is), memory)
@@ -158,20 +159,34 @@ applyExists cs gamma (Exists rel c)
 
 -- Constructs a model when a loop exists
 -- Should have all exists sotred here, need to call proofOrModel for any further exists
-createLoopModel :: [Concept] -> [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
+{-createLoopModel :: [Concept] -> [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
 createLoopModel (Exists rel c : cs) gamma n (i:is) memory 
    = (either (Left . g) Right proofOrModel, newmem') 
     where
-       g (model, indivs) = (joinModels model newmodel, indivs)
+       g (model, indivs) = (joinModels (constructAtomicModel cs i) (m model), indivs)
+       m model = joinModels model newmodel
        newmodel = ([i], [], [(rel, [(i, n)])]) -- Pred here!
-       (proofOrModel, newmem) =  findProofOrModel cs gamma (i:is) memory -- (Left (([], [], []), is), memory)
+       (proofOrModel, newmem) = findProofOrModel cs gamma (i:is) memory
        newmem' = (((Exists rel c : cs), (Left (Left (newmodel, is)))):(newmem''))
        newmem'' = filter isNotExists newmem
          where
            isNotExists =  (/=(Exists rel c : cs)) . fst
-createLoopModel _ _ _ _ _ = error "createLoopModel is called with wrong params: probably with no exists"
-            
-{-  = (Left (newmodel, is), memory)
-     where
-       newmodel = ([i], [], [(rel, [(i, n)])])  -}
+createLoopModel _ _ _ _ _ = error "createLoopModel is called with wrong params: probably with no exists" -}
+
+createLoopModel :: [Concept] -> [Concept] -> [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
+createLoopModel (Exists rel c : cs) (Exists rel' c' : es) gamma n (i:is) memory 
+   = (result, newmem)
+    where
+       result = f (newmodel, (i:is))
+       newmem = (((Exists rel c : cs), (Left result)):(newmem'))
+       newmem' = filter isNotExists newmem''
+       isNotExists =  (/=(Exists rel c : cs)) . fst
+       newmodel = ([i], [], [(rel, [(i, n)])]) -- Pred here!
+       f (m, is') = either (\(m', is'') -> Left (joinModels m' m''', is''))
+                         (Right . g) proofOrModel
+       g proof = NodeOne (Exists rel c : cs, "exists", Exists rel c) proof
+       (proofOrModel, newmem'') = findProofOrModel es gamma (i:is) memory -- (Left (([], [], []), is), newmem') -- foldExists es is' newmem'
+       m''  = joinModels ([i], [], [(rel, [(i, head is)])]) newmodel
+       m''' = joinModels (constructAtomicModel cs i) m''
+       
                                                    
