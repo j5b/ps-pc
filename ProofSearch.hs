@@ -78,7 +78,7 @@ findProofOrModel (Exists rel c : cs) gamma is memory
              then foldExists (filter isExists (Exists rel c : cs)) is memory
              else if (isRight $ snd $ head findInMemory)
                   then createLoopModel (Exists rel c : cs) (filter isExists (Exists rel c : cs)) 
-                             gamma (fromRight $ snd $ head findInMemory) is memory -- Need pred here - change!
+                             gamma (fromRight $ snd $ head findInMemory) is memory
                   else (fromLeft $ snd (head findInMemory), memory)
         findInMemory = filter ((==(Exists rel c : cs)) . fst) memory
         foldExists [] is memory = (Left (([], [], []), is), memory)
@@ -88,14 +88,15 @@ findProofOrModel (Exists rel c : cs) gamma is memory
              else (fst (f proofOrModel), snd (f proofOrModel))
                 where 
                    (proofOrModel, newmem') = findProofOrModel (applyExists cs gamma (Exists rel c)) 
-                                                 gamma (i:is) (((Exists rel c : cs), Right i):memory)
+                                                 gamma is (((Exists rel c : cs), Right i):memory)
                    g proof = NodeOne (Exists rel c : cs, "exists", Exists rel c) proof
                    f (Left (m, is')) = (either (\(m', is'') -> Left (joinModels m' m''', is''))
                                   (Right . g) proofOrModel2, newmem'')
                       where
-                          (proofOrModel2, newmem'') = findProofOrModel es gamma is' newmem' -- (Left (([], [], []), is), newmem') -- foldExists es is' newmem'
+                          (proofOrModel2, newmem'') =  foldExists es (i:is') newmem' -- findProofOrModel es gamma is' newmem'
                           m''  = joinModels ([i], [], [(rel, [(i, head is)])]) m
                           m''' = joinModels (constructAtomicModel cs i) m''
+
 findProofOrModel cs gamma (i:is) memory = (Left (constructAtomicModel cs i, is), memory)
 
 -- A function that sorts concepts in the following order, first to last:
