@@ -51,22 +51,28 @@ findProofOrModel (Or c d : cs) gamma is
              (findProofOrModel (conceptSort $ d `uniqueCons` cs) gamma is)
       g' = NodeTwo (Or c d : cs, "or", Or c d)
 findProofOrModel (Exists rel c : cs) gamma is
-  = foldExists (filter isExists (Exists rel c : cs)) is
-    where
-      foldExists :: [Concept] -> [Individual]
-                    -> Either (Model, [Individual]) ProofTree
-      foldExists [] is = Left (([], [], []), is)
-      foldExists (Exists rel c : es) (i:is)
-        = either f (Right . g) (findProofOrModel
-                                (applyExists cs gamma (Exists rel c)) gamma is)
-          where
-            g = NodeOne (Exists rel c : cs, "exists", Exists rel c)
-            f (m, is') = either (\(m', is'') -> Left (joinModels m' m''', is''))
-                         (Right . g) (foldExists es (i : is'))
-              where
-                m''  = joinModels ([i], [], [(rel, [(i, head is)])]) m
-                m''' = joinModels (constructAtomicModel cs i) m''
+  = foldExists (Exists rel c : cs) gamma (filter isExists (Exists rel c : cs)) is
 findProofOrModel cs gamma (i:is) = Left (constructAtomicModel cs i, is)
+
+-- Deals with the exists case by doing the following:
+--   (i)  If a proof is found, it is immediately returned.
+--   (ii) If a model is found, it recurses on the following exist concepts and
+--        merges the models if all model constructions were succesful, otherwise
+--        a proof is returned.
+foldExists :: [Concept] -> [Concept] -> [Concept] -> [Individual]
+              -> Either (Model, [Individual]) ProofTree
+foldExists _ _ [] is
+  = Left (([], [], []), is)
+foldExists cs gamma (Exists rel c : es) (i:is)
+  = either dealWithModel (Right . constructProof) $
+    findProofOrModel (applyExists cs gamma (Exists rel c)) gamma is
+  where
+    constructProof = NodeOne (cs, "exists", Exists rel c)
+    dealWithModel (m, is') = either (\(m', is'') -> Left (joinModels m' m'', is''))
+                             Right (foldExists cs gamma es (i : is'))
+      where
+        m'' = joinModels m $ joinModels ([i], [], [(rel, [(i, head is)])])
+                                        (constructAtomicModel cs i)
 
 -- A function that sorts concepts in the following order, first to last:
 -- 'A, not A', 'A and B', 'A or B', 'ER.C', others
@@ -84,10 +90,10 @@ conceptSort = putFalsityFirst . putContradictionsFirst . sortBy compareConcepts
         compareConcepts _ (Exists _ _) = GT
         compareConcepts _ _            = EQ
 
-	putFalsityFirst :: [Concept] -> [Concept]
-	putFalsityFirst concepts = falsities ++ (concepts \\ falsities)
-	  where
-	    falsities = filter isBot concepts
+        putFalsityFirst :: [Concept] -> [Concept]
+        putFalsityFirst concepts = falsities ++ (concepts \\ falsities)
+          where
+            falsities = filter isBot concepts
         
         putContradictionsFirst :: [Concept] -> [Concept]
         putContradictionsFirst cs = contradictions ++ (cs \\ contradictions)
