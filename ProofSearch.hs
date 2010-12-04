@@ -77,7 +77,7 @@ findProofOrModel (Exists rel c : cs) gamma is memory
            = if (findInMemory == [])
              then foldExists (filter isExists (Exists rel c : cs)) is memory
              else if (isRight $ snd $ head findInMemory)
-                  then createLoopModel (Exists rel c : cs) (filter isExists (Exists rel c : cs)) 
+                  then createLoopModel (Exists rel c : cs) -- (filter isExists (Exists rel c : cs)) 
                              gamma (fromRight $ snd $ head findInMemory) is memory
                   else (fromLeft $ snd (head findInMemory), memory)
         findInMemory = filter ((==(Exists rel c : cs)) . fst) memory
@@ -160,7 +160,7 @@ applyExists cs gamma (Exists rel c)
 
 -- Constructs a model when a loop exists
 -- Should have all exists sotred here, need to call proofOrModel for any further exists
-{-createLoopModel :: [Concept] -> [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
+createLoopModel :: [Concept] -> [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
 createLoopModel (Exists rel c : cs) gamma n (i:is) memory 
    = (either (Left . g) Right proofOrModel, newmem') 
     where
@@ -172,9 +172,9 @@ createLoopModel (Exists rel c : cs) gamma n (i:is) memory
        newmem'' = filter isNotExists newmem
          where
            isNotExists =  (/=(Exists rel c : cs)) . fst
-createLoopModel _ _ _ _ _ = error "createLoopModel is called with wrong params: probably with no exists" -}
+createLoopModel _ _ _ _ _ = error "createLoopModel is called with wrong params: probably with no exists"
 
-createLoopModel :: [Concept] -> [Concept] -> [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
+{-createLoopModel :: [Concept] -> [Concept] -> [Concept] -> Individual -> [Individual] -> Memory -> (Either (Model, [Individual]) ProofTree, Memory)
 createLoopModel (Exists rel c : cs) (Exists rel' c' : es) gamma n (i:is) memory 
    = (result, newmem)
     where
@@ -189,5 +189,5 @@ createLoopModel (Exists rel c : cs) (Exists rel' c' : es) gamma n (i:is) memory
        (proofOrModel, newmem'') = findProofOrModel es gamma (i:is) memory -- (Left (([], [], []), is), newmem') -- foldExists es is' newmem'
        m''  = joinModels ([i], [], [(rel, [(i, head is)])]) newmodel
        m''' = joinModels (constructAtomicModel cs i) m''
-       
+-}     
                                                    
