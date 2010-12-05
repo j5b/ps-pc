@@ -99,8 +99,18 @@ findProofOrModel (Exists rel c : cs) gamma is memory
                 is memory
           | otherwise = (fromLeft $ snd (head findInMemory), memory)
         findInMemory = filter ((==(Exists rel c : cs)) . fst) memory
-
-findProofOrModel cs gamma (i:is) memory = (Left (constructAtomicModel cs i, is), memory)
+findProofOrModel cs gamma (i:is) memory -- (Left (constructAtomicModel cs i, is), memory)
+   = (result, newmem) 
+    where
+      newmem 
+        = if findInMemory == [] 
+          then (cs, Left result):newmem' 
+          else newmem'
+      (result, newmem') 
+        = if findInMemory == []
+          then (Left (constructAtomicModel cs i, is), memory)
+          else (fromLeft $ snd (head findInMemory), memory)
+      findInMemory = filter ((==cs) . fst) memory   
 
 -- Deals with the exists case by doing the following:
 --   (i)  If a proof is found, it is immediately returned.
