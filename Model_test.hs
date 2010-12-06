@@ -7,32 +7,31 @@
    Description: test models
 -}
 
+module Model_test where 
+
 import Model
-import Report
+import TestUtils
+
 import Test.HUnit
 
--- TODO: Add formal test cases
+testmodelsorter1 = testequality msg target emptyModel $ printModel emptyModel
+  where target = sortModel emptyModel
+        msg    = "Failed to sort the empty model"
 
-assertSuccess (log,success) = assertBool success
+testmodelsorter2 = testequality msg target result $ printModel input
+  where input  = ([1,2,3],[("A",[1,2]),("C",[2,3])],[("R",[(1,2),(2,3),(3,1)])])
+        target = input
+        result = sortModel input
+        msg    = "Failed while sorting an already sorted model"
 
-onePointDomain = [1]
-onePointSimpleModel = (onePointDomain, [], [])
+testmodelsorter3 = testequality msg target result $ printModel input
+  where input  = ([1,3,2,4],[("B",[1,2]),("A",[3,2,4])],[("S",[(1,1)]),("R",[(2,1),(1,3)])]) 
+        target = ([1,2,3,4],[("A",[2,3,4]),("B",[1,2])],[("R",[(1,3),(2,1)]),("S",[(1,1)])])
+        result = sortModel input
+        msg    = "Failed to sort a simple unsorted model"
 
-oneAtomModel = [("A", [1])]
-oneRelationModel = [("R", [(1,1)])]
+modelsortertests = maplabel "Model sorter" [testmodelsorter1, testmodelsorter2, testmodelsorter3]
 
-simpleModel1 = (onePointDomain, oneAtomModel, [])
-simpleModel2 = (onePointDomain, oneAtomModel, oneRelationModel)
-
-nonTrivialDomain1 = [1,2,3]
-nonTrivialAtoms1 = [("A", [1,2,3]), ("B", [1])]
-nonTrivialRelations1 = [("R", [(1,2),(1,3)]), ("S", [(1,1),(2,2),(3,3)])]
-
-simpleModel3 = (nonTrivialDomain_1, nonTrivialAtoms_1, nonTrivialRelations_1)
-
-errorDomain1 = [1]
-errorAtoms1 = [("A", [2])]
-errorRelations1 = [("R", [(2,1)])]
-
-errorModel1 = (errorDomain_1, errorAtoms_1, errorRelations_1)
-
+allmodelsortertests = do putStrLn "==== Testing Model sorter"
+                         runTestTT modelsortertests
+                        

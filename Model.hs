@@ -8,11 +8,13 @@
 -}
 
 module Model (Model, Individual, Domain, BinaryRelation, UnaryRelation,
-              getDomain, getRelations, isEmpty, 
-              emptyModel, checkModelConsistency, isInUnary, isInBinary) where
+              getDomain, getRelations, isEmpty, sortModel, 
+              emptyModel, isInUnary, isInBinary) where
 
 import Control.Monad
 import Data.Maybe
+import Data.List
+
 import Report
 
 -- A model is a set of individual for which atomic or binary relations may or may not hold
@@ -27,6 +29,8 @@ isEmpty model = flip (==) [] $ getDomain model
 
 -- returns the domain of the model
 getDomain (dom, _, _) = dom
+
+getUnarys (_,unarys,_) = unarys
 
 -- returns the relations of the model
 getRelations (_, _, relations) = relations
@@ -44,39 +48,34 @@ isInBinary pair str (_,_,bins) = isInPrototype pair str bins
 -- Creates an empty model (good for testing)
 emptyModel = ([], [], [])
 
--- report for the empty model
-emptyModelReport = ("", ["Model is fine since we got an empty result"], True)
-emr = emptyModelReport
+joinTuples :: [(a,a)] -> [a]
+joinTuples list = left ++ right
+  where (left,right) = unzip list
 
--- checks the domain for errors
-checkModelConsistency :: Model -> Report
-checkModelConsistency (dom, uns, bins) = 
-  combine reportUns reportBins
-  where reportUns  = pushTitle $ title "Unary check" $ checkUnaryConsistency dom uns
-        reportBins = pushTitle $ title "Binary check" $ checkBinaryConsistency dom bins
-  
--- checks the domain for errors relating to atoms
-checkUnaryConsistency :: Domain -> [UnaryRelation] -> Report
-checkUnaryConsistency dom list = foldl1 combine $ makeCorrect (map checker list) [] [emr] -- [emr] since a list is expceted
-  where checker (name, set) = flip buildReport result $ 
-                                   "Unary " ++ name ++ 
-                                    (if result then " is only containing elements of the domain" 
-                                               else " is not only containing elements of the domain")  
-          where result      = allElements set dom
+-- Checking for model consistency
+consistentModel :: Model -> String
+-- additional cases can be added easily
+consistentModel model = if isEmpty model then mzero else concat [case1, case2, case3] 
+  where domain  = getDomain model
+        unarys  = concatMap snd $ getUnarys model
+        binarys = joinTuples $ concatMap snd $ getRelations model
+        case1   = if nub unarys \\ domain /= []
+                  then "Some atomic concept refers to an individual outside the domain\n" 
+                  else mzero
+        case2   = if nub binarys \\ domain /= []
+                  then "Some binary concept refers to an individual outside the domain\n"
+                  else mzero
+        case3   = if domain /= nub domain 
+                  then "Domain contains duplicates"
+                  else mzero
 
--- checks the domain for errors relating to binary relations
-checkBinaryConsistency :: Domain -> [BinaryRelation] -> Report
-checkBinaryConsistency dom list = foldl1 combine $ makeCorrect (map checker list) [] [emr] -- [emr] since a list is expected
-  where checker (name, set) = flip buildReport result $ 
-                                   "Binary " ++ name ++ 
-                                    (if result then " is only containing elements of the domain" 
-                                               else " is not only containing elements of the domain")  
-          where result      = allElements (map fst set) dom && allElements (map snd set) dom
-
-allElements subList list = all (`elem` list) subList
-
-makeCorrect result exception alternative =
-  if result == exception then alternative else result
-
-
-
+mapSnd :: (a->b) -> (c,a) -> (c,b)
+mapSnd f (x,y) = (x,f y)
+                      
+sortModel :: Model -> Model
+sortModel model = if result == mzero then sortedModel else error result
+  where result = consistentModel model
+        sortedModel = (domsorted, unarysorted, binsorted)
+        domsorted   = sort $ getDomain model
+        unarysorted = sort $ map (mapSnd sort) $ getUnarys model
+        binsorted   = sort $ map (mapSnd sort) $ getRelations model

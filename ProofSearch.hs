@@ -25,7 +25,7 @@ type Memory = [([Concept] , Either (Either (Model, [Individual]) ProofTree) Indi
 -- Takes a knowledge base and a set of concepts and returns either a proof
 -- showing inconsistency or a model.
 findPOM :: [Concept] -> [Concept] -> Either Model ProofTree
-findPOM cs gamma = either (Left . fst) Right
+findPOM cs gamma = either (Left . (sortModel .fst)) Right
                    (fst $ findProofOrModel (conceptSort . nub $ map toNNF cs++gamma)
                     (nub $ map toNNF gamma) [1..] [])
 
