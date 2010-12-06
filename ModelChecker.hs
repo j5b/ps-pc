@@ -33,7 +33,8 @@ type Answer = (String, Bool)
 -- checks the inpxut model
 checkInputModel :: Model -> Concepts -> Concepts -> Answer
 checkInputModel model [] givens =
-  ("---- All concepts:\n"++msg++
+  ("---- Model:\n"++show model++
+   "\n---- All concepts:\n"++msg++
    "---- Gamma only:\n", result) 
   where concepts      = foldl1 (/\) $ map toNNF givens
   	(msg, result) = checkModel concepts model 
@@ -42,7 +43,8 @@ checkInputModel model gamma givens =
   checkGamma (foldl1 (/\) $ map toNNF gamma) model
   where concepts = foldl1 (/\) $ map toNNF gamma ++ map toNNF givens
         combine (part1, result1) (part2, result2) =
-                ("---- All concepts:\n"++part1++
+                ("---- Model:\n"++show model++
+                 "\n---- All concepts:\n"++part1++
                  "---- Gamma only:\n"++part2, result1 && result2)
 
 {-

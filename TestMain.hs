@@ -20,9 +20,11 @@ import Proof_test
 import ProofChecker_test
 import ProofSearch_test
 import Signature_test
+import Model_test
 
 runTestsPSPC :: Args -> Bool -> PackageDescription -> LocalBuildInfo -> IO ()
 runTestsPSPC args expected description buildinfo = do allsignaturetests
+                                                      allmodelsortertests
                                                       allproofdttests
                                                       allmodelcheckertests
                                                       allproofsteptest

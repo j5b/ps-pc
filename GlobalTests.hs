@@ -48,7 +48,7 @@ templateSimple concepts gamma  = do checkResult <- (check concepts gamma searchR
 --          checkResult          = check concepts gamma searchResult
           errorMsg             = "For gamma: "++show gamma++"\n"++
                                  "For concepts: "++show concepts++"\n"++
-                                 "A failure was detected:\n\t"
+                                 "A failure was detected:\n"
 
 -- return the result with taking care for timeouts
 template :: [Concept] -> [Concept] -> Assertion
@@ -67,8 +67,7 @@ testtemplate cs gamma = TestCase (template cs gamma)
 
 -- check if the result of computation is correct or not
 check :: [Concept] -> [Concept] -> Either Model ProofTree -> IO (String, Bool)
-check cs gamma (Left model) = do putStrLn " #### MODEL:\n"
-                                 putStrLn $ "Model obtained: "++show model++"\n"
+check cs gamma (Left model) = do putStrLn " #### MODEL:"
                                  return $ checkInputModel model gamma cs
 check _ gamma (Right proof) = do putStrLn " #### PROOF:"
                                  return $ checkProof proof (map toNNF gamma)
@@ -108,9 +107,9 @@ generateTest randomGen num sampleSize = testtemplate givens gamma
 
 globaltests = maplabel "GlobalTests" testlist
   where testlist = take numTests $ map generator [1..]
-        numTests = 100
-        sampleSize = 10
-        simpleSize = 8
+        numTests = 20
+        sampleSize = 2
+        simpleSize = 6
         generator x = generateTest (mkStdGen x) simpleSize sampleSize
 
 allglobaltests  = do putStrLn "==== Global tests"
