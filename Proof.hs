@@ -22,12 +22,3 @@ data ProofTree = NodeZero ProofStep |
                  NodeOne ProofStep ProofTree |
                  NodeTwo ProofStep ProofTree ProofTree
                deriving (Show, Eq)
-
-getConcepts :: ProofStep -> [Concept]
-getConcepts (concepts,_,_) = concepts
-
-getRule :: ProofStep -> Rule
-getRule (_,rule,_) = rule
-
-getConceptUsed :: ProofStep -> Concept
-getConceptUsed (_,_,used) = used
