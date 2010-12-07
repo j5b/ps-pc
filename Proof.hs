@@ -7,7 +7,7 @@
    Description: provides a framework to build and handle description logic proofs
 -}
 
-module Proof where 
+module Proof where
 
 import Signature
 import Data.List
@@ -22,3 +22,12 @@ data ProofTree = NodeZero ProofStep |
                  NodeOne ProofStep ProofTree |
                  NodeTwo ProofStep ProofTree ProofTree
                deriving (Show, Eq)
+
+getConcepts :: ProofStep -> [Concept]
+getConcepts (concepts,_,_) = concepts
+
+getRule :: ProofStep -> Rule
+getRule (_,rule,_) = rule
+
+getConceptUsed :: ProofStep -> Concept
+getConceptUsed (_,_,used) = used
