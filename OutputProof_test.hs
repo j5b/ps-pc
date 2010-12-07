@@ -11,6 +11,7 @@ module OutputProof_test where
 import Signature
 import OutputProof
 import TestUtils
+import ProofSearch
 
 import System.IO
 import System.Process
@@ -33,7 +34,7 @@ fileC2LGenerator = do output <- openFile "concept_latex_test_output.tex" WriteMo
                       hPutStrLn output ("$"++conceptsToLatex myConceptList++"$")
                       hPutStrLn output "\\end{document}"
                       hClose output
-                      putStrLn "\n File for testing conceptToLatex function has been generated"
+                      putStrLn "\nFile for testing conceptToLatex function has been generated"
 
 createC2LPDF :: IO ExitCode
 createC2LPDF = do fileC2LGenerator 
@@ -44,3 +45,17 @@ testC2L = TestCase (test)
   where test = do code <- createC2LPDF
                   unless (code == ExitSuccess) fail 
         fail = assertFailure "Failed to compile simple concept representation in latex"
+
+fileTreeGenerate :: IO ()
+fileTreeGenerate = do output <- openFile "tree_test_output.tex" WriteMode
+                      hPutStrLn output "\\documentclass[12pt, a4paper]{article}"
+                      hPutStrLn output "\\usepackage{amsmath}"
+                      hPutStrLn output "\\usepackage{amssymb}"
+                      hPutStrLn output "\\usepackage{qtree}"
+                      hPutStrLn output "\\begin{document}"
+                      mapM (hPutStrLn output) inputlist
+                      hPutStrLn output "\\end{document}"
+                      hClose output
+                      putStrLn "\nFile for testing output proofs has been generated"
+  where list = map (flip findPOM []) $ map return myConceptList
+        inputlist = map (either (\x -> "") (\x -> "\\Tree"++latexify x++"\n")) list
