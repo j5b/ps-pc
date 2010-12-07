@@ -10,10 +10,12 @@ module OutputProof where
 
 import Signature
 import Proof
-import ProofUtils
 import ProofSearch
-
 import TestUtils
+
+getConcepts (cs,_,_) = cs
+getRule (_,rule,_) = rule
+getUsed (_,_,used) = used
 
 latexify :: ProofTree -> String
 latexify (NodeZero step) = "[.{"++concepts++end++"\n]"
