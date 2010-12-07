@@ -10,6 +10,7 @@ module OutputProof where
 
 import Signature
 import Proof
+import ProofUtils
 import ProofSearch
 
 import TestUtils
