@@ -121,7 +121,7 @@ forall_generator list = map forall_r list ++ map forall_s list
 
 exists_generator list = map exists_r list ++ map exists_r list
 
-generateConcepts num  = nub $ simple ++ foralls ++ exists ++ complex
+generateConcepts num  = simple ++ foralls ++ exists ++ complex ++ reallyComplex
   where simple_atoms  = simple_atom_list num
         simple        = simple_atoms ++ simpleOr ++ simpleAnd
         simpleOr      = or_generator simpleTuples
@@ -131,6 +131,10 @@ generateConcepts num  = nub $ simple ++ foralls ++ exists ++ complex
         simpleTuples  = all_tuples simple_atoms simple_atoms
         complex       = forall_generator (foralls++exists) ++
                         exists_generator (foralls++exists)
+        complexTuples = all_tuples foralls exists ++ 
+                        all_tuples exists exists++
+                        all_tuples foralls foralls
+        reallyComplex = or_generator complexTuples
 
 containsExists (Exists str concept) = True
 containsExists (Forall str concept) = containsExists concept

@@ -14,59 +14,15 @@ import ProofSearch
 
 import TestUtils
 
--- concepts: rule: concepts: orbranching : ( : branch 1: ) : ( : branch 2 : ) 
-data PTokens = CToken [Concept] | -- CToken: Concepts
-               RToken Rule Concept | -- RToken: Rules
-               ORToken | -- ORToken : Or branching
-               LBToken | -- LBToken : left bracket
-               RBToken |  -- RBToken : right bracket
-               ENDToken
-    deriving (Eq, Show)
-
-type TokenForm = [PTokens]
-
--- check if the token form is correct
-validTokenForm :: TokenForm -> Bool
-validTokenForm (ORToken : rest) = rest /= [] && cond1 && cond2 && cond3 && cond4
-  where cond1 = head rest == LBToken
-        cond2 = r /= []
-        cond3 = cond2 && head r == LBToken
-        cond4 = cond2 && last r == RBToken
-        (l,r) = splitAtElem RBToken $ tail rest 
-               
--- split a list into two list at element e
-splitAtElem e [] = ([],[])
-splitAtElem e [x] = if e == x then ([e],[]) else ([],[e])
-splitAtElem e (x:xs) 
-  | e == x    = ([e],xs)
-  | otherwise = (x:l, r)
-  where (l,r) = splitAtElem e xs
-
--- Turns a proof into token form
-tokenize :: ProofTree -> TokenForm
-tokenize (NodeZero step) = from : by: [to]
-  where from = CToken $ getConcepts step
-        by   = RToken (getRule step) (getConceptUsed step)
-        to   = ENDToken
-tokenize (NodeOne step tree) = from : by: rest
-  where from = CToken $ getConcepts step
-        by   = RToken (getRule step) (getConceptUsed step)
-        rest = tokenize tree
-tokenize (NodeTwo step ltree rtree) = from : by : left ++ right
-  where from  = CToken $ getConcepts step
-        by    = ORToken
-        left  = [LBToken] ++ tokenize ltree ++ [RBToken]
-        right = [LBToken] ++ tokenize rtree ++ [RBToken]
-
 latexify :: ProofTree -> String
 latexify (NodeZero step) = "[.{"++concepts++end++"\n]"
   where concepts = "$"++(conceptsToLatex $ getConcepts step)++"$"
-        end      = "}[. { $\\ast$ } ]"
-latexify (NodeOne step tree) = "[.{"++concepts++"}\n"++rest++"\n]"
+        end      = "}\n\t[. { $\\ast$ } ]"
+latexify (NodeOne step tree) = "[.{"++concepts++"}\n\t"++rest++"\n]"
   where concepts = "$"++(conceptsToLatex $ getConcepts step)++"$"
         rule     = " ("++getRule step++") " -- ++" for $"++(conceptToLatex $ getConceptUsed step)++"$) "
         rest     = latexify tree
-latexify (NodeTwo step left right) = "[.{"++concepts++"}\n"++lrest++"\n"++rrest++"\n]"
+latexify (NodeTwo step left right) = "[.{"++concepts++"}\n\t"++lrest++"\n\t"++rrest++"\n]"
   where concepts = "$"++(conceptsToLatex $ getConcepts step)++"$"
         rule     = " ("++getRule step++") " -- ++" for $"++(conceptToLatex $ getConceptUsed step)++"$) "
         lrest    = latexify left
