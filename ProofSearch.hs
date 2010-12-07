@@ -82,7 +82,7 @@ findProofOrModel (Or c d : cs) gamma is memory
                g pf = (either Left (Right . g' pf) proofOrModel2, newmem''')
                g' = NodeTwo (Or c d : cs, "or", Or c d)
       findInMemory = filter ((==(Or c d : cs)) . fst) memory
-findProofOrModel (Exists rel c : cs) gamma is memory
+findProofOrModel (Exists rel c : cs) gamma is memory -- TODO: Create atomic model here
   = (result, newmem)
       where
         newmem = if findInMemory == []
@@ -126,7 +126,7 @@ foldExists cs gamma (Exists rel c : es) (i:is) memory
      either (snd . dealWithModel) (snd . constructProof) proofOrModel)
   where
     (proofOrModel, newmemory) 
-        = findProofOrModel (applyExists cs gamma (Exists rel c)) 
+        = findProofOrModel existsResult 
                             gamma is ((cs, Right i):memory)
     constructProof pf 
         = (NodeOne (cs, "exists", Exists rel c) pf, newmemory)
@@ -136,9 +136,14 @@ foldExists cs gamma (Exists rel c : es) (i:is) memory
       where
         (proofOrModel', newmemory') 
             = foldExists cs gamma es (i : is') newmemory -- findProofOrModel es gamma is' newmem'
-        m'' = joinModels m $ joinModels ([i], [], [(rel, [(i, head is)])])
+        m'' = joinModels m $ joinModels pointermodel -- problem here!
                                         (constructAtomicModel cs i)
-
+        pointermodel 
+          = if (head is) `elem` dom
+            then ([i], [], [(rel, [(i, head is)])])
+            else ([], [], [])
+	(dom, _, _) = m        
+    existsResult = applyExists cs gamma (Exists rel c)
 -- A function that sorts concepts in the following order, first to last:
 -- 'A, not A', 'A and B', 'A or B', 'ER.C', others
 conceptSort :: [Concept] -> [Concept]
@@ -155,10 +160,10 @@ conceptSort = putFalsityFirst . putContradictionsFirst . sortBy compareConcepts
         compareConcepts _ (Exists _ _) = GT
         compareConcepts _ _            = EQ
 
-	putFalsityFirst :: [Concept] -> [Concept]
-	putFalsityFirst concepts = falsities ++ (concepts \\ falsities)
-	  where
-	    falsities = filter isBot concepts
+        putFalsityFirst :: [Concept] -> [Concept]
+        putFalsityFirst concepts = falsities ++ (concepts \\ falsities)
+          where
+            falsities = filter isBot concepts
         
         putContradictionsFirst :: [Concept] -> [Concept]
         putContradictionsFirst cs = contradictions ++ (cs \\ contradictions)
@@ -203,6 +208,14 @@ applyExists cs gamma (Exists rel c)
 createLoopModel :: [Concept] -> [Concept] -> Individual -> [Individual] -> Memory
                    -> (Either (Model, [Individual]) ProofTree, Memory)
 createLoopModel (Exists rel c : cs) gamma n (i:is) memory 
+   = (Left (newmodel, is), newmem)
+      where 
+       newmem = (Exists rel c : cs, Left (Left (newmodel, is))):newmem'
+       newmem' = filter isNotExists memory
+         where 
+            isNotExists =  (/=(Exists rel c : cs)) . fst
+       newmodel = ([i-1], [], [(rel, [(i-1, n)])])
+{-createLoopModel (Exists rel c : cs) gamma n (i:is) memory 
    = (either (Left . g) Right proofOrModel, newmem) 
     where
        newmem = (Exists rel c : cs, Left (Left (newmodel, is))):newmem'
@@ -213,7 +226,7 @@ createLoopModel (Exists rel c : cs) gamma n (i:is) memory
        g (model, indivs) = (joinModels (constructAtomicModel cs i) (m model), indivs)
        m model = joinModels model newmodel
        newmodel = ([i], [], [(rel, [(i, n)])]) -- Pred here!
-createLoopModel _ _ _ _ _ = error "createLoopModel is called with wrong params: probably with no exists"
+createLoopModel _ _ _ _ _ = error "createLoopModel is called with wrong params: probably with no exists" -}
 
 {-createLoopModel :: [Concept] -> [Concept] -> [Concept] -> 
                      Individual -> [Individual] -> Memory -> 
@@ -232,5 +245,5 @@ createLoopModel (Exists rel c : cs) (Exists rel' c' : es) gamma n (i:is) memory
        (proofOrModel, newmem'') = findProofOrModel es gamma (i:is) memory -- (Left (([], [], []), is), newmem') -- foldExists es is' newmem'
        m''  = joinModels ([i], [], [(rel, [(i, head is)])]) newmodel
        m''' = joinModels (constructAtomicModel cs i) m''
--}     
-    
+-}
+
