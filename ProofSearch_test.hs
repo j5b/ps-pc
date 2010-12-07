@@ -91,7 +91,7 @@ simpleModel2 = sortModel ([1,3], [("A",[3])], [("R",[(1,3)])])
 simpleModel3 = sortModel ([1,4], [("A",[4])], [("R",[(1,4)])])
 simpleModel4 = sortModel ([1,2], [("B",[2])], [("R",[(1,2)])])
 model1 = sortModel ([1,2,3,4,6], [("B",[1, 3]), ("A",[4, 6]), ("C",[2]), ("C",[3])], [("R",[(1,2), (1, 3)]), ("S",[(1,4), (2, 6)])])
-model2 = sortModel ([1,4,5,6,7,9,10], [("B",[1, 7]), ("A",[1, 7, 8]), ("C",[4, 10]), ("C",[4])], [("R",[(10,2), (1, 10)]), ("S",[(1,5), (5, 6)])])
+model2 = sortModel ([1,2,4,5,6,7,8,9,10], [("B",[1, 7]), ("A",[1, 7, 8]), ("C",[4, 10]), ("C",[4])], [("R",[(10,2), (1, 10)]), ("S",[(1,5), (5, 6)])])
 
 testJoinModelsEmpty = 
   testequality "Failed to join empty models" emptyModel (joinModels emptyModel emptyModel) input 
@@ -144,17 +144,17 @@ testJoinModelsComplex2 =
 
 testJoinModelsComplex3 = 
   testequality "Failed to join complex models 10" target (sortModel $ joinModels simpleModel2 model2) input
-    where target = sortModel ([1,3,4,5,6,7,9,10],[("A",[1,7,8,3]),("B",[1,7]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,3)]),("S",[(1,5),(5,6)])])
+    where target = sortModel ([1,2,3,4,5,6,7,8,9,10],[("A",[1,7,8,3]),("B",[1,7]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,3)]),("S",[(1,5),(5,6)])])
           input = printModel simpleModel2++"\n\t\tand\n"++printModel model2
 
 testJoinModelsComplex4 = 
   testequality "Failed to join complex models 11" target (sortModel $ joinModels simpleModel4 model2) input
-    where target = sortModel ([1,2,4,5,6,7,9,10],[("B",[1,7,2]),("A",[1,7,8]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,2)]),("S",[(1,5),(5,6)])])
+    where target = sortModel ([1,2,4,5,6,7,8,9,10],[("B",[1,7,2]),("A",[1,7,8]),("C",[4,10]),("C",[4])],[("R",[(10,2),(1,10),(1,2)]),("S",[(1,5),(5,6)])])
           input = printModel simpleModel4++"\n\t\tand\n"++printModel model2
 
 testJoinModelsComplex5 = 
   testequality "Failed to join complex models 12" target (sortModel $ joinModels model1 model2) input
-    where target = sortModel ([1,2,3,4,6,5,7,9,10],[("B",[1,7,3]),("A",[1,7,8,4,6]),("C",[4,10,2]),("C",[3])],[("R",[(10,2),(1,10),(1,2),(1,3)]),("S",[(1,5),(5,6),(1,4),(2,6)])])
+    where target = sortModel ([1,2,3,4,6,5,7,8,9,10],[("B",[1,7,3]),("A",[1,7,8,4,6]),("C",[4,2]),("C",[3])],[("R",[(10,2),(1,10),(1,2),(1,3)]),("S",[(1,5),(5,6),(1,4),(2,6)])])
           input = printModel model1++"\n\t\tand\n"++printModel model2
 
 -- constructAtomicModel

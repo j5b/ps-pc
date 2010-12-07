@@ -77,7 +77,7 @@ findProofOrModel (Or c d : cs) gamma is memory
                                           gamma is memory
                (proofOrModel2, newmem''') = findProofOrModel 
                                             (conceptSort $ d `uniqueCons` cs) 
-                                            gamma is newmem''
+                                            gamma is memory -- newmem''
                f proof = (Left proof, newmem'')
                g pf = (either Left (Right . g' pf) proofOrModel2, newmem''')
                g' = NodeTwo (Or c d : cs, "or", Or c d)

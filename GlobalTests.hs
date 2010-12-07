@@ -64,9 +64,9 @@ testtemplate cs gamma = TestCase (template cs gamma)
 
 -- check if the result of computation is correct or not
 check :: [Concept] -> [Concept] -> Either Model ProofTree -> IO (String, Bool)
-check cs gamma (Left model) = do putStrLn " #### MODEL:"
+check cs gamma (Left model) = do putStrLn $ " #### MODEL: "++show cs++" "++show gamma
                                  return $ checkInputModel model gamma cs
-check _ gamma (Right proof) = do putStrLn " #### PROOF:"
+check _ gamma (Right proof) = do putStrLn $ " #### PROOF: "++show gamma
                                  return $ checkProof proof (map toNNF gamma)
 
 -- Extract the element of the list at the positions given by indicies
@@ -104,9 +104,9 @@ generateTest randomGen num sampleSize = testtemplate givens gamma
 
 globaltests = maplabel "GlobalTests" testlist
   where testlist = take numTests $ map generator [1..]
-        numTests = 20
+        numTests = 10
         sampleSize = 2
-        simpleSize = 6
+        simpleSize = 4
         generator x = generateTest (mkStdGen x) simpleSize sampleSize
 
 allglobaltests  = do putStrLn "==== Global tests"
