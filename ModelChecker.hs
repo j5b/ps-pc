@@ -32,20 +32,24 @@ type Answer = (String, Bool)
 
 -- checks the inpxut model
 checkInputModel :: Model -> Concepts -> Concepts -> Answer
-checkInputModel model [] givens =
-  ("---- Model:\n"++show model++
-   "\n---- All concepts:\n"++msg++
-   "---- Gamma only:\n", result) 
+checkInputModel model [] givens = if consistent /= mzero 
+                                  then error (consistent ++ printModel model)
+                                  else ("---- Model:\n"++show model++
+                                        "\n---- All concepts:\n"++msg++
+                                        "---- Gamma only:\n", result)        
   where concepts      = foldl1 (/\) $ map toNNF givens
   	(msg, result) = checkModel concepts model 
-checkInputModel model gamma givens = 
-  checkModel concepts model `combine`
-  checkGamma (foldl1 (/\) $ map toNNF gamma) model
+        consistent    = consistentModel model
+checkInputModel model gamma givens = if consistent /= mzero
+                                     then error (consistent ++ printModel model)
+                                     else checkModel concepts model `combine`
+                                          checkGamma (foldl1 (/\) $ map toNNF gamma) model
   where concepts = foldl1 (/\) $ map toNNF gamma ++ map toNNF givens
         combine (part1, result1) (part2, result2) =
                 ("---- Model:\n"++show model++
                  "\n---- All concepts:\n"++part1++
                  "---- Gamma only:\n"++part2, result1 && result2)
+        consistent = consistentModel model
 
 {-
   Laziness will prevent to check the concept for every model

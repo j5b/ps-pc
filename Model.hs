@@ -9,7 +9,7 @@
 
 module Model (Model, Individual, Domain, BinaryRelation, UnaryRelation,
               getDomain, getRelations, isEmpty, sortModel, printModel,
-              emptyModel, isInUnary, isInBinary) where
+              consistentModel, emptyModel, isInUnary, isInBinary) where
 
 import Control.Monad
 import Data.Maybe
@@ -67,10 +67,10 @@ consistentModel model = if isEmpty model then mzero else concat [case1, case2, c
         unarys  = concatMap snd $ getUnarys model
         binarys = joinTuples $ concatMap snd $ getRelations model
         case1   = if nub unarys \\ domain /= []
-                  then "Some atomic concept refers to an individual outside the domain\n" 
+                  then "Some unary relation refers to an individual outside the domain\n" 
                   else mzero
         case2   = if nub binarys \\ domain /= []
-                  then "Some binary concept refers to an individual outside the domain\n"
+                  then "Some binary relation refers to an individual outside the domain\n"
                   else mzero
         case3   = if domain /= nub domain 
                   then "Domain contains duplicates"

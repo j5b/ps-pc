@@ -282,7 +282,7 @@ testMoreExists2' = testequality msg target result (printCG [orExists, negExists,
 testMoreExists3' = testequality msg target result (printCG [forallexists, orforalls, orExists, negExists] [])
   where msg = "Failed to find a model for universal existential, "++
               "disjunction of universal, disjunction of existential and negation of existential"
-        target = Left $ sortModel ([1,3,4,2],[("A",[4]),("B",[2])],[("S",[(1,3)]),("R",[(1,2),(3,4)])])
+        target = Left $ sortModel ([1,2],[("B",[2])],[("R",[(1,2)])])
         -- TODO: these are really confusing names, forallexists is an exists exists.
         --       this needs fixing!
         result = findPOM [forallexists, orforalls, orExists, negExists] []
