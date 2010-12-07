@@ -14,12 +14,6 @@ import Test.HUnit
 
 -- testing function YOU SHOULD USE TO MAKE YOUR FILE EASIER
 
-printModel :: Model -> String
-printModel (dom, unarys, binarys) =
-  "\n\tDomain: "++show dom++
-  "\n\tUnarys: "++show unarys++
-  "\n\tBinarys: "++show binarys
-
 printCG :: [Concept] -> [Concept] -> String
 printCG concepts gamma = "\n\tGamma: "++show gamma++"\n\tConcepts: "++show concepts
 

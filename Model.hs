@@ -8,7 +8,7 @@
 -}
 
 module Model (Model, Individual, Domain, BinaryRelation, UnaryRelation,
-              getDomain, getRelations, isEmpty, sortModel, 
+              getDomain, getRelations, isEmpty, sortModel, printModel,
               emptyModel, isInUnary, isInBinary) where
 
 import Control.Monad
@@ -23,6 +23,13 @@ type Domain = [Individual]
 type BinaryRelation = (String, [(Individual,Individual)])
 type UnaryRelation = (String, [Individual])
 type Model = (Domain, [UnaryRelation], [BinaryRelation])
+
+-- Outputs a model
+printModel :: Model -> String
+printModel (dom, unarys, binarys) =
+  "\n\tDomain: "++show dom++
+  "\n\tUnarys: "++show unarys++
+  "\n\tBinarys: "++show binarys
 
 -- check if the model is empty
 isEmpty model = flip (==) [] $ getDomain model
@@ -73,7 +80,7 @@ mapSnd :: (a->b) -> (c,a) -> (c,b)
 mapSnd f (x,y) = (x,f y)
                       
 sortModel :: Model -> Model
-sortModel model = if result == mzero then sortedModel else error result
+sortModel model = if result == mzero then sortedModel else error (result++printModel model)
   where result = consistentModel model
         sortedModel = (domsorted, unarysorted, binsorted)
         domsorted   = sort $ getDomain model
