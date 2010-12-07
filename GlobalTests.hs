@@ -24,7 +24,7 @@ import ProofChecker
 import Model
 import Proof
 
-untilTimeout = 5
+untilTimeout = 10
 
 -- run two threads and return the first one to finish
 compete :: IO a -> IO a -> IO a 
@@ -45,7 +45,6 @@ templateSimple concepts gamma  = do checkResult <- (check concepts gamma searchR
                                        then return Nothing 
                                        else return . Just $ errorMsg++fst checkResult
     where searchResult         = findPOM (map toNNF concepts) (map toNNF gamma)
---          checkResult          = check concepts gamma searchResult
           errorMsg             = "For gamma: "++show gamma++"\n"++
                                  "For concepts: "++show concepts++"\n"++
                                  "A failure was detected:\n"
@@ -56,9 +55,7 @@ template concepts gamma = do result <- timeout untilTimeout (templateSimple conc
                              if isNothing result
                                  then assertFailure timeoutMsg
                                  else let actualResult = fromJust result
-                                      in if isNothing actualResult
-                                         then return ()
-                                         else assertFailure $ fromJust actualResult
+                                      in unless (isNothing actualResult) $ assertFailure $ fromJust actualResult
                                  where timeoutMsg = "For gamma: "++show gamma++"\n"++
                                                     "For concepts: "++show concepts++"\n"++
                                                     "Detected potential infinite loop"
@@ -80,7 +77,7 @@ extract indices list
     | tooLargeIndices = error "Some of the indices provided were too large"
     | otherwise       = extract' 0 (sort $ nub indices) list
     where maxIndex        = length list
-          tooLargeIndices = or $ map (>=maxIndex) indices
+          tooLargeIndices = any (>=maxIndex) indices
           extract' :: Int -> [Int] -> [a] -> [a]
           extract' _ [] _ = []
           extract' n (i:is) (x:xs) 
@@ -91,7 +88,7 @@ extract indices list
 generateIndices :: StdGen -> Int -> Int -> [Int]
 -- PRE: num >= 0
 generateIndices _ 0 _ = []
-generateIndices randomGen num max = (mod randomint max) : generateIndices nextgen (num-1) max
+generateIndices randomGen num max = mod randomint max : generateIndices nextgen (num-1) max
   where (randomint, nextgen) = next randomGen 
 
 generateTest :: StdGen -> Int -> Int -> Test

@@ -2,6 +2,9 @@
 \title{Group Project - Proof search vs Proof checking - Log book}
 \author{M. G. Parusinski - CID 00566542}
 
+\usepackage{amsmath}
+\usepackage{amssymb}
+
 \begin{document}
 
 \maketitle
@@ -427,5 +430,45 @@
 \item Continue what was described above
 \item Find a proof system for Individuals
 \end{itemize}
-\textbf{Focus}
+
+\section*{Meeting 22- 2.12.2010}
+\textbf{People present:} Dr. Pattinson, M.G Parusinski, J. Bullian, K.W. Cheng, S. Benhaim \\
+\textbf{Points discussed:}
+\begin{itemize}
+\item How to adapt the proof searcher for Individuals ALCO 
+\item Labelled tableaux using Labelled sequences: always some individual considered and new rules $\implies$ equality rule, substitution rule
+\item Blocking strategy to avoid non terminating cases, since extension rule always add a new point for non empty TBOX in case above
+\item Propagation information: At and nodes describe constrains
+\end{itemize}
+
+\section*{Meetin 23 - 3.12.2010}
+\textbf{People present:} M.G. Parusinski, J. Bullian, K.W. Cheng, S.Benhaim
+\textbf{Points discussed:}
+\begin{itemize}
+\item Report 3
+\item Unit Testing
+\item Outputs
+\end{itemize}
+\textbf{Agreements:}
+\begin{itemize}
+\item Model output Jannis
+\item Proof output Michal
+\end{itemize}
+\textbf{Agreements:}
+\begin{itemize}
+\textbf{Achievements:}
+\begin{itemize}
+\item Parser tests
+\item Testing
+\item Implementing Cycles
+\end{itemize}
+\textbf{Tasks:}
+\begin{itemize}
+\item Model output
+\item Proof output
+\item Fixes bugs with apply exists rule
+\item Fixes bugs for cycle
+\item Read ALCO papers
+\item same tasks as efore
+\end{itemize}
 \end{document}
