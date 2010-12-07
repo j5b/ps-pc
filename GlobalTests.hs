@@ -98,9 +98,9 @@ generateTest randomGen num sampleSize = testtemplate givens gamma
         indicesGamma  = generateIndices (mkStdGen seed1) sampleSize maxlength
         indicesGivens = generateIndices (mkStdGen seed2) sampleSize maxlength
         concepts      = generateConcepts num
-        gamma         = extract indicesGamma concepts
+        gamma         = extract indicesGamma $ filter (not.containsExists) concepts
         givens        = extract indicesGivens concepts
-        maxlength     = length concepts
+        maxlength     = length $ filter (not.containsExists) concepts
 
 globaltests = maplabel "GlobalTests" testlist
   where testlist = take numTests $ map generator [1..]
