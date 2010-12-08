@@ -1,58 +1,61 @@
-\documentclass[12pt]{article}
+\documentclass[12pt,a4paper]{article}
 \title{Group Project - Proof search vs Proof checking - Log book}
 \author{M. G. Parusinski - CID 00566542}
 
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{longtable}
+
+\newcommand{\meeting}[6]{%
+\begin{center}%
+\begin{longtable}{| p{3.5cm}  | p{13cm} |}%
+\hline%
+\textbf{Date:} & #1 \\%
+\hline%
+\textbf{People present:} &#2 \\%
+\hline%
+\textbf{Points discussed:} &#3\\%
+\hline%
+\textbf{Achievements:} &#4 \\%
+\hline%
+\textbf{Agreements:} &#5 \\%
+\hline%
+\textbf{Tasks assigned:} &#6  \\%
+\hline%
+\end{longtable}%
+\end{center}%
+\bigbreak
+}
 
 \begin{document}
 
 \maketitle
 
-\section*{Meeting 1 - 12.10.2010} 
+\meeting{$12^{th}$ October 2010}%
+{Dr. Dirk, S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{ \begin{enumerate} \item Statement of the problem and its implications 
+ \item Possible challenges of the problem 
+ \item Reports and deadlines to meet 
+ \item Goals of the project 
+\end{enumerate} }%
+{ N $\backslash$ A}%
+{ N $\backslash$ A}%
+{ Read litterature about Description Logic and Knowledge Based system}
 
-\textbf{People present:} S. Benhaim, J. Bullian, M.G. Parusinski, K. Cheng, Dr. Dirk \\
-\textbf{Purpose:} Discuss organisation of the project and discuss main topic on the project \\
-\textbf{Points discussed:}
-\begin{itemize}
-\item Statement of the problem and its implications
-\item Possible challenges of the problem
-\item Reports and deadlines to meet
-\item Goals of the project
-\end{itemize} 
-\textbf{For next meeting}
-\begin{itemize}
-\item Read litterature about Description Logic and KR based system
-\end{itemize}
-
-\section*{Meeting 2 - 13.10.2010}
-
-\textbf{People present:} S. Benhaim, J. Bullian, M.G. Parusinski, K. Cheng \\
-\textbf{Purpose:} Discuss organisation of the project, assigning role in the group, discussing design and goals. \\
-\textbf{Points discussed:}
-\begin{itemize}
-\item Language will be Haskell
-\item M.G. Parusinski becomes Secretary
-\item Syntax for representing formulas using Abstract Data Types
-\item Output files to be generated: one human readable, one machine readable
-\item Tools for programming: Code review, Version Control, Automated testing (HUnit)
-\item Optimisation
-\end{itemize}
-\textbf{For next meeting:}
-\begin{itemize}
-\item Check HUnit
-\item Think about a modular design
-\item Choose version control
-\item Provide possible documentation for other members
-\end{itemize}
-\textbf{Temporary assignements:}
-\begin{itemize}
-\item S.Benhaim: Proof search
-\item M.G. Parusinski: Model Checking
-\item K.Cheng: Proof Checking
-\item J.Bullian: Model Construction
-\end{itemize}
-\textbf{Suggested critical goals (for B):} 
+\meeting{$13^{th}$ October 2010}%
+{S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{ \begin{enumerate} \item Statement of the problem and its implications 
+ \item Discuss organisation of the project 
+ \item Assignement of potentials roles in the group
+ \item Discussing the goals of the project
+ \item Discussing the design of the software 
+\end{enumerate} }%
+{N $\backslash$ A}
+{ \begin{enumerate}
+\item Assignements: Model Checker (M.G. Parusinski), Proof Checker (K.W. Cheng),
+Proof and Model Searcher (J.Bullian and S.Benhaim)
+\item Critical Goals: 
 \begin{itemize}
 \item Implementing an algorithm that performs proof searching
 \item Implementing an algorithm that performs model construction
@@ -60,46 +63,52 @@
 \item Implementing an algorithm that performs model checking
 \item Ensuring our algorithms are correct if terminates
 \end{itemize}
-\textbf{Secondary optional goals (for A):}
-\begin{itemize}
+\item Secondary goals \begin{itemize}
 \item Generating human readable format for models and proof representation
 \item Implement a parser for reading formulas
 \item Testing the code with tests unit
 \item Extend to non standard logics
 \end{itemize}
+\item Language which will be used is Haskell
+\item M. G. Parusinski becomes the Secretary of the project, J. Bullian the Leader
+\item Outputs to be generated from the Proof and Model searcher will be machine readable and human readable
+\item Tools to enhance programming: Code review, Version Control, Automated testing
+\end{enumerate} }%
+{ \begin{enumerate}\item Read about HUnit
+\item Think further about the design
+\item Think about which Version Control to choose
+\item Provide any relevant documentation to other team members
+\end{enumerate}}
 
-\section*{Meeting 3 - 14.10.2010}
-
-\textbf{People present:} S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng \\
-\textbf{Purpose:} Discuss organisation of the project, agreeing on roles \\
-\textbf{Points discussed:} 
-\begin{itemize}
-\item Code review and version control: Google code if the project can be open source
+\meeting{$14^{th}$ October 2010}%
+{S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{ \begin{enumerate} \item Statement of the problem and its implications 
+ \item Discuss organisaton of the project and agree on role assignement discuss in 
+previous meetings
+\item Question to ask the supervisor about theoritecal issues relating to Description Logic
+\end{enumerate} }%
+{ N $\backslash$ A}%
+{ \begin{enumerate}
 \item HUnit will be used for testing
-\item Data type to describe signature: see signature.hs
-\item Questions for the supervisor
-\end{itemize}
-\textbf{For next meeting:}
-\begin{itemize}
-\item Decide whether the code can open source or not. If possible which license to use
-\end{itemize}
+\item Code review and version control will be done through Google code. 
+\item Project will be released as an open source project
+\end{enumerate}}%
+{N $\backslash$ A}
 
-\section*{Meeting 4 - 15.10.2010}
-
-\textbf{People present:} Dr. Dirk, S.Benhaim, J.Bullian, M.G. Parusinski, K.Cheng \\
-\textbf{Purpose:} Discuss first report and division of work \\
-\textbf{Points discuessed:}
-\begin{itemize}
-\item Changes to types: restricting to unary and binary relations correcting errors made
-\item Determining whether project can be open-source or not
-\item Diving proof and model search algorithm into three parts: tree creation, proof search, model search
-\end{itemize}
-\textbf{For next meeting:}
-\begin{itemize}
+\meeting{$15^{th}$ October 2010}%
+{Dr. Dirk, S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{ \begin{enumerate} \item First report contents
+\item Division of the work amongst team members
+\item Implementation issues (type definitions)
+\item Is making the project open-source ok?
+\end{enumerate} }%
+{ N $\backslash$ A}%
+{N $\backslash$ A}
+{ \begin{enumerate}
 \item Read litterature about DL, tableau calculus
-\item Check CoLoss
-\item Correct the type definitions
-\end{itemize}
+\item Check CoLoss (a software already performing proof search)
+\item Correct the type definitions 
+\end{enumerate}}%
 
 \section*{Meeting 5 - 18.10.2010}
 
@@ -455,7 +464,6 @@
 \item Proof output Michal
 \end{itemize}
 \textbf{Agreements:}
-\begin{itemize}
 \textbf{Achievements:}
 \begin{itemize}
 \item Parser tests
