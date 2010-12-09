@@ -9,7 +9,7 @@
 
 \newcommand{\meeting}[6]{%
 \begin{center}%
-\begin{longtable}{| p{3.5cm}  | p{13cm} |}%
+\begin{longtable}{| p{3.5cm} | | p{13cm} |}%
 \hline%
 \textbf{Date:} & #1 \\%
 \hline%
@@ -366,91 +366,85 @@ previous meetings
 \item Write tests for the parser (Jannis + Ka Wai)
 \end{enumerate}}%
 
-\section*{Meeting 19 - 25.11.2010}
-\textbf{People present:} M. G. Parusinski, K. Cheng, S. Benhaim, J. Bullian \\
-\textbf{Point discussed:}
-\begin{itemize}
-\item Dealing with caching how to avoid infinite loops in proofs.
-\end{itemize}
+\meeting{$25^{th}$ November 2010}%
+{S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{Dealing with caching how to avoid infinite loops in proofs.}%
+{N $\backslash$ A}%
+{N $\backslash$ A}
+{N $\backslash$ A}%
 
-\section*{Meeting 20 - 26.11.2010}
-\textbf{People present:} M. G. Parusinski, K. W. Cheng, S. Benhaim, J. Bullian \\
-\textbf{Points discussed:}
-\begin{itemize}
-\item Achievements
+\meeting{$26^{th}$ November 2010}%
+{S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{\begin{enumerate}
 \item Error fixing
-\end{itemize}
-\textbf{Achievements:}
-\begin{itemize}
-\item Testing for all three lexers for the parser
-\item Almost working proof and model searcher for cycles
-\item Global testing
-\end{itemize}
-\textbf{Next tasks:}
-\begin{itemize}
+\end{enumerate}
+}%
+{N $\backslash$ A}%
+{N $\backslash$ A}
+{\begin{enumerate}
 \item Think about individuals (All)
 \item Finish cycles (Sagie)
-\item Save Private Sagie (All \ Sagie)
+\item Help Sagie deals with cycles (All \ Sagie)
 \item Tests for Parser (Michal)
 \item Choose between ABox and satisfaction operators
 \item Code reviews
-\end{itemize}
+\end{enumerate}}%
 
-\section*{Meeting 21 - 29.11.2010}
-\textbf{People present:} M. G. Parusinski, K. W. Cheng, S. Benhaim, J.Bullian \\
-\textbf{Points discussed:}
-\begin{itemize}
-\item Individuals
-\item Pretty Pictures
-\end{itemize}
-\textbf{Achievements:}
-\begin{itemize}
+\meeting{$29^{th}$ November 2010}%
+{S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{\begin{enumerate}
+\item Individuals (Logic)
+\item Output the model and proof to a visual format
+\end{enumerate}
+}%
+{\begin{enumerate}
 \item Cycles works for most cases
 \item Early testing for the parser
-\end{itemize}
-\textbf{Next tasks:}
-\begin{itemize}
-\item Continue what was described above
-\item Find a proof system for Individuals
-\end{itemize}
+\end{enumerate}}%
+{N $\backslash$ A}
+{\begin{enumerate}
+\item Find a proof system for individuals
+\end{enumerate}}%
 
-\section*{Meeting 22- 2.12.2010}
-\textbf{People present:} Dr. Pattinson, M.G Parusinski, J. Bullian, K.W. Cheng, S. Benhaim \\
-\textbf{Points discussed:}
-\begin{itemize}
+\meeting{$2^{nd}$ December 2010}%
+{Dr. Pattinson, S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{\begin{enumerate}
 \item How to adapt the proof searcher for Individuals ALCO 
 \item Labelled tableaux using Labelled sequences: always some individual considered and new rules $\implies$ equality rule, substitution rule
 \item Blocking strategy to avoid non terminating cases, since extension rule always add a new point for non empty TBOX in case above
 \item Propagation information: At and nodes describe constrains
-\end{itemize}
+\end{enumerate}
+}%
+{N $\backslash$ A}%
+{N $\backslash$ A}
+{N $\backslash$ A}%
 
-\section*{Meetin 23 - 3.12.2010}
-\textbf{People present:} M.G. Parusinski, J. Bullian, K.W. Cheng, S.Benhaim
-\textbf{Points discussed:}
-\begin{itemize}
+\meeting{$3^{rd}$ December 2010}%
+{S. Benhaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{\begin{enumerate}
 \item Report 3
 \item Unit Testing
 \item Outputs
-\end{itemize}
-\textbf{Agreements:}
-\begin{itemize}
-\item Model output Jannis
-\item Proof output Michal
-\end{itemize}
-\textbf{Agreements:}
-\textbf{Achievements:}
-\begin{itemize}
+\end{enumerate}
+}%
+{\begin{enumerate}
 \item Parser tests
 \item Testing
 \item Implementing Cycles
-\end{itemize}
-\textbf{Tasks:}
-\begin{itemize}
+\end{enumerate}
+}%
+{\begin{enumerate}
+\item Model output Ka Wei
+\item Proof output Michal
+\end{enumerate}
+}
+{\begin{enumerate}
 \item Model output
 \item Proof output
 \item Fixes bugs with apply exists rule
 \item Fixes bugs for cycle
 \item Read ALCO papers
 \item same tasks as efore
-\end{itemize}
+\end{enumerate}}%
+
 \end{document}

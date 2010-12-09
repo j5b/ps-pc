@@ -58,4 +58,4 @@ fileTreeGenerate = do output <- openFile "tree_test_output.tex" WriteMode
                       hClose output
                       putStrLn "\nFile for testing output proofs has been generated"
   where list = map (flip findPOM []) $ map return myConceptList
-        inputlist = map (either (\x -> "") (\x -> "\\Tree\n"++latexify x++"\n\\bigbreak\n")) list
+        inputlist = map (either (\x -> "") (\x -> proofToLatexTree x++"\\bigbreak\n")) list
