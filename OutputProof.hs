@@ -8,6 +8,11 @@
 
 module OutputProof where 
 
+import System.IO
+import System.Process
+import System.Exit
+import Control.Monad
+
 import Signature
 import Proof
 import ProofSearch
@@ -19,17 +24,48 @@ getUsed (_,_,used) = used
 
 latexify :: ProofTree -> String
 latexify (NodeZero step) = "[.{"++concepts++end++"\n]"
-  where concepts = "$"++(conceptsToLatex $ getConcepts step)++"$"
-        end      = "}\n\t[. { $\\ast$ } ]"
+  where concepts = niceConceptLatex (getConcepts step)
+        end      = "}\n\t[. { $\\bot$ } ]"
 latexify (NodeOne step tree) = "[.{"++concepts++"}\n\t"++rest++"\n]"
-  where concepts = "$"++(conceptsToLatex $ getConcepts step)++"$"
+  where concepts = niceConceptLatex (getConcepts step)
         rule     = " ("++getRule step++") " -- ++" for $"++(conceptToLatex $ getConceptUsed step)++"$) "
         rest     = latexify tree
 latexify (NodeTwo step left right) = "[.{"++concepts++"}\n\t"++lrest++"\n\t"++rrest++"\n]"
-  where concepts = "$"++(conceptsToLatex $ getConcepts step)++"$"
+  where concepts = niceConceptLatex (getConcepts step)
         rule     = " ("++getRule step++") " -- ++" for $"++(conceptToLatex $ getConceptUsed step)++"$) "
         lrest    = latexify left
         rrest    = latexify right
+
+proofToLatexTree :: ProofTree -> String
+proofToLatexTree prooftree = "\\Tree\n"++latexify prooftree++"\n"
+
+createGenericPDF :: [ProofTree] -> FilePath -> IO ()
+createGenericPDF proofs file = do putStrLn $ "Opening file "++file
+                                  output <- openFile file WriteMode
+                                  hPutStrLn output header
+                                  mapM_ (hPutStrLn output . proofToLatexTree) proofs
+                                  hPutStrLn output end
+                                  putStrLn $ "Closing file "++file
+                                  hClose output
+  where header = "\\documentclass[landscape, 8pt, a4paper]{article}\n"++
+                 "\\usepackage{amsmath}\n"++
+                 "\\usepackage{amssymb}\n"++
+                 "\\usepackage{qtree}\n"++
+                 "\\usepackage{fullpage}\n"++
+                 "\\begin{document}\n"++
+                 "\\begin{center}\n"
+        end    = "\\end{center}\n"++"\\end{document}"
+
+breakInPieces :: Int -> [a] -> [[a]]
+breakInPieces _ [] = []
+breakInPieces n list = (take n list):rest
+  where rest = breakInPieces n $ drop n list
+
+niceConceptLatex :: [Concept] -> String
+niceConceptLatex cs = concatMap fullFormat (init conceptsList) ++ lastFormat (last conceptsList)
+  where conceptsList = breakInPieces 6 cs
+        fullFormat list = "$"++conceptsToLatex list++",$\\\\"
+        lastFormat list = "$"++conceptsToLatex list++"$"
 
 -- Turns a concept into a nice string (for latex)
 conceptToLatex :: Concept -> String
