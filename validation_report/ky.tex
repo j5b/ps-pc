@@ -1,0 +1,12 @@
+As indicated in the previous reports, a test-driven development method was adopted; hence uniting testing was done at all stages of development. Unit tests were written before the implementation of functions or simultaneously; and test suites are run regularly, especially after any changes to code, to ensure the program still works as expected. All areas of code were tested in this way individually: model/proof construction, model checking, proof checking, and the parser for input languages and test files.
+
+Although writing an extensive set of unit tests take almost as much time as implementing the code itself, there were many benefits from this approach:
+\begin{itemize}
+\item By simultaneously writing the unit tests, it helped programmers think about and have a clear view of the expected/desired output of functions. This made coding of functions easier and members were able to identify mistakes quickly.
+
+\item This increased each member's confidence that their code produces expected results and given expected inputs. As a result, we were able to highlight differences in expectations between members writing different parts of the program for discussion in our meetings and come to an agreed solution.
+
+\item Unit tests helped identify most bugs early on, before code became complicated and difficult to resolve.
+\end{itemize}
+
+The bugs unit testing revealed include cases that were not covered properly and errors in the code. For example, the most basic cases were not covered in the proof or model construction stage; and the possibility of cycles in the input global assumptions was not dealt with. Some examples of errors found in code are: performing some incorrect checks in the proof checkers,
