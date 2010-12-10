@@ -56,16 +56,34 @@ createGenericPDF proofs file = do putStrLn $ "Opening file "++file
                  "\\begin{center}\n"
         end    = "\\end{center}\n"++"\\end{document}"
 
-breakInPieces :: Int -> [a] -> [[a]]
 breakInPieces _ [] = []
-breakInPieces n list = (take n list):rest
-  where rest = breakInPieces n $ drop n list
+breakInPieces size list = result:(breakInPieces size rest)
+  where (result,rest) = countTo 0 size list
+        countTo _ _ [] = ([],[])
+        countTo num size (x:xs) 
+            | num >= size = ([],xs)
+            | otherwise   = (newleft, newright)
+            where (oldleft, oldright) = countTo (num+conceptLength x) size xs
+                  newleft             = x:oldleft
+                  newright            = oldright
 
+-- Outputs in a nice formated format for latex to improve readability
 niceConceptLatex :: [Concept] -> String
 niceConceptLatex cs = concatMap fullFormat (init conceptsList) ++ lastFormat (last conceptsList)
-  where conceptsList = breakInPieces 6 cs
+  where conceptsList = breakInPieces 4 cs
         fullFormat list = "$"++conceptsToLatex list++",$\\\\"
         lastFormat list = "$"++conceptsToLatex list++"$"
+
+-- Way to mesure how long a concept is so we can break out the proof more neatly
+-- this estimates how a formula will be in latex
+conceptLength T              = 1
+conceptLength (Neg T)        = 1
+conceptLength (Atom a)       = length a
+conceptLength (Neg concept)  = 1+conceptLength concept
+conceptLength (Or c1 c2)     = 1+conceptLength c1+conceptLength c2
+conceptLength (And c1 c2)    = 1+conceptLength c1+conceptLength c2
+conceptLength (Exists rel c) = conceptLength c+length rel+1
+conceptLength (Forall rel c) = conceptLength c+length rel+1
 
 -- Turns a concept into a nice string (for latex)
 conceptToLatex :: Concept -> String
@@ -105,7 +123,7 @@ conceptToLatex (Exists rel concept) = "\\exists "++rel++". ("++conceptToLatex co
 conceptToLatex (Forall rel (Atom a)) = "\\forall "++rel++". "++a
 conceptToLatex (Forall rel T) = "\\forall "++rel++". \\top"
 conceptToLatex (Forall rel (Neg T)) = "\\forall "++rel++". \\bot"
-conceptToLatex (Forall rel concept) = "\\exists "++rel++". ("++conceptToLatex concept++")"
+conceptToLatex (Forall rel concept) = "\\forall "++rel++". ("++conceptToLatex concept++")"
 
 conceptsToLatex :: [Concept] -> String
 conceptsToLatex [] = ""

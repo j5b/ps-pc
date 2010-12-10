@@ -46,16 +46,8 @@ testC2L = TestCase (test)
                   unless (code == ExitSuccess) fail 
         fail = assertFailure "Failed to compile simple concept representation in latex"
 
-fileTreeGenerate :: IO ()
-fileTreeGenerate = do output <- openFile "tree_test_output.tex" WriteMode
-                      hPutStrLn output "\\documentclass[12pt, a4paper]{article}"
-                      hPutStrLn output "\\usepackage{amsmath}"
-                      hPutStrLn output "\\usepackage{amssymb}"
-                      hPutStrLn output "\\usepackage{qtree}"
-                      hPutStrLn output "\\begin{document}"
-                      mapM (hPutStrLn output) inputlist
-                      hPutStrLn output "\\end{document}"
-                      hClose output
-                      putStrLn "\nFile for testing output proofs has been generated"
-  where list = map (flip findPOM []) $ map return myConceptList
-        inputlist = map (either (\x -> "") (\x -> proofToLatexTree x++"\\bigbreak\n")) list
+fromRight (Right x) = x
+
+-- This should be easy to see inside the PDF but isn't
+testgenerator1 = createGenericPDF (return $ fromRight $ findPOM [] [Or (Forall "R" (Atom "A")) (Forall "R" (Neg $ Atom "A")), Forall "R" (Exists "R" (Atom "A")), Forall "R" (Exists "R" (Neg $ Atom "A")), Exists "R" T]) "output1.tex"
+
