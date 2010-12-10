@@ -55,7 +55,7 @@
 { \begin{enumerate}
 \item Assignements: Model Checker (M.G. Parusinski), Proof Checker (K.W. Cheng),
 Proof and Model Searcher (J.Bullian and S.Benaim)
-\item Critical Goals: 
+\item Critical Goals (for our project):
 \begin{itemize}
 \item Implementing an algorithm that performs proof searching
 \item Implementing an algorithm that performs model construction
@@ -64,17 +64,16 @@ Proof and Model Searcher (J.Bullian and S.Benaim)
 \item Ensuring our algorithms are correct if terminates
 \end{itemize}
 \item Secondary goals \begin{itemize}
-\item Generating human readable format for models and proof representation
+\item Generating human readable format for models and proofs
 \item Implement a parser for reading formulas
 \item Testing the code with tests unit
 \item Extend to non standard logics
 \end{itemize}
-\item Language which will be used is Haskell
+\item Programming language used will be Haskell
 \item M. G. Parusinski becomes the Secretary of the project, J. Bullian the Leader
-\item Outputs to be generated from the Proof and Model searcher will be machine readable and human readable
-\item Tools to enhance programming: Code review, Version Control, Automated testing
+\item We will use tools to enhance programming: Code review, Version Control, Automated testing
 \end{enumerate} }%
-{ \begin{enumerate}\item Read about HUnit
+{ \begin{enumerate}\item Learn about Automated Testing
 \item Think further about the design
 \item Think about which Version Control to choose
 \item Provide any relevant documentation to other team members
@@ -83,27 +82,26 @@ Proof and Model Searcher (J.Bullian and S.Benaim)
 \meeting{$14^{th}$ October 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
 { \begin{enumerate} \item Statement of the problem and its implications 
- \item Discuss organisaton of the project and agree on role assignement discuss in 
+ \item Organisaton of the project and agree on role assignement discuss in 
 previous meetings
-\item Question to ask the supervisor about theoritecal issues relating to Description Logic
+\item Theoritecal issues relating to Description Logic
 \end{enumerate} }%
 { N $\backslash$ A}%
 { \begin{enumerate}
-\item HUnit will be used for testing
+\item HUnit will be used for automated testing
 \item Code review and version control will be done through Google code. 
-\item Project will be released as an open source project
 \end{enumerate}}%
 {N $\backslash$ A}
 
 \meeting{$15^{th}$ October 2010}%
 {Dr. Pattinson, S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
-{ \begin{enumerate} \item First report contents
+{ \begin{enumerate} \item Inception report
 \item Division of the work amongst team members
 \item Implementation issues (type definitions)
 \item Is making the project open-source ok?
 \end{enumerate} }%
 { N $\backslash$ A}%
-{N $\backslash$ A}
+{Make the project open-source}
 { \begin{enumerate}
 \item Read litterature about DL, tableau calculus
 \item Check CoLoss (a software already performing proof search)
@@ -112,19 +110,19 @@ previous meetings
 
 \meeting{$18^{th}$ October 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
-{ \begin{enumerate} \item First report contents
+{ \begin{enumerate} \item Inception report
 \item Timetable and schedule for the project
 \item Should the language definition should be minimal or not
 \item Setting up regular meetings
 \end{enumerate} }%
-{ N $\backslash$ A}%
+{Setting-up data types necessary for the project}%
 {\begin{enumerate}
 \item Monday meetings at 12-13 everybody agreed this as their first choice
 \item Thursday meeting at 11-12 everybody agreed this as their first choice
-\item Use the minimal defintion
+\item Use the minimal Haskell definition for the Logic representation
 \end{enumerate}}
 { \begin{enumerate}
-\item Set up a Google Account for code.googe.com if not already available
+\item Set up a Google Account for code.google.com if not already available
 \item Install Mercurial on favourite O.S.
 \item Read about DL, and tableau calculus
 \item Compare Extreme Programming, and Scrum
@@ -136,10 +134,12 @@ previous meetings
 \meeting{$21^{th}$ October 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
 { \begin{enumerate} 
-\item Agile development method
+\item Agile development method used for the project
 \item Algorithms to implement
 \end{enumerate} }%
-{ N $\backslash$ A}%
+{\begin{enumerate}
+Everybody has access to the code.google.com services Mercurial, Code Review, ...
+\end{enumerate}}%
 {N $\backslash$ A}
 { \begin{enumerate}
 \item Read the litterature more carefully and understand the algorithms
@@ -165,7 +165,7 @@ previous meetings
 { \begin{enumerate}
 \item Read all relevant documentation
 \item Read about agile software development
-\item Find clear cut goals
+\item Agree on goals
 \item Agree for goals and agile software development
 \item Every person choose the features for the software development pratice
 \item Write the report
@@ -174,9 +174,7 @@ previous meetings
 
 \meeting{$26^{th}$ October 2010}%
 {S. Benaim, J. Bullian, K.W. Cheng}%
-{ \begin{enumerate} 
-\item First report: Inception report
-\end{enumerate} }%
+{Inception Report}%
 { N $\backslash$ A}%
 {\begin{enumerate}
 \item Software development method Agile development XP, Crystal Clear, Agile Unified Process mixture
@@ -188,10 +186,8 @@ previous meetings
 
 \meeting{$27^{th}$ October 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
-{ \begin{enumerate} 
-\item Finalize the inception report check any mistakes
-\end{enumerate} }%
-{ N $\backslash$ A}%
+{Finalize the inception report check any mistakes }%
+{Inception Report}%
 {N $\backslash$ A}
 {N $\backslash$ A}%
 
@@ -208,35 +204,33 @@ previous meetings
 \meeting{$29^{th}$ October 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
 { \begin{enumerate} 
-\item Agree on tasks for first iteration
+  \item First iteration plan
 \end{enumerate} }%
 { N $\backslash$ A}%
 {N $\backslash$ A}
 {\begin{enumerate}
 \item Write constructer functions of Description Logic to allow modular design
 \item Give precedence rule for operators (like in logic)
-\item Add domain to the code and appropriate
-\item Rules as a abstract data type
+\item Implement rules as a abstract data type
 \item Add knowledge base to the proof system
 \item Use either type for outputs
 \end{enumerate}}%
 
 \meeting{$1^{st}$ November 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
-{\begin{enumerate} 
-\item  Deal with unusual cases inside the algorithms
-\end{enumerate} }%
+{Deal with unusual cases inside the algorithms}%
 {\begin{enumerate}
 \item Precedence rule for operators
 \item Constructer functions and abstract data type representing rules implemented
 \end{enumerate}}%
-{N $\backslash$ A}
+{\begin{enumerate}
+\item Write code for ALC instead of AL
+\item Model checker and proof checker will provide a report in case of failure
+\end{enumerate}}
 {\begin{enumerate}
 \item Model checker which outputs a report
 \item Proof checker which output a report
-\item Proof/Model searcher done
-\item Debugging function if applicable
-\item Perform code review
+\item Proof/Model searcher
 \end{enumerate}}%
 
 \meeting{$5^{th}$ November 2010}%
@@ -245,18 +239,15 @@ previous meetings
 \item  Check progress and set new tasks
 \end{enumerate} }%
 {\begin{enumerate}
-\item Virtually achieved proof checker should be done by a day
-\item Planned pseudo-code and design for proof/model searcher
-\item Achieved model checker for simple concepts
-\item Achieved a model in domain checker (all elements in the representation inside the domain)
-\item Send concept to negation normal form function
+\item Early implementation of the proof checker
+\item Pseudo-code and design for proof/model searcher
+\item Achieved model checker for simple concepts without reports for failure
 \end{enumerate}}%
 {N $\backslash$ A}
 {\begin{enumerate}
-\item Concept sorter, so we can choose the best concept for the searcher
-\item Report for model checker
+\item Create a concept sorter, to improve Proof Or Model Searcher
+\item Output report for model checker
 \item Finish the proof/model checker
-\item Consider parallelism for model checking if optimisation is necessary and useful
 \end{enumerate}}%
 
 \meeting{$8^{th}$ November 2010}%
@@ -266,10 +257,10 @@ previous meetings
 \end{enumerate} }%
 {\begin{enumerate}
 \item Working basis for the model checker
-\item Proof checker done without the error tester
-\item Proof/Model searcher done, but without unit tests
+\item Proof checker done with basic unit tests
+\item Proof/Model searcher with basis unit tests
 \end{enumerate}}%
-{\begin{enumerate}
+{Agreements for the progress report: \begin{enumerate}
 \item Decide to write the code for ALC instead of AL since it was agreed as it is more pratical as a consequence we combined two iterations
 \item Two new features has been added which returns why proofs or models fail, and users can check their own models and proofs
 \item No new extension planned at the moment
@@ -284,8 +275,6 @@ previous meetings
 \item More extensive testing for the proof/model searcher
 \item More extensive testing for the model checker
 \item More extensive testing for the proof checker
-\item Use HLint to analyse our code
-\item Review other people code
 \item Agree on other logics which we want to extend our software to
 \item Write draft progress (part 1 of report 2) : Sagie
 \item Write draft revisions (part 2 of report 2) : Jannis
@@ -295,20 +284,14 @@ previous meetings
 
 \meeting{$11^{th}$ November 2010}%
 {Dr. Pattinson, S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
-{\begin{enumerate} 
+{\begin{enumerate}
 \item Theory about Tableau Calculus
-\item Extensions of other logics
+\item Extensions to other logics
+\item Progress report
 \end{enumerate} }%
-{\begin{enumerate}
-\item Possible extenions, number in exists relations, ABox (validity at specific points) contribute fairly
-\end{enumerate}}%
-{\begin{enumerate}
-\item Extensive testing for each part of the software
-\item Used HLint to improve our code
-\item Partial review of other people code
-\item Early draft of report except for precise schedule
-\end{enumerate}}
-{N $\backslash$ A}%
+{Early draft of report except for precise schedule}
+{As Possible extension: Counting successors, ABox (validity at specific points)}%
+{}%
 
 \meeting{$15^{th}$ November 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
@@ -316,11 +299,9 @@ previous meetings
 {N $\backslash$ A}%
 {N $\backslash$ A}
 {\begin{enumerate}
-\item Yet more testing, for broader range, and systematic
-\item Code review, and improve ou code
-\item Make it compatible with proof tree
-\item Cabal global testing
-\item When done start caching
+\item Extensive testing for each part of the software
+\item Set up cabal for package management
+\item Set up cabal for global testing
 \end{enumerate}}%
 
 \meeting{$19^{th}$ November 2010}%
@@ -340,27 +321,18 @@ previous meetings
 
 \meeting{$22^{nd}$ November 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
-{\begin{enumerate}
-\item Achievements
-\item Testing
-\item Implementation issues
-\item Tasks for next time
-\end{enumerate}}%
+{}%
 {\begin{enumerate}
 \item Early implementation of the parser
-\item Clearer testing messages
-\item Combined the test concepts
-\item Setify the proof and model searcher done but not commited
-\item Corrected some bugs
+\item Clearer and more consistent messages provided by cabal testing system
+\item Several issues has been corrected
 \end{enumerate}}%
 {N $\backslash$ A}
 {\begin{enumerate}
-\item Clear up the testing for Sagie part (Michal)
-\item Clear up the testing for Ka Wai part (Ka Wai)
-\item Setify commit (Sagie)
-\item Try to solve loops as much as possible (Sagie)
-\item Generate tests (Michal)
-\item Add parser to Cabal (Michal)
+\item Improve clarity of the testing for Proof and Model Searcher (Michal)
+\item Improve clarity of the testing for Proof checker (Ka Wai)
+\item Create a test generating function (Michal)
+\item Add parser to the Cabal package (Michal)
 \item Improve Model Checker (Michal)
 \item Improve parser implementation (Jannis + Ka Wai)
 \item Write tests for the parser (Jannis + Ka Wai)
@@ -369,37 +341,36 @@ previous meetings
 \meeting{$25^{th}$ November 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
 {Dealing with caching how to avoid infinite loops in proofs.}%
-{N $\backslash$ A}%
+{\begin{enumerate}
+\item Model Checker improved
+\item Tests for the parser has been implemented
+\end{enumerate}}%
 {N $\backslash$ A}
-{N $\backslash$ A}%
+{Same tasks at hand}%
 
 \meeting{$26^{th}$ November 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
-{\begin{enumerate}
-\item Error fixing
-\end{enumerate}
+{Fixing several issues that has arised
 }%
-{N $\backslash$ A}%
+{Early implementation for test generation}%
 {N $\backslash$ A}
 {\begin{enumerate}
-\item Think about individuals (All)
-\item Finish cycles (Sagie)
-\item Help Sagie deals with cycles (All \ Sagie)
-\item Tests for Parser (Michal)
-\item Choose between ABox and satisfaction operators
-\item Code reviews
+\item Think about how to implement ABOX extension (individual) (All)
+\item All together provide help in solving issue with cycles
+\item Implement tests for the Parser (Michal)
+\item Choose between ABox and/or satisfaction operators and/or counting restrictions
 \end{enumerate}}%
 
 \meeting{$29^{th}$ November 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
 {\begin{enumerate}
-\item Individuals (Logic)
-\item Output the model and proof to a visual format
+\item ABOX (Individuals) (Logic)
+\item How to output models and proofs to a visual format
 \end{enumerate}
 }%
 {\begin{enumerate}
-\item Cycles works for most cases
-\item Early testing for the parser
+\item Significant improvement in implementing cycles
+\item Early testing implementation for the parser
 \end{enumerate}}%
 {N $\backslash$ A}
 {\begin{enumerate}
@@ -408,12 +379,12 @@ previous meetings
 
 \meeting{$2^{nd}$ December 2010}%
 {Dr. Pattinson, S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
-{\begin{enumerate}
-\item How to adapt the proof searcher for Individuals ALCO 
+{How to adapt the proof searcher for ABOX (Individuals) also known as ALCO 
+\begin{itemize}
 \item Labelled tableaux using Labelled sequences: always some individual considered and new rules $\implies$ equality rule, substitution rule
 \item Blocking strategy to avoid non terminating cases, since extension rule always add a new point for non empty TBOX in case above
 \item Propagation information: At and nodes describe constrains
-\end{enumerate}
+\end{itemize}
 }%
 {N $\backslash$ A}%
 {N $\backslash$ A}
@@ -422,29 +393,48 @@ previous meetings
 \meeting{$3^{rd}$ December 2010}%
 {S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
 {\begin{enumerate}
-\item Report 3
-\item Unit Testing
-\item Outputs
+\item Validation report
+\item Graphical outputs for models and proofs
 \end{enumerate}
 }%
 {\begin{enumerate}
-\item Parser tests
-\item Testing
-\item Implementing Cycles
+\item Several test has been implemented for parsers
+\item Bug fixes and improvement for cycles
+\end{enumerate}
+}%
+{}
+{\begin{enumerate}
+\item Implement model output (Ka Wai)
+\item Implement proof output (Michal)
+\item Fixes all bugs discovered
+\item Read ALCO papers
+\end{enumerate}}%
+
+\meeting{$3^{rd}$ December 2010}%
+{S. Benaim, J. Bullian, M.G. Parusinski, K.W. Cheng}%
+{\begin{enumerate}
+\item Third report (Software Validation) concent
+\item Impact of testing on our project
 \end{enumerate}
 }%
 {\begin{enumerate}
-\item Model output Ka Wai
-\item Proof output Michal
+\item Some informations about testing and its benefits has been sent to Ka Wai
+\item Model output partially implemented
+\item Bug fixed about applyExists
+\item Partial proof output
+\end{enumerate}
+}%
+{\begin{enumerate}
+\item None
 \end{enumerate}
 }
 {\begin{enumerate}
-\item Model output
-\item Proof output
-\item Fixes bugs with apply exists rule
-\item Fixes bugs for cycle
-\item Read ALCO papers
-\item same tasks as efore
+\item Improve proof output and model output
+\item Finish the report
+\item Information about validation technics if relevant
+\item Fix cycle and/or caching
+\item Think about division of work for the final report
+\item Write the main function (Michal)
 \end{enumerate}}%
 
 \end{document}
