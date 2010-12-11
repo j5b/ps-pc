@@ -142,7 +142,7 @@ foldExists cs gamma (Exists rel c : es) (i:is) memory
           = if (head is) `elem` dom
             then ([i], [], [(rel, [(i, head is)])])
             else ([], [], [])
-	(dom, _, _) = m        
+        (dom, _, _) = m        
     existsResult = applyExists cs gamma (Exists rel c)
 -- A function that sorts concepts in the following order, first to last:
 -- 'A, not A', 'A and B', 'A or B', 'ER.C', others
