@@ -133,7 +133,7 @@ foldExists cs gamma (Exists rel c : es) (i:is) memory
     dealWithModel (m, is') 
         = (either (\(m', is'') -> Left (joinModels m' m'', is''))
             Right proofOrModel', newmemory')
-      where
+      wherest,
         (proofOrModel', newmemory') 
             = foldExists cs gamma es (i : is') newmemory -- findProofOrModel es gamma is' newmem'
         m'' = joinModels m $ joinModels pointermodel -- problem here!
@@ -215,6 +215,7 @@ createLoopModel (Exists rel c : cs) gamma n (i:is) memory
          where 
             isNotExists =  (/=(Exists rel c : cs)) . fst
        newmodel = ([i-1], [], [(rel, [(i-1, n)])])
+
 {-createLoopModel (Exists rel c : cs) gamma n (i:is) memory 
    = (either (Left . g) Right proofOrModel, newmem) 
     where
