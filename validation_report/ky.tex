@@ -1,0 +1,28 @@
+As indicated in the inception report, a test-driven development method was adopted; hence unit testing was done at all stages of development. Unit tests were written before the implementation of functions or simultaneously; and test suites are run regularly, especially after any changes to code, to ensure the program still works as expected. All areas of code were tested in this way individually: model/proof construction; model checking; proof checking; parsing of user input and test files; and the outputting of the constructed proof and model.
+
+\subsection*{Benefits}
+Although writing an extensive set of unit tests take almost as much time as implementing the code itself, there were many benefits from this approach.
+
+By simultaneously writing the unit tests, it helped programmers think about and have a clear view of the expected/desired output of functions. This made coding of functions easier and members were able to identify mistakes quickly.
+
+When moving on to code other parts of the program, we have confidence that tested code is correct and produces expected results when given expected inputs. As a result, we were able to highlight differences in expectations between members writing different parts of the program for discussion in our meetings and come to an agreed solution.
+
+Unit tests were written for code coverage, ensuring all input cases were considered and our code produces the expected results. Otherwise, unit testing exposed where cases were not handled correctly. This helped identify most bugs early on, before code became more complex and difficult to resolve.
+
+In particular, having extensively tested proof checker and model checker by unit tests enabled these components of the program to be used with high confidence in global testing. The proof and model checker are important in the global tests to check the results of the proof and model construction part of the program, which is very complicated and much harder to test by simply unit tests due to its exploratory nature.
+
+\subsection*{Bugs}
+The bugs unit testing revealed include cases that were not covered properly, errors in the code, and bugs introduced due to changes in code. Bugs detected immediately by unit testing:
+\begin{itemize}
+\item Initially the trivial cases were not covered in the proof and model construction stage. When falsity was in the set of inputs for the proof and model construction, a model was produced rather than the expected proof containing only falsity to show unsatisfibaility.
+
+\item The possibility of cycles in the input global assumptions was not dealt with.
+
+\item In cases where particular input patterns should not be passed to auxiliary functions due to the way that the function is called, unit tests detected the non-exhaustive input patterns.
+
+\item The possibility of cycles in the input global assumptions was not dealt with by the proof and model construction stage.
+
+\item Some incorrect checks performed by the proof checker and model checker.
+
+\item After some changes to code, some bugs were introduced since the affect of the changes on all cases were not considered. For example, after combining the separate parsers for user input and benchmark files to reuse functions, the parsing for one of the benchmark files was incorrect and needed to have further changes. 
+\end{itemize}
