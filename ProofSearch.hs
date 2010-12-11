@@ -133,7 +133,7 @@ foldExists cs gamma (Exists rel c : es) (i:is) memory
     dealWithModel (m, is') 
         = (either (\(m', is'') -> Left (joinModels m' m'', is''))
             Right proofOrModel', newmemory')
-      wherest,
+      where
         (proofOrModel', newmemory') 
             = foldExists cs gamma es (i : is') newmemory -- findProofOrModel es gamma is' newmem'
         m'' = joinModels m $ joinModels pointermodel -- problem here!
