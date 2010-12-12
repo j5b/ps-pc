@@ -9,7 +9,7 @@ When moving on to code other parts of the program, we have confidence that teste
 
 Unit tests were written for code coverage, ensuring all input cases were considered and our code produces the expected results. Otherwise, unit testing exposed where cases were not handled correctly. This helped identify most bugs early on, before code became more complex and difficult to resolve.
 
-In particular, having extensively tested proof checker and model checker by unit tests enabled these components of the program to be used with high confidence in global testing. The proof and model checker are important in the global tests to check the results of the proof and model construction part of the program, which is very complicated and much harder to test by simply unit tests due to its exploratory nature.
+In particular, having extensively tested proof checker and model checker by unit tests enabled these components of the program to be used with high confidence in other types of testing. The proof and model checkers are important in these other tests to check the results produced, for the automatically generated complex input cases, by the proof and model construction part of the program, which is very complicated and much harder to test simply by unit tests due to its exploratory nature.
 
 \subsection*{Bugs}
 The bugs unit testing revealed include cases that were not covered properly, errors in the code, and bugs introduced due to changes in code. Bugs detected immediately by unit testing:
