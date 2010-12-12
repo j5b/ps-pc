@@ -44,7 +44,7 @@ findProofOrModel (Atom c : Neg (Atom d) : cs) _ (i:is) memory
     then (Right (NodeZero (Atom c : Neg (Atom d) : cs, "bottom", Atom c)), memory)
     else (Left (constructAtomicModel (Atom c : cs) i, is), memory)
 findProofOrModel (And c d : cs) gamma is memory
-  = (result, newmem) 
+  = (result, newmem)
     where
       newmem 
         = if findInMemory == [] 
@@ -94,7 +94,7 @@ findProofOrModel (Exists rel c : cs) gamma is memory -- TODO: Create atomic mode
                 (filter isExists (Exists rel c : cs))
                 is memory
           | isRight $ snd $ head findInMemory =
-            createLoopModel (Exists rel c : cs) gamma -- (filter isExists (Exists rel c : cs)) 
+            createLoopModel (Exists rel c : cs) -- (filter isExists (Exists rel c : cs)) 
                 (fromRight $ snd $ head findInMemory)
                 is memory
           | otherwise = (fromLeft $ snd (head findInMemory), memory)
@@ -144,6 +144,7 @@ foldExists cs gamma (Exists rel c : es) (i:is) memory
             else ([], [], [])
         (dom, _, _) = m        
     existsResult = applyExists cs gamma (Exists rel c)
+
 -- A function that sorts concepts in the following order, first to last:
 -- 'A, not A', 'A and B', 'A or B', 'ER.C', others
 conceptSort :: [Concept] -> [Concept]
@@ -205,9 +206,9 @@ applyExists cs gamma (Exists rel c)
 
 -- Constructs a model when a loop exists
 -- Should have all exists sotred here, need to call proofOrModel for any further exists
-createLoopModel :: [Concept] -> [Concept] -> Individual -> [Individual] -> Memory
+createLoopModel :: [Concept] -> Individual -> [Individual] -> Memory
                    -> (Either (Model, [Individual]) ProofTree, Memory)
-createLoopModel (Exists rel c : cs) gamma n (i:is) memory 
+createLoopModel (Exists rel c : cs) n (i:is) memory 
    = (Left (newmodel, is), newmem)
       where 
        newmem = (Exists rel c : cs, Left (Left (newmodel, is))):newmem'
@@ -215,36 +216,4 @@ createLoopModel (Exists rel c : cs) gamma n (i:is) memory
          where 
             isNotExists =  (/=(Exists rel c : cs)) . fst
        newmodel = ([i-1], [], [(rel, [(i-1, n)])])
-
-{-createLoopModel (Exists rel c : cs) gamma n (i:is) memory 
-   = (either (Left . g) Right proofOrModel, newmem) 
-    where
-       newmem = (Exists rel c : cs, Left (Left (newmodel, is))):newmem'
-       newmem' = filter isNotExists newmem''
-         where 
-            isNotExists =  (/=(Exists rel c : cs)) . fst
-       (proofOrModel, newmem'') = findProofOrModel cs gamma (i:is) memory       
-       g (model, indivs) = (joinModels (constructAtomicModel cs i) (m model), indivs)
-       m model = joinModels model newmodel
-       newmodel = ([i], [], [(rel, [(i, n)])]) -- Pred here!
-createLoopModel _ _ _ _ _ = error "createLoopModel is called with wrong params: probably with no exists" -}
-
-{-createLoopModel :: [Concept] -> [Concept] -> [Concept] -> 
-                     Individual -> [Individual] -> Memory -> 
-                     (Either (Model, [Individual]) ProofTree, Memory)
-createLoopModel (Exists rel c : cs) (Exists rel' c' : es) gamma n (i:is) memory 
-   = (result, newmem)
-    where
-       result = f (newmodel, (i:is))
-       newmem = (((Exists rel c : cs), (Left result)):(newmem'))
-       newmem' = filter isNotExists newmem''
-       isNotExists =  (/=(Exists rel c : cs)) . fst
-       newmodel = ([i], [], [(rel, [(i, n)])]) -- Pred here!
-       f (m, is') = either (\(m', is'') -> Left (joinModels m' m''', is''))
-                         (Right . g) proofOrModel
-       g proof = NodeOne (Exists rel c : cs, "exists", Exists rel c) proof
-       (proofOrModel, newmem'') = findProofOrModel es gamma (i:is) memory -- (Left (([], [], []), is), newmem') -- foldExists es is' newmem'
-       m''  = joinModels ([i], [], [(rel, [(i, head is)])]) newmodel
-       m''' = joinModels (constructAtomicModel cs i) m''
--}
 
