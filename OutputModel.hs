@@ -17,14 +17,25 @@ import ProofSearch
 {-
  Output string of DOT language that draws model
  WARNING: assumes the model is already checked & correct
+ Returns message if same relation name listed more than once
 -}
 modelToGraph :: Model -> String
 modelToGraph ([], _, _) = "Domain is empty, no model to draw"
 modelToGraph (dom, us, bs)
-  = "digraph {\n " ++ concat ulabels ++
-    domOnlyToGraph (nub dom Data.List.\\ unodes) ++
-    concatMap drawEdges (nub bs) ++ "}"
-  where (unodes, ulabels) = unaryToGraph (mapUnary (nub us) empty)
+  | (length dom) /= (length $ nub dom) = 
+      "Domain contains duplicated individuals"
+  | not $ isUnique us =
+      "Duplicated unary relation names exist"
+  | not $ isUnique bs =
+      "Duplicated binary relation names exist"
+  | otherwise =
+      "digraph {\n " ++ concat ulabels ++
+      domOnlyToGraph (dom Data.List.\\ unodes) ++ concatMap drawEdges bs ++ "}"
+  where (unodes, ulabels) = unaryToGraph $ mapUnary us empty
+
+-- Returns true if there is only 1 occurrence of the fst of the pairs in the list
+isUnique :: [(String, a)] -> Bool
+isUnique xs = (length xs) == (length $ nub $ fst $ unzip xs)
 
 -- Draws edges for a binary relation
 drawEdges :: (String, [(Individual, Individual)]) -> String

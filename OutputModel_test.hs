@@ -28,6 +28,7 @@ dom0 = []
 dom1 = [1]
 dom2 = [1,2,3]
 dom3 = [1,2,3,4]
+dom4 = [1,2,3,4,5,6]
 domall = concat [dom0, dom1, dom2, dom3, [5,6]]
 
 unary0 = []
@@ -78,9 +79,10 @@ domaintest3 = testequality msg target result
                  "3 [label=\"3: B \"] ;\n 4 [label=\"4\"] ;\n 1 -> 2 " ++
                  "[label=\"R\"] ;\n 2 -> 3 [label=\"R\"] ;\n " ++ end
 
+-- Should different relation names with same x -> y be represented by same arrow & list relation names by 1 label, or represent by individual arrows
 domaintest4 = testequality msg target result "([1,1,2,3,1,2,3,4,5,6],[(A,[1,3]), (B,[2,4,1])], [(A,[(4,1)]),(R,[(4,1)])])"
   where msg    = "Failed to produce correct output for simple model"
-        result = modelToGraph (domall, unary4, binary4)
+        result = modelToGraph (dom4, unary4, binary4)
         target = begin ++ "1 [label=\"1: B A \"] ;\n 2 [label=\"2: B \"] ;\n" ++
                  " 3 [label=\"3: A \"] ;\n 4 [label=\"4: B \"] ;\n 5 " ++
                  "[label=\"5\"] ;\n 6 [label=\"6\"] ;\n 4 -> 1 " ++
