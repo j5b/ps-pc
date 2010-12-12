@@ -29,3 +29,10 @@ These kind of tests can also be understood as \emph{stress testing} of our
 program, because the cases are larger than we expect normal user input to be
 and are very likely to test concepts that go beyond what users would normally
 input.
+
+We usually ran \emph{hlint} and unit tests before submitting the code to the
+repository. Then we gave code reviews and used grey-box testing to improve
+the quality of the code and find bugs that weren't found before. On a regular
+basis we run the black-box tests on the whole program, discovering issues
+that were missed in the previous steps. This whole setup gives us high
+confidence that the program is working correctly.
