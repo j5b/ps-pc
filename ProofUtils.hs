@@ -100,7 +100,7 @@ fromLeft _ = error "fromLeft: Should not get a right here"
 
 fromRight :: Either a b -> b
 fromRight (Right b) = b
-fromRight _ = error "fromRight: Should not get a left here"
+fromRight _ = error "fromRight: Should not get a left here" 
 
 isRight :: Either a b -> Bool
 isRight (Right _) = True
