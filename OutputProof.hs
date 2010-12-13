@@ -12,6 +12,7 @@ import System.IO
 import System.Process
 import System.Exit
 import Control.Monad
+import Data.ByteString as BS
 
 import Signature
 import Proof
@@ -57,7 +58,7 @@ createGenericPDF proofs file = do putStrLn $ "Opening file "++file
         end    = "\\end{center}\n"++"\\end{document}"
 
 breakInPieces _ [] = []
-breakInPieces size list = result:(breakInPieces size rest)
+breakInPieces size list = result:breakInPieces size rest
   where (result,rest) = countTo 0 size list
         countTo _ _ [] = ([],[])
         countTo num size (x:xs) 
@@ -93,6 +94,8 @@ conceptToLatex (Atom a)  = a
 conceptToLatex (Neg (Atom a)) = "\\neg "++a
 conceptToLatex (Neg concept) = "\\neg ("++conceptToLatex concept++")"
 conceptToLatex (Or (Atom a) (Atom b)) = a++" \\lor "++b
+conceptToLatex (Or T (Neg T)) = "\\top \\lor \\bot"
+conceptToLatex (Or (Neg T) T) = "\\bot \\lor \\top"
 conceptToLatex (Or T (Atom b)) = "\\top \\lor "++b
 conceptToLatex (Or (Neg T) (Atom b)) = "\\bot \\lor "++b
 conceptToLatex (Or (Atom a) T) = a++" \\lor \\top"
@@ -105,6 +108,8 @@ conceptToLatex (Or lc T) = "("++conceptToLatex lc++") \\lor \\top"
 conceptToLatex (Or lc (Neg T)) = "("++conceptToLatex lc++") \\lor \\bot"
 conceptToLatex (Or lc rc) = "("++conceptToLatex lc++") \\lor ("++conceptToLatex rc++")"
 conceptToLatex (And (Atom a) (Atom b)) = a++" \\land "++b
+conceptToLatex (And T (Neg T)) = "\\top \\land \\bot"
+conceptToLAtex (And (Neg T) T) = "\\bot \\land \\bot"
 conceptToLatex (And T (Atom b)) = "\\top \\land "++b
 conceptToLatex (And (Neg T) (Atom b)) = "\\bot \\land "++b
 conceptToLatex (And (Atom a) T) = a++" \\land \\top"
