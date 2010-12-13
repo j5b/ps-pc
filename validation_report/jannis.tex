@@ -1,0 +1,38 @@
+We used several methods in addition to unit tests to validate the program.
+The user interface we choose allows to input concepts in a familiar way for anyone
+who has worked with formal logic before (e.g. `$A \& B \rightarrow C$'). We have not systematically
+tested this on users, but the users of our program were always able to learn the interface quickly.
+
+We use \emph{hlint}, a program similar to lint, that analyses Haskell programs and
+suggests changes, to ensure a good and consistent style throughout the program. This
+not only ensured that the source code is easier to read and understand, but also
+made programming mistakes less likely.
+
+As mentioned in previous reports, we make extensive use of \emph{code reviews}. These
+helped improve the quality of the code and made sure that we would understand
+each others code. It also lead to the discovery of some small programming mistakes
+in the reviews.
+
+After each significant change we used \emph{grey-box testing} to validate these
+changes, i.e. we tried with our knowledge of the inner workings of the program
+to find possible problems. This sometimes lead to the discovery of small issues,
+for example a forgotten case.
+
+Furthermore, we used two different ways of \emph{black-box testing} in addition to
+the unit testing described above. We wrote a small program that automatically generates
+large test cases, runs the proof/model searcher on them, and then either the proof
+or the model checker on the result. We also wrote a parser, so we could read complex
+`benchmark concepts' that are available from the proof searcher community, and
+test these in the same way. Both these approaches turned out to be very
+useful and helped us discover some rather obscure bugs.
+These kind of tests can also be understood as \emph{stress testing} of our
+program, because the cases are larger than we expect normal user input to be
+and are very likely to test concepts that go beyond what users would normally
+input.
+
+We usually ran \emph{hlint} and unit tests before submitting the code to the
+repository. Then we gave code reviews and used grey-box testing to improve
+the quality of the code and find bugs that weren't found before. On a regular
+basis we run the black-box tests on the whole program, discovering issues
+that were missed in the previous steps. This whole setup gives us high
+confidence that the program is working correctly.
