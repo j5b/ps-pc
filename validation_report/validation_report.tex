@@ -12,6 +12,7 @@
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{longtable}
+\usepackage{appendix}
 
 % for the code listings (if any)
 \usepackage{listings}
@@ -37,6 +38,25 @@
 \textbf{Agreements:} &#5 \\%
 \hline%
 \textbf{Tasks assigned:} &#6  \\%
+\hline%
+\end{longtable}%
+\end{center}%
+\bigbreak
+}
+
+\newcommand{\week}[5]{%
+\begin{center}%
+\begin{longtable}{| p{3.5cm} | | p{13cm} |}%
+\hline%
+\textbf{Week:} & #1 \\%
+\hline%
+\textbf{J. Bulian:} &#2 \\%
+\hline%
+\textbf{S. Benaim:} &#3\\%
+\hline%
+\textbf{M. G. Parusinsky:} &#4 \\%
+\hline%
+\textbf{K. W. Cheng:} &#5 \\%
 \hline%
 \end{longtable}%
 \end{center}%
@@ -87,3 +107,4 @@
 \input{michal}
 
 \end{document}
+
