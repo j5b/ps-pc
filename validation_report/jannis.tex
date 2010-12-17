@@ -1,5 +1,8 @@
-We used several methods in addition to unit tests to validate the program.
-The user interface we choose allows to input concepts in a familiar way for anyone
+We used several methods in addition to unit tests to validate the program. Although
+the unit tests were very useful and helped us find many bugs an early stage, they don't
+help with more complex bugs. This is why we made use of \emph{hlint}, \emph{code reviews} and \emph{grey/black box testing} to complement them.
+
+The user interface we chose allows to input concepts in a familiar way for anyone
 who has worked with formal logic before (e.g. `$A \& B \rightarrow C$'). We have not systematically
 tested this on users, but the users of our program were always able to learn the interface quickly.
 
@@ -14,7 +17,7 @@ each others code. It also lead to the discovery of some small programming mistak
 in the reviews.
 
 After each significant change we used \emph{grey-box testing} to validate these
-changes, i.e. we tried with our knowledge of the inner workings of the program
+changes, i.e. we tried, using our knowledge of the inner workings of the program,
 to find possible problems. This sometimes lead to the discovery of small issues,
 for example a forgotten case.
 
@@ -24,15 +27,17 @@ large test cases, runs the proof/model searcher on them, and then either the pro
 or the model checker on the result. We also wrote a parser, so we could read complex
 `benchmark concepts' that are available from the proof searcher community, and
 test these in the same way. Both these approaches turned out to be very
-useful and helped us discover some rather obscure bugs.
+useful and helped us discover some rather obscure bugs (e.g. bugs that would only
+occure if concepts were nested in a very particular and complex way).
 These kind of tests can also be understood as \emph{stress testing} of our
 program, because the cases are larger than we expect normal user input to be
 and are very likely to test concepts that go beyond what users would normally
 input.
 
+We integrated these tools into a validation process.
 We usually ran \emph{hlint} and unit tests before submitting the code to the
 repository. Then we gave code reviews and used grey-box testing to improve
 the quality of the code and find bugs that weren't found before. On a regular
-basis we run the black-box tests on the whole program, discovering issues
-that were missed in the previous steps. This whole setup gives us high
+basis we ran the black-box tests on the whole program, discovering issues
+that were missed in the previous steps. This whole setup gave us high
 confidence that the program is working correctly.

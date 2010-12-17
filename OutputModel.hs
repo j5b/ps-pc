@@ -64,3 +64,7 @@ addToIndividual :: String -> [Individual] -> Map Individual String
                    -> Map Individual String
 addToIndividual u [] m     = m
 addToIndividual u (i:is) m = insertWith (++) i (u ++ " ") $ addToIndividual u is m
+
+-- Writes graph to file.
+writeModel :: FilePath -> Model -> IO()
+writeModel filename = writeFile ("models/"++filename) . modelToGraph

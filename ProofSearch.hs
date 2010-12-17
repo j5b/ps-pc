@@ -13,137 +13,91 @@ module ProofSearch where
 
 import Data.Either
 import Data.List
+import Data.Maybe
 
 import Model
 import Proof
 import ProofUtils
 import Signature
 
--- Either: Individual if unexpanded, ProofOrModel otherwise
-type Memory = [([Concept] , Either (Either (Model, [Individual]) ProofTree) Individual)]
+type CacheEntry = Either Model ProofTree
+type Cache      = [([Concept], (Individual, CacheEntry))]
 
 -- Takes a knowledge base and a set of concepts and returns either a proof
 -- showing inconsistency or a model.
 findPOM :: [Concept] -> [Concept] -> Either Model ProofTree
-findPOM cs gamma = either (Left . (sortModel .fst)) Right
-                   (fst $ findProofOrModel (conceptSort . nub $ map toNNF cs++gamma)
-                    (nub $ map toNNF gamma) [1..] [])
+findPOM cs gamma = either (Left . fst) Right $ fst $
+                   findProofOrModel (conceptSort . nub $ map toNNF cs++gamma)
+                   (nub $ map toNNF gamma) [1..] []
 
--- Maps a set of concepts to either a proof or model.
-findProofOrModel :: [Concept] -> [Concept] -> [Individual] -> Memory
-                    -> (Either (Model, [Individual]) ProofTree, Memory)
--- do we want cashing is base cases?! look at sorting
-findProofOrModel [] _ (i:is) memory
-  = (Left (([i],[],[]), is), memory)
-findProofOrModel (T : cs) _ (i:is) memory
-  = (Left (([i],[],[]), is), memory)
-findProofOrModel (Neg T:cs) _ is memory
-  = (Right (NodeZero (Neg T : cs, "", Neg T)), memory)
-findProofOrModel (Atom c : Neg (Atom d) : cs) _ (i:is) memory
+-- Maps a set of concepts to either a proof or model. At this stage only
+-- the caching is handled.
+findProofOrModel :: [Concept] -> [Concept] -> [Individual] -> Cache
+                    -> (Either (Model, [Individual]) ProofTree, Cache)
+findProofOrModel cs gamma (i:is) cache
+  = maybe (result, cache') fromCache $ lookup cs cache
+    where
+      expanding          = (cs, (i, Left ([],[],[])))
+      result             = findProofOrModel' cs gamma (i:is) (expanding:cache)
+      resulttocash       = either (Left . fst) Right result
+      cache'             = (cs, (i, resulttocash)):cache
+      fromCache (_, pom) = (either (Left . (\m -> (m, i:is))) Right pom, cache)
+
+-- Maps a set of concepts to either a proof or model. Here is the actual
+-- logic of the function.
+findProofOrModel' :: [Concept] -> [Concept] -> [Individual] -> Cache
+                    -> Either (Model, [Individual]) ProofTree
+findProofOrModel' [] _ (i:is) _
+  = Left (([i],[],[]), is)
+findProofOrModel' (T : cs) gamma (i:is) _
+  = Left (([i],[],[]), is)
+findProofOrModel' (Neg T:cs) gamma is _
+  = Right (NodeZero (Neg T : cs, "", Neg T))
+findProofOrModel' (Atom c : Neg (Atom d) : cs) _ (i:is) _
   = if  c == d
-    then (Right (NodeZero (Atom c : Neg (Atom d) : cs, "bottom", Atom c)), memory)
-    else (Left (constructAtomicModel (Atom c : cs) i, is), memory)
-findProofOrModel (And c d : cs) gamma is memory
-  = (result, newmem)
+    then Right (NodeZero (Atom c : Neg (Atom d) : cs, "bottom", Atom c))
+    else Left (constructAtomicModel (Atom c : cs) i, is)
+findProofOrModel' (And c d : cs) gamma is cache
+  = either Left (Right . constructProof)
+    (fst $ findProofOrModel cs' gamma is cache)
     where
-      newmem 
-        = if findInMemory == [] 
-          then (And c d:cs, Left result):newmem' 
-          else newmem'
-      (result, newmem') 
-        = if findInMemory == []
-          then (either Left (Right . g) proofOrModel, newmem'')
-          else (fromLeft $ snd (head findInMemory), memory)
-            where 
-               (proofOrModel, newmem'') = findProofOrModel newcs gamma is memory
-               g = NodeOne (And c d : cs, "and", And c d)
-               newcs = conceptSort $ c `uniqueCons` (d `uniqueCons` cs)
-      findInMemory = filter ((==(And c d : cs)) . fst) memory
-findProofOrModel (Or c d : cs) gamma is memory
-  = (result, newmem)
+      constructProof = NodeOne (And c d : cs, "and", And c d)
+      cs' = conceptSort $ c `uniqueCons` (d `uniqueCons` cs)
+findProofOrModel' (Or c d : cs) gamma is cache
+  = either Left constructProofOrFindModel pom
     where
-      newmem 
-        = if findInMemory == [] 
-          then (Or c d : cs, Left result):newmem' 
-          else newmem'
-      (result, newmem')
-        = if findInMemory == []
-          then (either (fst . f) (fst . g) proofOrModel, 
-               either (snd . f) (snd . g) proofOrModel)
-          else (fromLeft $ snd (head findInMemory), memory)
-            where
-               (proofOrModel, newmem'') = findProofOrModel 
-                                          (conceptSort $ c `uniqueCons` cs) 
-                                          gamma is memory
-               (proofOrModel2, newmem''') = findProofOrModel 
-                                            (conceptSort $ d `uniqueCons` cs) 
-                                            gamma is memory -- newmem''
-               f proof = (Left proof, newmem'')
-               g pf = (either Left (Right . g' pf) proofOrModel2, newmem''')
-               g' = NodeTwo (Or c d : cs, "or", Or c d)
-      findInMemory = filter ((==(Or c d : cs)) . fst) memory
-findProofOrModel (Exists rel c : cs) gamma is memory -- TODO: Create atomic model here
-  = (result, newmem)
-      where
-        newmem = if findInMemory == []
-                 then (Exists rel c : cs, Left result):newmem'
-                 else newmem' 
-        (result, newmem') 
-          | findInMemory == [] =
-            foldExists (Exists rel c : cs) gamma
-                (filter isExists (Exists rel c : cs))
-                is memory
-          | isRight $ snd $ head findInMemory =
-            createLoopModel (Exists rel c : cs) -- (filter isExists (Exists rel c : cs)) 
-                (fromRight $ snd $ head findInMemory)
-                is memory
-          | otherwise = (fromLeft $ snd (head findInMemory), memory)
-        findInMemory = filter ((==(Exists rel c : cs)) . fst) memory
-findProofOrModel cs gamma (i:is) memory -- (Left (constructAtomicModel cs i, is), memory)
-   = (result, newmem) 
-    where
-      newmem 
-        = if findInMemory == [] 
-          then (cs, Left result):newmem' 
-          else newmem'
-      (result, newmem') 
-        = if findInMemory == []
-          then (Left (constructAtomicModel cs i, is), memory)
-          else (fromLeft $ snd (head findInMemory), memory)
-      findInMemory = filter ((==cs) . fst) memory   
+      (pom, cache')
+          = findProofOrModel (conceptSort $ c `uniqueCons` cs) gamma is cache
+      constructProofOrFindModel pf
+          = either Left (Right . constructProof pf) $ fst $
+            findProofOrModel (conceptSort $ d `uniqueCons` cs) gamma is cache'
+      constructProof = NodeTwo (Or c d : cs, "or", Or c d)
+findProofOrModel' (Exists rel c : cs) gamma is cache
+  = foldExists (Exists rel c : cs) gamma (filter isExists (Exists rel c : cs)) is cache
+findProofOrModel' cs gamma (i:is) _ = Left (constructAtomicModel cs i, is)
 
 -- Deals with the exists case by doing the following:
 --   (i)  If a proof is found, it is immediately returned.
 --   (ii) If a model is found, it recurses on the following exist concepts and
 --        merges the models if all model constructions were succesful, otherwise
 --        a proof is returned.
-foldExists :: [Concept] -> [Concept] -> [Concept] -> [Individual] -> Memory
-              -> (Either (Model, [Individual]) ProofTree, Memory)
-foldExists _ _ [] is memory
-  = (Left (([], [], []), is), memory)
-foldExists cs gamma (Exists rel c : es) (i:is) memory
-  = (either (fst . dealWithModel) (Right . fst . constructProof) proofOrModel, 
-     either (snd . dealWithModel) (snd . constructProof) proofOrModel)
+foldExists :: [Concept] -> [Concept] -> [Concept] -> [Individual] -> Cache
+              -> Either (Model, [Individual]) ProofTree
+foldExists _ _ [] (i:is) _
+  = Left (([], [], []), is)
+foldExists cs gamma (Exists rel c : es) (i:is) cache
+  = either dealWithModel (Right . constructProof) pom
   where
-    (proofOrModel, newmemory) 
-        = findProofOrModel existsResult 
-                            gamma is ((cs, Right i):memory)
-    constructProof pf 
-        = (NodeOne (cs, "exists", Exists rel c) pf, newmemory)
-    dealWithModel (m, is') 
-        = (either (\(m', is'') -> Left (joinModels m' m'', is''))
-            Right proofOrModel', newmemory')
+    (pom, cache') = findProofOrModel cs' gamma is cache
+    cs' = applyExists cs gamma (Exists rel c)
+    constructProof = NodeOne (cs, "exists", Exists rel c)
+    dealWithModel (m, is') = either (\(m', is'') -> Left (joinModels m' m'', is''))
+                             Right (foldExists cs gamma es (i : is') cache')
       where
-        (proofOrModel', newmemory') 
-            = foldExists cs gamma es (i : is') newmemory -- findProofOrModel es gamma is' newmem'
-        m'' = joinModels m $ joinModels pointermodel -- problem here!
-                                        (constructAtomicModel cs i)
-        pointermodel 
-          = if (head is) `elem` dom
-            then ([i], [], [(rel, [(i, head is)])])
-            else ([], [], [])
-        (dom, _, _) = m        
-    existsResult = applyExists cs gamma (Exists rel c)
+        m'' = joinModels m $ joinModels edgemodel (constructAtomicModel cs i)
+        edgemodel = maybe ([i], [], [(rel, [(i, head is)])])
+                    createBackEdge $ lookup cs' cache
+        createBackEdge (j, _) = ([i], [], [(rel, [(i, j)])])
 
 -- A function that sorts concepts in the following order, first to last:
 -- 'A, not A', 'A and B', 'A or B', 'ER.C', others
@@ -203,17 +157,3 @@ applyExists cs gamma (Exists rel c)
     isMatchingForall :: String -> Concept -> Bool
     isMatchingForall rel' (Forall rel c) = rel == rel'
     isMatchingForall _ _                 = False
-
--- Constructs a model when a loop exists
--- Should have all exists sotred here, need to call proofOrModel for any further exists
-createLoopModel :: [Concept] -> Individual -> [Individual] -> Memory
-                   -> (Either (Model, [Individual]) ProofTree, Memory)
-createLoopModel (Exists rel c : cs) n (i:is) memory 
-   = (Left (newmodel, is), newmem)
-      where 
-       newmem = (Exists rel c : cs, Left (Left (newmodel, is))):newmem'
-       newmem' = filter isNotExists memory
-         where 
-            isNotExists =  (/=(Exists rel c : cs)) . fst
-       newmodel = ([i-1], [], [(rel, [(i-1, n)])])
-
