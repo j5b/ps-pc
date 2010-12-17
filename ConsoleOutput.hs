@@ -4,7 +4,7 @@
   License: GPLv3
 -}
 
-module ConsoleOutput where 
+module ConsoleOutput (resultToConsole, conceptsToConsole) where 
 
 import Data.List
 import Data.Either
@@ -18,7 +18,7 @@ import ProofSearch
 topConsole = "(1)"
 botConsole = "(0)"
 andConsole = "&"
-orConsole  = "+"
+orConsole  = "|"
 negConsole = "~"
 existsConsole = "(E)"
 forallConsole = "(A)"
@@ -32,18 +32,18 @@ modelToConsole (dom,unarys,binarys)
   where dompart = "Domain  = "++show dom++"\n"
         unarypart = if unarys == [] 
                     then "No unary relation\n" 
-                    else "Unarys  = \n"++processUnarys unarys
+                    else "Unarys  = \n"++processUnarys unarys++"\n"
         binpart   = if binarys == [] 
                     then "No binary relation\n" 
-                    else "Binarys  = \n"++processBinarys binarys
+                    else "Binarys  = \n"++processBinarys binarys++"\n"
 
 processUnarys :: Num a => [(String,[a])] -> String
 processUnarys list = concatMap f list
-   where f (unary, space) = "--Unary "++unary++" is satisfied for: "++show space++"\n"
+   where f (unary, space) = "--Unary "++unary++" is satisfied for: "++show space
 
 processBinarys :: Num a => [(String,[(a,a)])] -> String
 processBinarys list = concatMap f list
-   where f (binary, space) = "--Binary "++binary++" is satisfied for: "++show space++"\n"
+   where f (binary, space) = "--Binary "++binary++" is satisfied for: "++show space
 
 proofToConsole :: ProofTree -> String
 proofToConsole = unlines . proofToConsoleInternal
