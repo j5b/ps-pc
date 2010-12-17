@@ -56,7 +56,7 @@ Concept2 : var                         {Atom $1}
 {
 
 parseError :: [Token] -> a
-parseError _ = error "Parse error"
+parseError i = error $ "Parse error on "++show i
 
 data Token
       = TokenTrue
@@ -79,6 +79,25 @@ lexVar (' ':cs) = lexVar cs
 lexVar cs =
    case span isAlphaNum cs of
       (var,rest)   -> (TokenVar var, rest)
+
+lexerInterpreter :: String -> [Token]
+lexerInterpreter [] = []
+lexerInterpreter ('(':'A':')':cs) = TokenForall : TokenVar var : lexerInterpreter (tail rest)
+  where (var, rest) = span (/= '.') cs
+lexerInterpreter ('(':'E':')':cs) = TokenExists : TokenVar var : lexerInterpreter (tail rest)
+  where (var, rest) = span (/= '.') cs
+lexerInterpreter ('(':'1':')':cs) = TokenTrue : lexerInterpreter cs
+lexerInterpreter ('(':'0':')':cs) = TokenFalse : lexerInterpreter cs
+lexerInterpreter (',':cs) = TokenSemicolon : lexerInterpreter cs
+lexerInterpreter ('&':cs) = TokenAnd : lexerInterpreter cs
+lexerInterpreter ('|':cs) = TokenOr : lexerInterpreter cs
+lexerInterpreter ('~':cs) = TokenNeg : lexerInterpreter cs
+lexerInterpreter ('(':cs) = TokenOB : lexerInterpreter cs
+lexerInterpreter (')':cs) = TokenCB : lexerInterpreter cs
+lexerInterpreter (c:cs)
+       | isSpace c = lexerInterpreter cs
+       | isAlphaNum c = var : (lexerInterpreter rest)
+  where (var, rest) = lexVar (c:cs)
 
 -- Lexer for input grammar.
 lexerI :: String -> [Token]
