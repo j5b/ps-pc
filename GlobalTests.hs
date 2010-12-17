@@ -24,7 +24,7 @@ import ProofChecker
 import Model
 import Proof
 
-untilTimeout = 10
+untilTimeout = 30
 
 -- run two threads and return the first one to finish
 compete :: IO a -> IO a -> IO a 
@@ -98,15 +98,15 @@ generateTest randomGen num sampleSize = testtemplate givens gamma
         indicesGamma  = generateIndices (mkStdGen seed1) sampleSize maxlength
         indicesGivens = generateIndices (mkStdGen seed2) sampleSize maxlength
         concepts      = generateConcepts num
-        gamma         = extract indicesGamma $ filter (not.containsExists) concepts
+        gamma         = extract indicesGamma concepts
         givens        = extract indicesGivens concepts
-        maxlength     = length $ filter (not.containsExists) concepts
+        maxlength     = length concepts
 
 globaltests = maplabel "GlobalTests" testlist
   where testlist = take numTests $ map generator [1..]
-        numTests = 10
-        sampleSize = 2
-        simpleSize = 4
+        numTests = 40
+        sampleSize = 6
+        simpleSize = 6
         generator x = generateTest (mkStdGen x) simpleSize sampleSize
 
 allglobaltests  = do putStrLn "==== Global tests"
