@@ -49,9 +49,9 @@ findProofOrModel' :: [Concept] -> [Concept] -> [Individual] -> Cache
                     -> Either (Model, [Individual]) ProofTree
 findProofOrModel' [] _ (i:is) _
   = Left (([i],[],[]), is)
-findProofOrModel' (T : cs) gamma (i:is) _
+findProofOrModel' (T : cs) _ (i:is) _
   = Left (([i],[],[]), is)
-findProofOrModel' (Neg T:cs) gamma is _
+findProofOrModel' (Neg T:cs) _ _ _
   = Right (NodeZero (Neg T : cs, "", Neg T))
 findProofOrModel' (Atom c : Neg (Atom d) : cs) _ (i:is) _
   = if  c == d
@@ -83,20 +83,22 @@ findProofOrModel' cs gamma (i:is) _ = Left (constructAtomicModel cs i, is)
 --        a proof is returned.
 foldExists :: [Concept] -> [Concept] -> [Concept] -> [Individual] -> Cache
               -> Either (Model, [Individual]) ProofTree
-foldExists _ _ [] (i:is) _
-  = Left (([], [], []), is)
+foldExists cs _ [] (i:is) _
+  = Left (constructAtomicModel cs i, is)
 foldExists cs gamma (Exists rel c : es) (i:is) cache
   = either dealWithModel (Right . constructProof) pom
   where
     (pom, cache') = findProofOrModel cs' gamma is cache
     cs' = applyExists cs gamma (Exists rel c)
     constructProof = NodeOne (cs, "exists", Exists rel c)
-    dealWithModel (m, is') = either (\(m', is'') -> Left (joinModels m' m'', is''))
+    dealWithModel (m, is') = either (\(m'', is'') -> Left (joinModels m' m'', is''))
                              Right (foldExists cs gamma es (i : is') cache')
       where
-        m'' = joinModels m $ joinModels edgemodel (constructAtomicModel cs i)
-        edgemodel = maybe ([i], [], [(rel, [(i, head is)])])
-                    createBackEdge $ lookup cs' cache
+        m' = joinModels m edgemodel
+        edgemodel = maybe forwardEdge createBackEdge $ lookup cs' cache
+        forwardEdge = if (head is) `elem` dom then ([i], [], [(rel, [(i, head is)])])
+                                              else ([], [], [])
+        (dom, _, _) = (fst . fromLeft) pom
         createBackEdge (j, _) = ([i], [], [(rel, [(i, j)])])
 
 -- A function that sorts concepts in the following order, first to last:
