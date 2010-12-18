@@ -9,10 +9,21 @@ module OutputModel where
 
 import Data.List
 import Data.Map
+import System.Cmd
+import System.Directory
 
 import Signature
 import Model
 import ProofSearch
+
+-- Creates visual graph of model
+runDot :: Model -> FilePath -> IO ()
+runDot m filename
+  = do writeModel (filename ++ ".dot") m
+       rawSystem "dot" ["-Tjpg", fp ++ ".dot", "-o", fp ++ ".jpg"]
+       removeFile (fp ++ ".dot")
+       return ()
+  where fp = "models/" ++ filename
 
 {-
  Output string of DOT language that draws model
@@ -22,7 +33,7 @@ import ProofSearch
 modelToGraph :: Model -> String
 modelToGraph ([], _, _) = "Domain is empty, no model to draw"
 modelToGraph (dom, us, bs)
-  | (length dom) /= (length $ nub dom) = 
+  | length dom /= length (nub dom) = 
       "Domain contains duplicated individuals"
   | not $ isUnique us =
       "Duplicated unary relation names exist"
@@ -35,7 +46,7 @@ modelToGraph (dom, us, bs)
 
 -- Returns true if there is only 1 occurrence of the fst of the pairs in the list
 isUnique :: [(String, a)] -> Bool
-isUnique xs = (length xs) == (length $ nub $ fst $ unzip xs)
+isUnique xs = length xs == length (nub $ fst $ unzip xs)
 
 -- Draws edges for a binary relation
 drawEdges :: (String, [(Individual, Individual)]) -> String
