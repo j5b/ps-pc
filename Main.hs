@@ -12,8 +12,8 @@
 
 import Data.Either
 import Data.List
--- import System.IO
--- import System(getArgs)
+import System.IO
+import System(getArgs)
 
 import Model
 import ModelChecker
@@ -22,11 +22,14 @@ import Proof
 import ProofChecker
 import ProofSearch
 import Signature
+import Reader
 
 -- TODO: parse input and call the proof/model searcher and check the result
 --main :: IO()
-main = do putStr $ "Nothing happening " ++ "at "
-          putStr $ "the " ++ "moment\n"
+main = do input <- getArgs
+          let plainInput = concatMap (++" ") input
+          processString plainInput
+          return ()
 
 -- Dispatches call to either the model or proof checker.
 -- TODO: Make interfaces compatible.
