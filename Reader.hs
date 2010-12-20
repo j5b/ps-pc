@@ -64,6 +64,7 @@ executeCommand Help
 -- from a well formed string creates a command
 -- Mode is already known before hand
 processString :: String -> IO ()
+processString [] = error "No arguments provided"
 processString ('-':'h':rest)
   = executeCommand Help
 processString ('-':'-':'h':'e':'l':'p':' ':rest)
@@ -80,4 +81,4 @@ processString string
           concepts = (file $ lexerInterpreter $ dropDelimiters gamma, file $ lexerInterpreter $ dropDelimiters givens) 
 
 dropDelimiters :: String -> String
-dropDelimiters = init . tail
+dropDelimiters = id
