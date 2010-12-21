@@ -2,7 +2,7 @@
    Author: Ka Wai
    License: GPL 3.0
    File: OutputModel.hs
-   Description: outputs a graphviz file representing the given model
+   Description: outputs a graph representing the given model
 -}
 
 module OutputModel where 
@@ -16,11 +16,11 @@ import Signature
 import Model
 import ProofSearch
 
--- Creates visual graph of model
-runDot :: Model -> FilePath -> IO ()
-runDot m filename
-  = do writeModel (filename ++ ".dot") m
-       rawSystem "dot" ["-Tjpg", fp ++ ".dot", "-o", fp ++ ".jpg"]
+-- Creates visual graph of model in specified format
+outputModel :: Model -> FilePath -> String -> IO ()
+outputModel model filename format
+  = do writeModel (filename ++ ".dot") model
+       rawSystem "dot" ["-T" ++ format, fp ++ ".dot", "-o", fp ++ "." ++ format]
        removeFile (fp ++ ".dot")
        return ()
   where fp = "models/" ++ filename
@@ -31,18 +31,21 @@ runDot m filename
  Returns message if same relation name listed more than once
 -}
 modelToGraph :: Model -> String
-modelToGraph ([], _, _) = "Domain is empty, no model to draw"
+modelToGraph ([], _, _)
+  = "digraph {\n label = \"Domain is empty, no model to draw\" ;\n}"
 modelToGraph (dom, us, bs)
   | length dom /= length (nub dom) = 
-      "Domain contains duplicated individuals"
+      begin ++ "label = \"Domain contains duplicated individuals\" ;\n" ++ end
   | not $ isUnique us =
-      "Duplicated unary relation names exist"
+      begin ++ "label = \"Duplicated unary relation names exist\" ;\n" ++ end
   | not $ isUnique bs =
-      "Duplicated binary relation names exist"
+      begin ++ "label = \"Duplicated binary relation names exist\" ;\n" ++ end
   | otherwise =
-      "digraph {\n " ++ concat ulabels ++
-      domOnlyToGraph (dom Data.List.\\ unodes) ++ concatMap drawEdges bs ++ "}"
+      begin ++ concat ulabels ++ domOnlyToGraph (dom Data.List.\\ unodes) ++
+      concatMap drawEdges bs ++ end
   where (unodes, ulabels) = unaryToGraph $ mapUnary us empty
+        begin = "digraph {\n "
+        end = "}"
 
 -- Returns true if there is only 1 occurrence of the fst of the pairs in the list
 isUnique :: [(String, a)] -> Bool
@@ -62,8 +65,17 @@ domOnlyToGraph ds = concat [show i ++ " [label=\"" ++ show i ++ "\"] ;\n " | i <
 -- Returns string to label every unary in the 
 unaryToGraph :: Map Individual String -> ([Individual], [String])
 unaryToGraph m
-  = unzip [(k, show k ++ " [label=\"" ++ show k ++ ": " ++ a ++ "\"] ;\n ")
-           | (k, a) <- Data.Map.toList m ]
+  = unzip [(k, show k ++ " [label=\"" ++ show k ++ ": " ++ addnewlines a ++
+            "\"] ;\n ") | (k, a) <- Data.Map.toList m ]
+
+-- Ensures node is not too large
+-- Adds a newline after every 9 characters
+addnewlines :: String -> String
+addnewlines cs
+  | line `elem` [[], " "] = []
+  | rest `elem` [[], " "] = line
+  | otherwise             = line ++ "\\n" ++ addnewlines rest
+  where (line, rest) = splitAt 6 cs
 
 -- Collects all dot labels
 mapUnary :: [UnaryRelation] -> Map Individual String -> Map Individual String
