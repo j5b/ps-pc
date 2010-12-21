@@ -13,13 +13,15 @@ import Signature
 import TestUtils
 import Test.HUnit
 
--- alloutputmodeltests = do
-
 domainTests = maplabel "Output model domain test"
-  [domaintest0, domaintest1, domaintest2, domaintest3, domaintest4]
+  [domaintest1, domaintest2, domaintest3, domaintest4, nodesizetest]
+
+errorTests = maplabel "Output model error test"
+  [errortest1, errortest2, errortest3, errortest4]
 
 alltests = do putStrLn "==== Testing the model output"
               runTestTT domainTests
+              runTestTT errorTests
 
 
 -- Testing setup
@@ -29,71 +31,86 @@ dom1 = [1]
 dom2 = [1,2,3]
 dom3 = [1,2,3,4]
 dom4 = [1,2,3,4,5,6]
-domall = concat [dom0, dom1, dom2, dom3, [5,6]]
+domall = concat [dom1, dom2]
 
 unary0 = []
 unary1 = [("A",[])]
-unary2 = [("A",[1])]
-unary3 = [("A",[1]), ("B",[2,3])]
-unary4 = [("A",[1,3]), ("B",[2,4,1])]
-unaryall = concat [unary0, unary1, unary2, unary3]
+unary2 = [("B",[1])]
+unary3 = [("C",[1]), ("D",[2,3])]
+unary4 = [("E",[1,3]), ("A",[2,4,1])]
+unaryall = concat [unary2, unary3, unary4]
 
 binary0 = []
 binary1 = [("R",[(1,1)])]
 binary2 = [("R",[(1,2),(1,2)])]
 binary3 = [("R",[(1,2),(2,3)])]
 binary4 = [("A",[(4,1)]),("R",[(4,1)])]
-binaryall = concat [binary0, binary1, binary2, binary3]
+binaryall = concat [binary1, binary4]
 
 -- Expected results
 
-emptydom = "Domain is empty, no model to draw"
+emptydom = begin ++ "label = \"Domain is empty, no model to draw\" ;\n" ++ end
+dupdomain = begin ++ "label = \"Domain contains duplicated individuals\" ;\n" ++ end
+dupunary = begin ++ "label = \"Duplicated unary relation names exist\" ;\n" ++ end
+dupbinary = begin ++ "label = \"Duplicated binary relation names exist\" ;\n" ++ end
 
 begin = "digraph {\n "
 end   = "}"
 
 -- Tests
-
-domaintest0 = testequality msg target result "empty model ([],[],[])"
-  where msg    = "Failed to detect empty domain"
-        result = modelToGraph (dom0, unary0, binary0)
-        target = emptydom
-
 domaintest1 = testequality msg target result "([1],[(A,[])], [(R,[(1,1)])])"
   where msg    = "Failed to produce correct output for simple model"
         result = modelToGraph (dom1, unary1, binary1)
         target = begin ++ "1 [label=\"1\"] ;\n 1 -> 1 [label=\"R\"] ;\n " ++ end
 
 domaintest2 = testequality msg target result
-              "([1,2,3],[(A,[1])], [(R,[(1,2),(2,1)])])"
+              "([1,2,3],[(B,[1])], [(R,[(1,2),(2,1)])])"
   where msg    = "Failed to produce correct output for simple model"
         result = modelToGraph (dom2, unary2, binary2)
-        target = begin ++ "1 [label=\"1: A \"] ;\n 2 [label=\"2\"] ;\n 3 " ++
+        target = begin ++ "1 [label=\"1: B \"] ;\n 2 [label=\"2\"] ;\n 3 " ++
                  "[label=\"3\"] ;\n 1 -> 2 [label=\"R\"] ;\n " ++ end
 
 domaintest3 = testequality msg target result
-              "([1,2,3,4],[(A,[1]), (B,[2,3])], [(R,[(1,2),(2,3)])])"
+              "([1,2,3,4],[(C,[1]), (D,[2,3])], [(R,[(1,2),(2,3)])])"
   where msg    = "Failed to produce correct output for simple model"
         result = modelToGraph (dom3, unary3, binary3)
-        target = begin ++ "1 [label=\"1: A \"] ;\n 2 [label=\"2: B \"] ;\n " ++
-                 "3 [label=\"3: B \"] ;\n 4 [label=\"4\"] ;\n 1 -> 2 " ++
+        target = begin ++ "1 [label=\"1: C \"] ;\n 2 [label=\"2: D \"] ;\n " ++
+                 "3 [label=\"3: D \"] ;\n 4 [label=\"4\"] ;\n 1 -> 2 " ++
                  "[label=\"R\"] ;\n 2 -> 3 [label=\"R\"] ;\n " ++ end
 
--- Should different relation names with same x -> y be represented by same arrow & list relation names by 1 label, or represent by individual arrows
-domaintest4 = testequality msg target result "([1,1,2,3,1,2,3,4,5,6],[(A,[1,3]), (B,[2,4,1])], [(A,[(4,1)]),(R,[(4,1)])])"
+domaintest4 = testequality msg target result "([1,1,2,3,1,2,3,4,5,6],[(E,[1,3]), (A,[2,4,1])], [(A,[(4,1)]),(R,[(4,1)])])"
   where msg    = "Failed to produce correct output for simple model"
         result = modelToGraph (dom4, unary4, binary4)
-        target = begin ++ "1 [label=\"1: B A \"] ;\n 2 [label=\"2: B \"] ;\n" ++
-                 " 3 [label=\"3: A \"] ;\n 4 [label=\"4: B \"] ;\n 5 " ++
+        target = begin ++ "1 [label=\"1: A E \"] ;\n 2 [label=\"2: A \"] ;\n" ++
+                 " 3 [label=\"3: E \"] ;\n 4 [label=\"4: A \"] ;\n 5 " ++
                  "[label=\"5\"] ;\n 6 [label=\"6\"] ;\n 4 -> 1 " ++
                  "[label=\"A\"] ;\n 4 -> 1 [label=\"R\"] ;\n " ++ end
-{-
-domaintest5 = testequality msg target result
-  "([1,1,2,3,1,2,3,4,5,6],[(A,[]),(A,[1]),(A,[1]),(B,[2,3]),(A,[1,3]),(B,[2,4,1])], [(R,[(1,1)]),(R,[(1,2),(1,2)]),(R,[(1,2),(2,3)]),(A,[(4,1)]),(R,[(4,1)])])"
+
+nodesizetest = testequality msg target result
+  "([1,2,3,4,5,6],[(B,[1]),(C,[1]),(D,[2,3]),(E,[1,3]),(A,[2,4,1])], [(A,[(4,1)]),(R,[(4,1)])]))"
   where msg    = "Failed to produce correct output for simple model"
-        result = modelToGraph (domall, unaryall, binaryall)
-        target = begin ++ "1 [label=\"1: B A \"] ;\n 2 [label=\"2: B \"] ;\n" ++
-                 " 3 [label=\"3: A \"] ;\n 4 [label=\"4: B \"] ;\n 5 " ++
-                 "[label=\"5\"] ;\n 6 [label=\"6\"] ;\n 4 -> 1 " ++
+        result = modelToGraph (dom4, unaryall, binary4)
+        target = begin ++ "1 [label=\"1: A E C \\nB \"] ;\n 2 [label=\"2: " ++
+                 "A D \"] ;\n 3 [label=\"3: E D \"] ;\n 4 [label=\"4: A \"]" ++
+                 " ;\n 5 [label=\"5\"] ;\n 6 [label=\"6\"] ;\n 4 -> 1 " ++
                  "[label=\"A\"] ;\n 4 -> 1 [label=\"R\"] ;\n " ++ end
--}
+
+errortest1 = testequality msg target result "empty model ([],[],[])"
+  where msg    = "Failed to detect empty domain"
+        result = modelToGraph (dom0, unary0, binary0)
+        target = emptydom
+
+errortest2 = testequality msg target result "duplicates in domain ([1,1,2,3],[],[])"
+  where msg    = "Failed to detect duplicated individuals in domain"
+        result = modelToGraph (domall, unary0, binary0)
+        target = dupdomain
+
+errortest3 = testequality msg target result "duplicates in domain ([1,2,3,4],[(A,[]),(E,[1,3]),(A,[2,4,1])],[])"
+  where msg    = "Failed to detect duplicated unary concepts in unarys"
+        result = modelToGraph (dom3, unary1 ++ unary4, binary0)
+        target = dupunary
+
+errortest4 = testequality msg target result "duplicates in domain ([1,2,3,4],[],[(R,[(1,1)]),(A,[(4,1)]),(R,[(4,1)])])"
+  where msg    = "Failed to detect duplicated unary concepts in binarys"
+        result = modelToGraph (dom3, unary0, binaryall)
+        target = dupbinary
