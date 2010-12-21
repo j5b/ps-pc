@@ -24,7 +24,7 @@ import ProofChecker
 import Model
 import Proof
 
-untilTimeout = 30
+untilTimeout = 180 -- 30
 
 -- run two threads and return the first one to finish
 compete :: IO a -> IO a -> IO a 
