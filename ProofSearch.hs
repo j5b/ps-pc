@@ -97,7 +97,7 @@ foldExists cs gamma (Exists rel c : es) (i:is) cache
         m' = joinModels m edgemodel
         edgemodel = maybe forwardEdge createBackEdge $ lookup cs' cache
         forwardEdge = if (head is) `elem` dom then ([i], [], [(rel, [(i, head is)])])
-                                              else ([], [], [])
+                                              else ([i], [], [(rel, [(i, i)])]) -- ([], [], [])
         (dom, _, _) = (fst . fromLeft) pom
         createBackEdge (j, _) = ([i], [], [(rel, [(i, j)])])
 
