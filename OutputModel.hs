@@ -8,7 +8,7 @@
 module OutputModel where 
 
 import Data.List
-import Data.Map
+import qualified Data.Map as Map
 import System.Cmd
 import System.Directory
 
@@ -28,7 +28,6 @@ outputModel model filename format
 {-
  Output string of DOT language that draws model
  WARNING: assumes the model is already checked & correct
- Returns message if same relation name listed more than once
 -}
 modelToGraph :: Model -> String
 modelToGraph ([], _, _)
@@ -41,52 +40,63 @@ modelToGraph (dom, us, bs)
   | not $ isUnique bs =
       begin ++ "label = \"Duplicated binary relation names exist\" ;\n" ++ end
   | otherwise =
-      begin ++ concat ulabels ++ domOnlyToGraph (dom Data.List.\\ unodes) ++
+      begin ++ concat ulabels ++ domOnlyToGraph (dom \\ unodes) ++
       concatMap drawEdges bs ++ end
-  where (unodes, ulabels) = unaryToGraph $ mapUnary us empty
+  where (unodes, ulabels) = unaryToGraph $ mapUnary us Map.empty
         begin = "digraph {\n "
         end = "}"
 
 -- Returns true if there is only 1 occurrence of the fst of the pairs in the list
 isUnique :: [(String, a)] -> Bool
-isUnique xs = length xs == length (nub $ fst $ unzip xs)
+isUnique xs = length xs == length (nub . fst $ unzip xs)
 
 -- Draws edges for a binary relation
 drawEdges :: (String, [(Individual, Individual)]) -> String
 drawEdges (_, [])       = []
 drawEdges (r, (p,c):es)
   = concat [show p, " -> ", show c, " [label=\"", r, "\"] ;\n ",
-    drawEdges (r, nub es Data.List.\\ [(p,c)])]
+            drawEdges (r, nub es \\ [(p,c)])]
 
 -- Returns string that draws all individuals that are not in unary relations
 domOnlyToGraph :: [Individual] -> String
-domOnlyToGraph ds = concat [show i ++ " [label=\"" ++ show i ++ "\"] ;\n " | i <- ds]
+domOnlyToGraph ds
+  = concat [show i ++ " [label=\"" ++ show i ++ "\"] ;\n " | i <- ds]
 
 -- Returns string to label every unary in the 
-unaryToGraph :: Map Individual String -> ([Individual], [String])
+unaryToGraph :: Map.Map Individual [String] -> ([Individual], [String])
 unaryToGraph m
-  = unzip [(k, show k ++ " [label=\"" ++ show k ++ ": " ++ addnewlines a ++
-            "\"] ;\n ") | (k, a) <- Data.Map.toList m ]
+  = unzip [(k, show k ++ " [label=\"" ++ show k ++ ": " ++
+            intercalate ", " (addnewlines a) ++ "\"] ;\n ")
+           | (k, a) <- Map.toList m ]
 
 -- Ensures node is not too large
--- Adds a newline after every 9 characters
-addnewlines :: String -> String
-addnewlines cs
-  | line `elem` [[], " "] = []
-  | rest `elem` [[], " "] = line
-  | otherwise             = line ++ "\\n" ++ addnewlines rest
-  where (line, rest) = splitAt 6 cs
+-- Adds a newline after every 8 characters (specified by max's assigned value)
+addnewlines :: [String] -> [String]
+addnewlines [] = []
+addnewlines (c:cs)
+  | index == 0 = (pre ++ "-\\n" ++ newsuf) : newtail
+  | rest == [] = c:cs
+  | otherwise  = line ++ (("\\n" ++ head newrest) : tail newrest)
+  where (line, rest) = splitAt index (c:cs)
+        acculength = scanl1 ((+) . (+2)) $ map length (c:cs)
+--        acculength = zipWith (+) [2,4..] $ scanl1 (+) $ map length (c:cs)
+        index = length $ takeWhile (<=max) acculength
+        (pre, suf) = splitAt (max-1) c
+        max = 8
+        (newsuf:newtail) = addnewlines (suf:cs)
+        newrest = addnewlines rest
 
 -- Collects all dot labels
-mapUnary :: [UnaryRelation] -> Map Individual String -> Map Individual String
+mapUnary :: [UnaryRelation] -> Map.Map Individual [String]
+            -> Map.Map Individual [String]
 mapUnary [] m          = m
 mapUnary ((u,is):xs) m = mapUnary xs $ addToIndividual u is m
 
 -- Add unary to all individuals satisfying
-addToIndividual :: String -> [Individual] -> Map Individual String
-                   -> Map Individual String
+addToIndividual :: String -> [Individual] -> Map.Map Individual [String]
+                   -> Map.Map Individual [String]
 addToIndividual u [] m     = m
-addToIndividual u (i:is) m = insertWith (++) i (u ++ " ") $ addToIndividual u is m
+addToIndividual u (i:is) m = Map.insertWith (++) i [u] $ addToIndividual u is m
 
 -- Writes graph to file.
 writeModel :: FilePath -> Model -> IO()
