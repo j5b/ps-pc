@@ -24,7 +24,7 @@ import ProofChecker
 import Model
 import Proof
 
-untilTimeout = 180 -- 30
+untilTimeout = 30
 
 -- run two threads and return the first one to finish
 compete :: IO a -> IO a -> IO a 
@@ -104,7 +104,7 @@ generateTest randomGen num sampleSize = testtemplate givens gamma
 
 globaltests = maplabel "GlobalTests" testlist
   where testlist = take numTests $ map generator [1..]
-        numTests = 40
+        numTests = 100
         sampleSize = 6
         simpleSize = 6
         generator x = generateTest (mkStdGen x) simpleSize sampleSize
