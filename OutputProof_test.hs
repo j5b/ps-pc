@@ -37,9 +37,10 @@ fileC2LGenerator = do output <- openFile "concept_latex_test_output.tex" WriteMo
                       putStrLn "\nFile for testing conceptToLatex function has been generated"
 
 createC2LPDF :: IO ExitCode
-createC2LPDF = do fileC2LGenerator 
-                  hProcess <- runCommand "pdflatex -halt-on-error -interaction=nonstopmode concept_latex_test_output.tex > /dev/null"
-                  waitForProcess hProcess
+createC2LPDF 
+  = do fileC2LGenerator 
+       hProcess <- runCommand "pdflatex -halt-on-error -interaction=nonstopmode concept_latex_test_output.tex > /dev/null"
+       waitForProcess hProcess
 
 testC2L = TestCase (test)
   where test = do code <- createC2LPDF
