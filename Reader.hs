@@ -18,6 +18,8 @@ import Model
 import Proof
 import ProofSearch
 import Signature
+import OutputModel
+import OutputProof
 
 type Gamma = [Concept]
 type Givens = [Concept]
@@ -25,7 +27,7 @@ type Data = (Gamma, Givens)
 
 data OutputMode = None | Console | Graphical -- to be modified later
   deriving (Show, Eq)
-data Command = Solve OutputMode Data | Help
+data Command = Solve OutputMode Data String | Help
   deriving (Show, Eq)
 
 helpString :: String
@@ -38,25 +40,31 @@ helpString = unlines ["The syntax used by the program is",
                       " bot    stands for \"falsity\"",
                       " top    stands for \"truth\"",
                       "---------------------------------",
-                      "The input for the program is OUTPUT GAMMA CONCEPTS",
+                      "The input for the program is OUTPUT GAMMA CONCEPTS (FILENAME)",
                       " where OUTPUT = none | console | graphical",
                       " and gamma and concepts is a list of formulaes"]
 
 -- output the result of the proof/model searcher
-outputResult :: OutputMode -> Either Model ProofTree -> IO ()
-outputResult None result      = either left right result
+outputResult :: OutputMode -> Either Model ProofTree -> String -> IO ()
+outputResult None result _             = either left right result
   where left  x = putStrLn "SATISFIABLE"
         right x = putStrLn "UNSATISFIABLE"
-outputResult Console result   = putStr $ resultToConsole result
-outputResult Graphical result = error "Graphical output not yet supported"
+outputResult Console result _          = putStr $ resultToConsole result
+outputResult Graphical result filename = either left right result
+  where left  x = do outputModel x filename "png" 
+                     putStrLn $ "A generated model has been outputed to models/"++filename++".png"
+        right x = do outputProof x $ "proofs/"++filename
+                     putStrLn $ "A generated proof has been outputed to proofs/"++filename++".pdf"
 
 -- executes command given
 executeCommand :: Command -> IO ()
-executeCommand (Solve mode (gamma, givens))
+executeCommand (Solve mode (gamma, givens) filename )
   = do putStrLn $ "For GAMMA: "++conceptsToConsole gamma
        putStrLn $ "For GIVENS: "++conceptsToConsole givens
-       putStrLn $ "The result is:"
-       outputResult mode $ findPOM givens gamma
+       if mode /= Graphical 
+          then putStrLn "The result is:"
+          else putStrLn "The result will be generated in a seprate file"
+       outputResult mode (findPOM givens gamma) filename
 executeCommand Help
   = putStrLn helpString
 
@@ -72,14 +80,19 @@ processString ('-':'h':rest) _
 processString ('-':'-':'h':'e':'l':'p':' ':rest) _
   = executeCommand Help
 processString string args
-  = executeCommand (Solve mode concepts)
-    where (mode, rest) = process string
-              where process :: String -> (OutputMode, String)
-                    process ('n':'o':'n':'e':rest) = (None, rest)
-                    process ('c':'o':'n':'s':'o':'l':'e':rest) = (Console, rest)
-                    process ('g':'r':'a':'p':'h':'i':'c':'a':'l':rest) = (Graphical, rest)
-                    process _ = error "Unable to process input"
-          gamma    = args !! 0
-          givens   = args !! 1
-          concepts = (if (gamma  == [])   then [] else file $ lexerI gamma, 
-                      if (givens == "  ") then [] else file $ lexerI givens)
+  | numOfArgs < 2  = error "Not enough arguments"
+  | numOfArgs == 2 = executeCommand (Solve mode concepts "output")
+  | numOfArgs > 3  = error "Too many arguments"
+  | otherwise      = executeCommand (Solve mode concepts filename)
+  where (mode, rest) = process string
+            where process :: String -> (OutputMode, String)
+                  process ('n':'o':'n':'e':rest) = (None, rest)
+                  process ('c':'o':'n':'s':'o':'l':'e':rest) = (Console, rest)
+                  process ('g':'r':'a':'p':'h':'i':'c':'a':'l':rest) = (Graphical, rest)
+                  process _ = error "Unable to process input"
+        numOfArgs = length args
+        gamma     = head args
+        givens    = args !! 1
+        filename  = args !! 2
+        concepts  = (if gamma  == []   then [] else file $ lexerI gamma, 
+                     if givens == "  " then [] else file $ lexerI givens)

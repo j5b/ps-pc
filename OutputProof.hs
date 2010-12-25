@@ -12,12 +12,20 @@ import System.IO
 import System.Process
 import System.Exit
 import Control.Monad
-import Data.ByteString as BS
 
 import Signature
 import Proof
 import ProofSearch
 import TestUtils
+
+outputProof :: ProofTree -> FilePath -> IO ()
+outputProof proof filename 
+  = do createGenericPDF [proof] $ filename++".tex"
+       let command = "pdflatex -halt-on-error -interaction=nonstopmode "++
+                     filename++".tex > /dev/null"
+       hProcess <- runCommand command
+       waitForProcess hProcess
+       return ()
 
 getConcepts (cs,_,_) = cs
 getRule (_,rule,_) = rule
@@ -48,7 +56,7 @@ createGenericPDF proofs file = do putStrLn $ "Opening file "++file
                                   hPutStrLn output end
                                   putStrLn $ "Closing file "++file
                                   hClose output
-  where header = "\\documentclass[landscape, 8pt, a4paper]{article}\n"++
+  where header = "\\documentclass[8pt, a4paper]{article}\n"++
                  "\\usepackage{amsmath}\n"++
                  "\\usepackage{amssymb}\n"++
                  "\\usepackage{qtree}\n"++
@@ -62,7 +70,7 @@ breakInPieces size list = result:breakInPieces size rest
   where (result,rest) = countTo 0 size list
         countTo _ _ [] = ([],[])
         countTo num size (x:xs) 
-            | num >= size = ([],xs)
+            | num >= size = ([],x:xs)
             | otherwise   = (newleft, newright)
             where (oldleft, oldright) = countTo (num+conceptLength x) size xs
                   newleft             = x:oldleft
@@ -71,7 +79,7 @@ breakInPieces size list = result:breakInPieces size rest
 -- Outputs in a nice formated format for latex to improve readability
 niceConceptLatex :: [Concept] -> String
 niceConceptLatex cs = concatMap fullFormat (init conceptsList) ++ lastFormat (last conceptsList)
-  where conceptsList = breakInPieces 4 cs
+  where conceptsList = breakInPieces 6 cs
         fullFormat list = "$"++conceptsToLatex list++",$\\\\"
         lastFormat list = "$"++conceptsToLatex list++"$"
 
@@ -109,11 +117,11 @@ conceptToLatex (Or lc (Neg T)) = "("++conceptToLatex lc++") \\lor \\bot"
 conceptToLatex (Or lc rc) = "("++conceptToLatex lc++") \\lor ("++conceptToLatex rc++")"
 conceptToLatex (And (Atom a) (Atom b)) = a++" \\land "++b
 conceptToLatex (And T (Neg T)) = "\\top \\land \\bot"
-conceptToLAtex (And (Neg T) T) = "\\bot \\land \\bot"
+conceptToLatex (And (Neg T) T) = "\\bot \\land \\top"
 conceptToLatex (And T (Atom b)) = "\\top \\land "++b
 conceptToLatex (And (Neg T) (Atom b)) = "\\bot \\land "++b
 conceptToLatex (And (Atom a) T) = a++" \\land \\top"
-conceptToLatex (And (Atom a) (Neg T)) = a++" \\land \\top"
+conceptToLatex (And (Atom a) (Neg T)) = a++" \\land \\bot"
 conceptToLatex (And (Atom a) rc) = a++" \\land ("++conceptToLatex rc++")"
 conceptToLatex (And T rc) = "\\top \\land ("++conceptToLatex rc++")"
 conceptToLatex (And (Neg T) rc) = "\\bot \\land ("++conceptToLatex rc++")"
@@ -136,4 +144,4 @@ conceptsToLatex [concept] = conceptToLatex concept
 conceptsToLatex list = iterator list
   where iterator [] = "" -- this shoudln't occur
         iterator [concept] = conceptToLatex concept
-        iterator (c:cs) = conceptToLatex c++","++conceptsToLatex cs
+        iterator (c:cs)    = conceptToLatex c++","++conceptsToLatex cs
