@@ -15,13 +15,13 @@ import Proof
 import Model
 import ProofSearch
 
-topConsole = "(1)"
-botConsole = "(0)"
+topConsole = "top"
+botConsole = "bot"
 andConsole = "&"
 orConsole  = "|"
 negConsole = "~"
-existsConsole = "(E)"
-forallConsole = "(A)"
+existsConsole = "Forall"
+forallConsole = "Exists"
 
 resultToConsole :: Either Model ProofTree -> String
 resultToConsole = either modelToConsole proofToConsole

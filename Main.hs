@@ -27,8 +27,7 @@ import Reader
 -- TODO: parse input and call the proof/model searcher and check the result
 --main :: IO()
 main = do input <- getArgs
-          let plainInput = concatMap (++" ") input
-          processString plainInput
+          processInput input
           return ()
 
 -- Dispatches call to either the model or proof checker.
