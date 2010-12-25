@@ -18,7 +18,6 @@ import Model
 import Proof
 import ProofSearch
 import Signature
-import TestUtils
 
 type Gamma = [Concept]
 type Givens = [Concept]
@@ -31,13 +30,13 @@ data Command = Solve OutputMode Data | Help
 
 helpString :: String
 helpString = unlines ["The syntax used by the program is",
-                      " (A) stands for \"forall\"",
-                      " (E) stands for \"exists\"",
-                      "  ~  stands for \"not\"",
-                      "  &  stands for \"and\"",
-                      "  +  stands for \"or\"",
-                      " (0) stands for \"falsity\"",
-                      " (1) stands for \"truth\"",
+                      " Forall stands for \"forall\"",
+                      " Exists stands for \"exists\"",
+                      "  ~     stands for \"not\"",
+                      "  &     stands for \"and\"",
+                      "  |     stands for \"or\"",
+                      " bot    stands for \"falsity\"",
+                      " top    stands for \"truth\"",
                       "---------------------------------",
                       "The input for the program is OUTPUT GAMMA CONCEPTS",
                       " where OUTPUT = none | console | graphical",
@@ -61,24 +60,26 @@ executeCommand (Solve mode (gamma, givens))
 executeCommand Help
   = putStrLn helpString
 
+processInput :: [String] -> IO ()
+processInput (x:xs) = processString x xs
+
 -- from a well formed string creates a command
 -- Mode is already known before hand
-processString :: String -> IO ()
-processString [] = error "No arguments provided"
-processString ('-':'h':rest)
+processString :: String -> [String] -> IO ()
+processString [] _  = error "No arguments provided"
+processString ('-':'h':rest) _
   = executeCommand Help
-processString ('-':'-':'h':'e':'l':'p':' ':rest)
+processString ('-':'-':'h':'e':'l':'p':' ':rest) _
   = executeCommand Help
-processString string
+processString string args
   = executeCommand (Solve mode concepts)
     where (mode, rest) = process string
               where process :: String -> (OutputMode, String)
-                    process ('n':'o':'n':'e':' ':rest) = (None, rest)
-                    process ('c':'o':'n':'s':'o':'l':'e':' ':rest) = (Console, rest)
-                    process ('g':'r':'a':'p':'h':'i':'c':'a':'l':' ':rest) = (Graphical, rest)
+                    process ('n':'o':'n':'e':rest) = (None, rest)
+                    process ('c':'o':'n':'s':'o':'l':'e':rest) = (Console, rest)
+                    process ('g':'r':'a':'p':'h':'i':'c':'a':'l':rest) = (Graphical, rest)
                     process _ = error "Unable to process input"
-          (gamma, givens) = span (/= ' ') rest
-          concepts = (file $ lexerInterpreter $ dropDelimiters gamma, file $ lexerInterpreter $ dropDelimiters givens) 
-
-dropDelimiters :: String -> String
-dropDelimiters = id
+          gamma    = args !! 0
+          givens   = args !! 1
+          concepts = (if (gamma  == [])   then [] else file $ lexerI gamma, 
+                      if (givens == "  ") then [] else file $ lexerI givens)
