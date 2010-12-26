@@ -4,7 +4,7 @@
   License: GPLv3
 -}
 
-module ConsoleOutput (resultToConsole, conceptsToConsole) where 
+module ConsoleOutput where 
 
 import Data.List
 import Data.Either
@@ -23,28 +23,33 @@ negConsole = "~"
 existsConsole = "Exists"
 forallConsole = "Forall"
 
+-- creates a string representing the model or the proof tree
 resultToConsole :: Either Model ProofTree -> String
 resultToConsole = either modelToConsole proofToConsole
 
+-- creates a string representing the model
 modelToConsole :: Model -> String
 modelToConsole (dom,unarys,binarys) 
   = dompart++unarypart++ binpart
   where dompart = "Domain  = "++show dom++"\n"
         unarypart = if unarys == [] 
                     then "No unary relation\n" 
-                    else "Unarys  = \n"++processUnarys unarys++"\n"
+                    else "Unarys  = \n"++processUnarys unarys
         binpart   = if binarys == [] 
                     then "No binary relation\n" 
-                    else "Binarys  = \n"++processBinarys binarys++"\n"
+                    else "Binarys = \n"++processBinarys binarys
 
+-- Utility function for modelToConsole
 processUnarys :: Num a => [(String,[a])] -> String
 processUnarys list = concatMap f list
-   where f (unary, space) = "--Unary "++unary++" is satisfied for: "++show space
+   where f (unary, space) = "--Unary "++unary++" is satisfied for: "++show space++"\n"
 
+-- Utility function for modelToConsole
 processBinarys :: Num a => [(String,[(a,a)])] -> String
 processBinarys list = concatMap f list
-   where f (binary, space) = "--Binary "++binary++" is satisfied for: "++show space
+   where f (binary, space) = "--Binary "++binary++" is satisfied for: "++show space++"\n"
 
+-- creates a string representing the proof
 proofToConsole :: ProofTree -> String
 proofToConsole = unlines . proofToConsoleInternal
 
