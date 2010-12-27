@@ -22,6 +22,7 @@ import ProofSearch_test
 import Signature_test
 import Model_test
 import ConsoleOutput_test
+import Reader_test
 
 runTestsPSPC :: Args -> Bool -> PackageDescription -> LocalBuildInfo -> IO ()
 runTestsPSPC args expected description buildinfo = do allsignaturetests
@@ -34,6 +35,7 @@ runTestsPSPC args expected description buildinfo = do allsignaturetests
                                                       allpomutests
                                                       allmodelgentests
                                                       allconsoleoutputtests
+                                                      allreadertests
 --                                                      allglobaltests
                                                       allparsertests
                                                       return ()

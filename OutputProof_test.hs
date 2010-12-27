@@ -52,3 +52,4 @@ fromRight (Right x) = x
 -- This should be easy to see inside the PDF but isn't
 testgenerator1 = createGenericPDF (return $ fromRight $ findPOM [] [Or (Forall "R" (Atom "A")) (Forall "R" (Neg $ Atom "A")), Forall "R" (Exists "R" (Atom "A")), Forall "R" (Exists "R" (Neg $ Atom "A")), Exists "R" T]) "output1.tex"
 
+
