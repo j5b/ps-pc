@@ -49,11 +49,15 @@ readLocation (Location file) = file
 
 readGamma :: GammaInput -> IO String
 readGamma (DirectGamma gamma) = return gamma
-readGamma (FileGamma file) = readFile file
+readGamma (FileGamma file) 
+    = do content <- readFile file
+         return $ filter (\x -> not $ elem x "\n\t\b") content
 
 readGivens :: GivensInput -> IO String
 readGivens (DirectGivens givens) = return givens
-readGivens (FileGivens file) = readFile file
+readGivens (FileGivens file) 
+    = do content <- readFile file
+         return $ filter (\x -> not $ elem x "\n\t\b") content
 
 getMode :: String -> OutputMode
 getMode ('n':'o':'n':'e':rest) = None
@@ -74,7 +78,7 @@ match str1 str2 = match' str1 str2
 
 -- Some way of determining if we are working with a file path
 isFilePath :: String -> Bool
-isFilePath string = length (filter (/= '.') string) == 1
+isFilePath string = length (filter (== '.') string) == 1
 
 createCommand :: [Info] -> IO Command
 createCommand [] = error "Can't do nothing with no arguments please refer to help"
@@ -161,7 +165,7 @@ outputResult Graphical result filename = either left right result
 
 -- executes command given
 executeCommand :: Command -> IO ()
-executeCommand (Solve mode (gamma, givens) filename )
+executeCommand (Solve mode (gamma, givens) filename)
   = do putStrLn $ "For GAMMA: "++conceptsToConsole gamma
        putStrLn $ "For GIVENS: "++conceptsToConsole givens
        if mode /= Graphical 

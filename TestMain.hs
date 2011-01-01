@@ -36,6 +36,6 @@ runTestsPSPC args expected description buildinfo = do allsignaturetests
                                                       allmodelgentests
                                                       allconsoleoutputtests
                                                       allreadertests
---                                                      allglobaltests
+                                                      allglobaltests
                                                       allparsertests
                                                       return ()

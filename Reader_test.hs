@@ -15,17 +15,14 @@ import Signature
 
 import Test.HUnit
 
-test11 = outputResult None (Left ([1],[],[]))
-test12 = outputResult None (Right (NodeZero ([Neg T],"",Neg T)))
+test11 = TestCase $ outputResult None (Left ([1],[],[])) ""
+test12 = TestCase $ outputResult None (Right (NodeZero ([Neg T],"",Neg T))) ""
 
-test21 = executeCommand Help
-test22 = executeCommand (Solve None ([T], [T]))
-
-test31 = processString "console \"(top)\" \"(top)\""
-test32 = processString "console \"(bottom)\" \"(bottom)\""
+test21 = TestCase $ executeCommand Help
+test22 = TestCase $ executeCommand (Solve None ([T], [T]) "output")
 
 readertests = maplabel "Reader test" list
-    where list = [test11,test12,test21,test22,test31,test32]
+    where list = [test11,test12,test21,test22]
 
 allreadertests = do putStrLn "Running tests for command reader for main"
                     runTestTT readertests
