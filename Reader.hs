@@ -25,27 +25,130 @@ type Gamma = [Concept]
 type Givens = [Concept]
 type Data = (Gamma, Givens)
 
-data OutputMode = None | Console | Graphical -- to be modified later
-  deriving (Show, Eq)
-data Command = Solve OutputMode Data String | Help
+data OutputMode = None | Console | Graphical
+                  deriving (Show, Eq)
+                 
+data GammaInput  = DirectGamma String | FileGamma FilePath
+                   deriving (Show, Eq)
+data GivensInput = DirectGivens String | FileGivens FilePath
+                   deriving (Show, Eq)
+data OutputFile  = DefaultLocation | Location FilePath
+                   deriving (Show, Eq)
+
+data Info = Gamma GammaInput | Givens GivensInput
+          | OutFile OutputFile | OutMode OutputMode
+          | HelpRequest
+            deriving (Show, Eq)
+
+data Command = Solve OutputMode Data FilePath | Help
   deriving (Show, Eq)
 
-helpString :: String
-helpString = unlines ["The syntax used by the program is",
-                      " Forall stands for \"forall\"",
-                      " Exists stands for \"exists\"",
-                      "  ~     stands for \"not\"",
-                      "  &     stands for \"and\"",
-                      "  |     stands for \"or\"",
-                      " bot    stands for \"falsity\"",
-                      " top    stands for \"truth\"",
-                      "---------------------------------",
-                      "The input for the program is OUTPUT GAMMA CONCEPTS (FILENAME)",
-                      " where OUTPUT = none | console | graphical",
-                      " and gamma and concepts is a list of formulaes"]
+readLocation :: OutputFile -> String
+readLocation DefaultLocation = "output"
+readLocation (Location file) = file
+
+readGamma :: GammaInput -> IO String
+readGamma (DirectGamma gamma) = return gamma
+readGamma (FileGamma file) = readFile file
+
+readGivens :: GivensInput -> IO String
+readGivens (DirectGivens givens) = return givens
+readGivens (FileGivens file) = readFile file
+
+getMode :: String -> OutputMode
+getMode ('n':'o':'n':'e':rest) = None
+getMode ('c':'o':'n':'s':'o':'l':'e':rest) = Console
+getMode ('g':'r':'a':'p':'h':'i':'c':'a':'l':rest) = Graphical
+getMode _ 
+    = error "Unable to process mode: please write 'none', 'console' or 'graphical'"
+
+
+-- is str1 in str2 or vice versa partially
+match :: String -> String -> Bool
+match str1 str2 = match' str1 str2
+    where match' [] _ = True
+          match' _ [] = True 
+          match' (x:xs) (y:ys) 
+                 | x == y    = match' xs ys
+                 | otherwise = False
+
+-- Some way of determining if we are working with a file path
+isFilePath :: String -> Bool
+isFilePath string = length (filter (/= '.') string) == 1
+
+createCommand :: [Info] -> IO Command
+createCommand [] = error "Can't do nothing with no arguments please refer to help"
+createCommand infos
+    | HelpRequest `elem` infos = return Help
+    | otherwise = do 
+        gammaStr <- readGamma gm
+        givensStr <- readGivens gi
+        let gamma = file $ lexerI gammaStr
+        let givens = file $ lexerI givensStr
+        return $ Solve outmode (gamma,givens) outfile
+    where (gm,gi,outf,outmode) = processInfo infos
+          outfile = readLocation outf
+
+processInfo :: [Info] -> (GammaInput, GivensInput, OutputFile, OutputMode)
+processInfo [] = error "Unexpected error in processInfo, please contact developer"
+processInfo [Gamma gamma] 
+    = (gamma, DirectGivens "", DefaultLocation, None)
+processInfo [Givens givens]
+    = (DirectGamma "", givens, DefaultLocation, None)
+processInfo [OutFile outfile]
+    = (DirectGamma "", DirectGivens "", outfile, None)
+processInfo [OutMode mode]
+    = (DirectGamma "", DirectGivens "", DefaultLocation, mode)
+processInfo (Gamma gamma:rest)
+    = (gamma,gi,outf,outm)
+    where (gm,gi,outf,outm) = processInfo rest
+processInfo (Givens givens:rest)
+    = (gm,givens,outf,outm)
+    where (gm,gi,outf,outm) = processInfo rest
+processInfo (OutFile outfile:rest)
+    = (gm,gi,outfile,outm)
+    where (gm,gi,outf,outm) = processInfo rest
+processInfo (OutMode mode:rest)
+    = (gm,gi,outf,mode)
+    where (gm,gi,outf,outm) = processInfo rest
+
+-- Takes the arguments a create a list of infos :)
+processArgs :: [String] -> IO [Info]
+processArgs []    = return []
+processArgs [arg] 
+    | match arg "-h" = return [HelpRequest]
+    | match arg "--help" = return [HelpRequest]
+    | otherwise = error "Couldn't understand argument: Did you mean -h or --help?"
+processArgs (option:matching:rest)
+    | match option "-h" = do 
+         putStrLn "Too many arguments: Dropping them and outputing help information"
+         return [HelpRequest]
+    | match option "--help" = do 
+         putStrLn "Too many arguments: Dropping them and outputing help information"
+         return [HelpRequest]
+    | match option "--gamma"  = do 
+         restinfo <- processArgs rest
+         if isFilePath matching 
+             then return $ Gamma (FileGamma matching):restinfo
+             else return $ Gamma (DirectGamma matching):restinfo
+    | match option "--givens" = do 
+         restinfo <- processArgs rest 
+         if isFilePath matching
+             then return $ Givens (FileGivens matching):restinfo
+             else return $ Givens (DirectGivens matching):restinfo
+    | match option "--output" = do 
+         restinfo <- processArgs rest
+         return $ OutFile (Location matching):restinfo
+    | match option "--mode" = do 
+         restinfo <- processArgs rest
+         return $ OutMode (getMode matching):restinfo
+    | otherwise = error $ "Unable to understand argument "++option++" please refer to help"
+
+helpString :: IO String
+helpString = readFile "HELP.TXT"
 
 -- output the result of the proof/model searcher
-outputResult :: OutputMode -> Either Model ProofTree -> String -> IO ()
+outputResult :: OutputMode -> Either Model ProofTree -> FilePath -> IO ()
 outputResult None result _             = either left right result
   where left  x = putStrLn "SATISFIABLE"
         right x = putStrLn "UNSATISFIABLE"
@@ -63,36 +166,8 @@ executeCommand (Solve mode (gamma, givens) filename )
        putStrLn $ "For GIVENS: "++conceptsToConsole givens
        if mode /= Graphical 
           then putStrLn "The result is:"
-          else putStrLn "The result will be generated in a seprate file"
+          else putStrLn "The result will be generated in a seperate file (indicated by --output if specified)"
        outputResult mode (findPOM givens gamma) filename
 executeCommand Help
-  = putStrLn helpString
-
-processInput :: [String] -> IO ()
-processInput (x:xs) = processString x xs
-
--- from a well formed string creates a command
--- Mode is already known before hand
-processString :: String -> [String] -> IO ()
-processString [] _  = error "No arguments provided"
-processString ('-':'h':rest) _
-  = executeCommand Help
-processString ('-':'-':'h':'e':'l':'p':' ':rest) _
-  = executeCommand Help
-processString string args
-  | numOfArgs < 2  = error "Not enough arguments"
-  | numOfArgs == 2 = executeCommand (Solve mode concepts "output")
-  | numOfArgs > 3  = error "Too many arguments"
-  | otherwise      = executeCommand (Solve mode concepts filename)
-  where (mode, rest) = process string
-            where process :: String -> (OutputMode, String)
-                  process ('n':'o':'n':'e':rest) = (None, rest)
-                  process ('c':'o':'n':'s':'o':'l':'e':rest) = (Console, rest)
-                  process ('g':'r':'a':'p':'h':'i':'c':'a':'l':rest) = (Graphical, rest)
-                  process _ = error "Unable to process input"
-        numOfArgs = length args
-        gamma     = head args
-        givens    = args !! 1
-        filename  = args !! 2
-        concepts  = (if gamma  == []   then [] else file $ lexerI gamma, 
-                     if givens == "  " then [] else file $ lexerI givens)
+  = do output <- helpString
+       putStrLn output
