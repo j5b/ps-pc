@@ -1,0 +1,37 @@
+--DESCRIPTION:
+
+This program searches for models for Description Logic. 
+If no such model can be found a proof is provided.
+
+--LOGIC SYNTAX:
+
+The syntax for Description Logic used is the following:
+  'Forall' for the universal quantification: Forall Relation (Concept)
+  'Exists' for the existential quantification: Exists Relation (Concept)
+  'top' for Top/Truth/Tautology (always true): top
+  'bot' for Bottom/Falsity (always false): bot
+  '&' for the Intersection/And symbol: (concept1)&(concept2)
+  '|' for the Union/Or symbol: (concept1)|(concept2)
+  '~' for the Complement/Negation symbol: ~(concept)
+  ';' to seperate Concepts (Formulaes) in a list: concept1;concept2
+The rest represents atomic or binary relation (used in forall and exists).
+Brackets can be omitted if there is no doubt.
+
+e.g. Forall R (A|top);~(~(top));A|(A|(B&Exists S (top|bot)))
+
+--OPTIONS
+
+There are the following options
+  --help for displaying this message
+  --gamma for specifying gamma (in a file or directly)
+  	 default is no concepts
+  --givens for specifying givens (in a file or directly)
+  	 default is no concepts
+  --mode for specifying what type of output you wish
+  	 -> none for simply stating SATISFIABLE or UNSATISFIABLE
+	 -> console for a verbose console output of the model or proof
+	 -> graphical for a verbose output in a file
+	 default is 'none'
+  --output for specifying the output file name (only makes sense for graphical
+  outputs) !! NOT THE FILE PATH !!
+	default is output

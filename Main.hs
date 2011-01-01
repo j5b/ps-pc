@@ -27,14 +27,7 @@ import Reader
 -- TODO: parse input and call the proof/model searcher and check the result
 --main :: IO()
 main = do input <- getArgs
-          processInput input
+          info <- processArgs input
+          command <- createCommand info
+          executeCommand command
           return ()
-
--- Dispatches call to either the model or proof checker.
--- TODO: Make interfaces compatible.
-check :: [Concept] -> [Concept] -> Either Model ProofTree -> (String, Bool)
--- TODO: Need model checker that can deal with knowledge base and a set of
---       concepts to dispatch this call.
-check cs gamma (Left model) = checkInputModel model gamma cs
-check _ gamma (Right proof) = checkProof proof gamma
-
