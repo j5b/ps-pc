@@ -3,7 +3,9 @@ framework for reasoning. We will provide a short but technical
 definition of what we mean by Description Logic. The logical framework
 the software deals with formally known as $\mathcal{ALC}$
 (\textit{Attributive Concept Language with Complements}). It forms the
-basis for many Description Logics.
+basis for many Description Logics, and can be seen as a more expressive
+extension of Proposition Logic and a decidable subset of First-Order
+logic.
 
 Like in other logics $\mathcal{ALC}$ is divided in two parts one
 syntactic (language) and the other semantic (meaning). The
@@ -30,7 +32,7 @@ Anything of the following form is a concept:
 \end{itemize}
 
 Nothing else is a concept. Examples of concepts are $\forall Link
-. (Website)$ or $\exists Friend . (\neg OnFacebook)$. To provide a
+. (Website)$ or $\exists Friend . (\neg Facebook)$. To provide a
 formal semantic for $\mathcal{ALC}$ we need to define the notion of
 interpretation which gives meaning for Description Logic concepts. An
 interpretation is a pair $(\Delta^{I},.^{I})$, where $\Delta^{I}$ is a
