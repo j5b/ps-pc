@@ -1,0 +1,59 @@
+Our project focuses on reasoning in Description Logic which provides a
+framework for reasoning. We will provide a short but technical
+definition of what we mean by Description Logic. The logical framework
+the software deals with formally known as $\mathcal{ALC}$
+(\textit{Attributive Concept Language with Complements}). It forms the
+basis for many Description Logics.
+
+Like in other logics $\mathcal{ALC}$ is divided in two parts one
+syntactic (language) and the other semantic (meaning). The
+syntax is built upon two sets: A set of atomic concept names (unary
+relations) and a set of relation names (binary relations). Those two
+sets defines the signature. A signature for instance could be
+consisting of the following atoms: ``Book'', ``Film''; and the
+following relations: ``Bought'', ``Borrowed''. Concepts in Description
+Logic are statements of truth and falsity like formulaes are in
+First-Order logic. 
+
+Anything of the following form is a concept:
+\begin{itemize}
+\item $\top$,$\bot$ and any atomic concept name $A$ is a concept.
+\item If $C$ and $D$ are concepts then $C \sqcap D$ is a concept
+  called the intersection or the conjunction of $C$ and $D$.
+\item If $C$ and $D$ are concepts then $C \sqcup D$ is a concept
+  called the union or the disjunction of $C$ and $D$.
+\item If $C$ is a concept then $\neg C$ is a concept called the complement or the
+  negation of $C$.
+\item If $C$ is a concept and $R$ a relation name then $\forall R . C$
+  and $\exists R . C$ is a concept called each respectively the
+  universal and existential restriction of $C$.
+\end{itemize}
+
+Nothing else is a concept. Examples of concepts are $\forall Link
+. (Website)$ or $\exists Friend . (\neg OnFacebook)$. To provide a
+formal semantic for $\mathcal{ALC}$ we need to define the notion of
+interpretation which gives meaning for Description Logic concepts. An
+interpretation is a pair $(\Delta^{I},.^{I})$, where $\Delta^{I}$ is a
+non-empty set called the domain and $.^{I}$ is a function sending each
+atomic concept to a subset of $\Delta^{I}$ and each relation name to a
+subset of $\Delta^{I} \times \Delta^{I}$ and satisfying the following 
+properties:
+
+\begin{itemize}
+\item $\top^{I} = \Delta^{I}$ and $\bot^{I} = \emptyset$.
+\item $(C \sqcap D)^{I} = C^{I} \cap D^{I}$.
+\item $(C \sqcup D)^{I} = C^{I} \cup D^{I}$.
+\item $(\neg C)^{I} = \Delta^{I} \backslash C^{I}$.
+\item $(\forall R . C)^{I} = \{x \in \Delta^{I} \text{: forall } (x,y) \in R^{I} \text{ implies } y \in C^{I}\}$ 
+\item $(\exists R . C)^{I} = \{x \in \Delta^{I} \text{: exists } (x,y) \in R^{I} \text{ implies } y \in C^{I}\}$ 
+\end{itemize}
+
+An intuitive way to think about $\mathcal{ALC}$, is that we are given a set of properties an individual might 
+satisfy or not and a set of possible relations between them. Description Logic in $\mathcal{ALC}$ provides a way
+to give a representation of knowledge about the individuals, properties and relations. 
+$\top$ and respectively $\bot$ are statements that either true or respectively false for each individual. 
+$\sqcap$, $\sqcup$ and $\neg$ can be read each as ``and'', ``or'' and ``not''. $\forall$ and $\exists$ differs
+a bit from First-Order logic in the sense $\forall R$ means every ``R-successors'' and $\exists R$ means a
+``R-successors''. For instance 
+$\forall Link . Website$ could be read as ``every link is to a website'' and
+$\exists Friend . (\neg Facebook)$ could be read as ``some friend is not on facebook''
