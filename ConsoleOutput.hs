@@ -24,20 +24,24 @@ existsConsole = "Exists"
 forallConsole = "Forall"
 
 -- creates a string representing the model or the proof tree
-resultToConsole :: Either Model ProofTree -> String
-resultToConsole = either modelToConsole proofToConsole
+resultToConsole :: Either Model ProofTree -> FilePath -> IO ()
+resultToConsole (Left model) file = modelToConsole file model
+resultToConsole (Right proof) file = proofToConsole file proof
 
 -- creates a string representing the model
-modelToConsole :: Model -> String
-modelToConsole (dom,unarys,binarys) 
-  = dompart++unarypart++ binpart
-  where dompart = "Domain  = "++show dom++"\n"
-        unarypart = if unarys == [] 
-                    then "No unary relation\n" 
-                    else "Unarys  = \n"++processUnarys unarys
-        binpart   = if binarys == [] 
-                    then "No binary relation\n" 
-                    else "Binarys = \n"++processBinarys binarys
+modelToConsole :: FilePath -> Model -> IO ()
+modelToConsole file (dom,unarys,binarys) 
+    = do putStrLn $ "The generated has been outputed to models/"++file++".mod"
+         let result = dompart++unarypart++binpart
+         writeFile ("models/"++file++".mod") result
+         putStrLn result
+    where dompart = "Domain  = "++show dom++"\n"
+          unarypart = if unarys == [] 
+                      then "No unary relation\n" 
+                      else "Unarys  = \n"++processUnarys unarys
+          binpart   = if binarys == [] 
+                      then "No binary relation\n" 
+                      else "Binarys = \n"++processBinarys binarys
 
 -- Utility function for modelToConsole
 processUnarys :: Num a => [(String,[a])] -> String
@@ -50,8 +54,12 @@ processBinarys list = concatMap f list
    where f (binary, space) = "--Binary "++binary++" is satisfied for: "++show space++"\n"
 
 -- creates a string representing the proof
-proofToConsole :: ProofTree -> String
-proofToConsole = unlines . proofToConsoleInternal
+proofToConsole :: FilePath -> ProofTree -> IO ()
+proofToConsole file proof
+    = do let result = (unlines . proofToConsoleInternal) proof
+         putStrLn $ "A proof has been outputed to proofs/"++file++".prf"
+         writeFile ("proofs/"++file++".pdf") result
+         putStrLn result
 
 proofToConsoleInternal :: ProofTree -> [String]
 proofToConsoleInternal (NodeZero (cs,rule,concept))

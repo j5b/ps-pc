@@ -24,7 +24,7 @@ e.g. Forall R (A|top);~(~(top));A|(A|(B&Exists S (top|bot)))
 
 --OPTIONS
 
-There are the following options
+There are the following options for this program
   --help for displaying this message
   --gamma for specifying gamma (in a file or directly)
   	 default is no concepts
@@ -35,9 +35,11 @@ There are the following options
 	 -> console for a verbose console output of the model or proof
 	 -> graphical for a verbose output in a file of the model or proof
 	 default is 'none'
-  --output for specifying the output file name (only makes sense for graphical
+  --output for specifying the output file name (only makes sense for graphical and console
   outputs) !! NOT THE FILE PATH BUT A FILE NAME !!
 	default is 'output'
 
 The order for the options do not matter. Help option discards all the other 
 information.
+
+e.g. ps-pc --output sample --gamma gamma.cpt --givens "Intelligent|Smart" --mode graphical

@@ -156,7 +156,7 @@ outputResult :: OutputMode -> Either Model ProofTree -> FilePath -> IO ()
 outputResult None result _             = either left right result
   where left  x = putStrLn "SATISFIABLE"
         right x = putStrLn "UNSATISFIABLE"
-outputResult Console result _          = putStr $ resultToConsole result
+outputResult Console result filename   = resultToConsole result filename
 outputResult Graphical result filename = either left right result
   where left  x = do outputModel x filename "png" 
                      putStrLn $ "A generated model has been outputed to models/"++filename++".png"
