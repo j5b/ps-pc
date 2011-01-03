@@ -1,3 +1,6 @@
+ps-pc --help
+ps-pc --givens [GIVENS|FILE] --gamma [GIVENS|FILE] --mode [none|console|graphical] --output [NAME]
+
 --DESCRIPTION:
 
 This program searches models for a given knowledge 

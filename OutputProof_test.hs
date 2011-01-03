@@ -14,7 +14,7 @@ import TestUtils
 import ProofSearch
 
 import System.IO
-import System.Process
+import System.Cmd(system)
 import System.Exit
 import Control.Monad
 import Test.HUnit
@@ -39,8 +39,7 @@ fileC2LGenerator = do output <- openFile "concept_latex_test_output.tex" WriteMo
 createC2LPDF :: IO ExitCode
 createC2LPDF 
   = do fileC2LGenerator 
-       hProcess <- runCommand "pdflatex -halt-on-error -interaction=nonstopmode concept_latex_test_output.tex > /dev/null"
-       waitForProcess hProcess
+       system "pdflatex -halt-on-error -interaction=nonstopmode concept_latex_test_output.tex > /dev/null"
 
 testC2L = TestCase (test)
   where test = do code <- createC2LPDF
