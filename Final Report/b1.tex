@@ -1,39 +1,40 @@
-Our project focuses on reasoning in Description Logic which provides a
-framework for reasoning. We will provide a short but technical
+Our project is focused on reasoning in Description Logic a language
+for representing knowlegde.  We will provide a short but technical
 definition of what we mean by Description Logic. The logical framework
-the software deals with formally known as $\mathcal{ALC}$
+the software deals with is formally known as $\mathcal{ALC}$
 (\textit{Attributive Concept Language with Complements}). It forms the
-basis for many Description Logics, and can be seen as a more expressive
-extension of Proposition Logic and a decidable subset of First-Order
-logic.
+basis for many other Description Logics, and it can be seen as a more
+expressive extension of Proposition Logic and a decidable subset of
+First-Order logic.
 
-Like in other logics $\mathcal{ALC}$ is divided in two parts one
-syntactic (language) and the other semantic (meaning). The
+Like in other logics $\mathcal{ALC}$'s definition is subdivided in two
+parts one syntactic (language) and the other semantic (meaning). The
 syntax is built upon two sets: A set of atomic concept names (unary
 relations) and a set of relation names (binary relations). Those two
 sets defines the signature. A signature for instance could be
 consisting of the following atoms: ``Book'', ``Film''; and the
-following relations: ``Bought'', ``Borrowed''. Concepts in Description
-Logic are statements of truth and falsity like formulaes are in
-First-Order logic. 
+following relations: ``Bought'', ``Borrowed''. We will now define what
+a concept is. A concept in Description Logic is a statement of truth
+and falsity just like formulaes are statements of truth in First-Order
+logic.
 
 Anything of the following form is a concept:
 \begin{itemize}
-\item $\top$,$\bot$ and any atomic concept name $A$ is a concept.
+\item $\top$ (``truth'', ``tautology''),$\bot$ (``bottom'', ``falsity'') and any atomic concept name $A$ is a concept.
 \item If $C$ and $D$ are concepts then $C \sqcap D$ is a concept
-  called the intersection or the conjunction of $C$ and $D$.
+  called the intersection (or the conjunction) of $C$ and $D$.
 \item If $C$ and $D$ are concepts then $C \sqcup D$ is a concept
-  called the union or the disjunction of $C$ and $D$.
-\item If $C$ is a concept then $\neg C$ is a concept called the complement or the
-  negation of $C$.
+  called the union (or the disjunction) of $C$ and $D$.
+\item If $C$ is a concept then $\neg C$ is a concept called the complement (or the
+  negation) of $C$.
 \item If $C$ is a concept and $R$ a relation name then $\forall R . C$
   and $\exists R . C$ is a concept called each respectively the
   universal and existential restriction of $C$.
 \end{itemize}
 
 Nothing else is a concept. Examples of concepts are $\forall Link
-. (Website)$ or $\exists Friend . (\neg Facebook)$. To provide a
-formal semantic for $\mathcal{ALC}$ we need to define the notion of
+. (Website)$ or $\exists Friend . (\neg Facebook)$. The 
+formal semantic for $\mathcal{ALC}$ is defined the notion of
 interpretation which gives meaning for Description Logic concepts. An
 interpretation is a pair $(\Delta^{I},.^{I})$, where $\Delta^{I}$ is a
 non-empty set called the domain and $.^{I}$ is a function sending each
@@ -50,12 +51,29 @@ properties:
 \item $(\exists R . C)^{I} = \{x \in \Delta^{I} \text{: exists } (x,y) \in R^{I} \text{ implies } y \in C^{I}\}$ 
 \end{itemize}
 
-An intuitive way to think about $\mathcal{ALC}$, is that we are given a set of properties an individual might 
-satisfy or not and a set of possible relations between them. Description Logic in $\mathcal{ALC}$ provides a way
-to give a representation of knowledge about the individuals, properties and relations. 
-$\top$ and respectively $\bot$ are statements that either true or respectively false for each individual. 
-$\sqcap$, $\sqcup$ and $\neg$ can be read each as ``and'', ``or'' and ``not''. $\forall$ and $\exists$ differs
-a bit from First-Order logic in the sense $\forall R$ means every ``R-successors'' and $\exists R$ means a
-``R-successors''. For instance 
-$\forall Link . Website$ could be read as ``every link is to a website'' and
-$\exists Friend . (\neg Facebook)$ could be read as ``some friend is not on facebook''
+An intuitive way to think about $\mathcal{ALC}$, is that we are given
+a set of properties an individual might satisfy or not and a set of
+possible relations between them. Description Logic in $\mathcal{ALC}$
+provides a way to give a representation of knowledge about the
+individuals, properties and relations.  $\top$ and $\bot$ are
+statements that are either always true or respectively always false
+for each individual.  $\sqcap$, $\sqcup$ and $\neg$ can be read each
+as ``and'', ``or'' and ``not''. $\forall$ and $\exists$ differs a bit
+from First-Order logic in the sense $\forall R$ means every
+``R-successors'' and $\exists R$ means a ``R-successors''. For
+instance $\forall Link . Website$ could be read as ``every link is to
+a website'' and $\exists Friend . (\neg Facebook)$ could be read as
+``some friend is not on facebook''
+
+A knowledge base in Description Logic is defined by two collections of
+concepts for some signature in $\mathcal{ALC}$. The first one we will
+refer as \textit{Gamma} and the second one as the \textit{Givens}. We
+say a knowledge base is satisfiable if there exists an interpretation
+or model that makes every statement in \textit{Gamma} true at each
+point of $\Delta^{I}$ and every statement in \textit{Givens} true at
+some point in $\Delta^{I}$. If no such model exists we say a knowledge
+base is unsatisfiable. For example if \textit{Givens} consists of one
+concept namely $\exists R. \top$ and if \textit{Gamma} consists of
+also one concept only $A$ (an atomic concept name), then this
+knowledge base is satisfiable since the intrepretation $\Delta^{I}
+= \{1\}$ with $A^{I} = \{1\}$ and $R^{I} = \{(1,1)\}$ is a model.
