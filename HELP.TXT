@@ -45,4 +45,4 @@ There are the following options for this program
 The order for the options do not matter. Help option discards all the other 
 information.
 
-e.g. ps-pc --output sample --gamma gamma.cpt --givens "Intelligent|Smart" --mode graphical
+e.g. ps-pc --output sample --gamma gamma.txt --givens "Intelligent|Smart" --mode graphical
