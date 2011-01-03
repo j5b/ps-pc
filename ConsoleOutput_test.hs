@@ -16,43 +16,18 @@ import Signature
 
 import Test.HUnit
 
-testmodeloutput1 = testequality msg target result $ printModel emptyModel
-    where msg    = "Failed to output correctly empty model"
-          target = "Domain  = []\n"++
-                   "No unary relation\n"++
-                   "No binary relation\n"
-          result = modelToConsole emptyModel
-testmodeloutput2 = testequality msg target result $ printModel input
-    where msg    = "Failed to output a simple model correctly"
-          target = "Domain  = [1,2]\n"++
-                   "Unarys  = \n"++
-                   "--Unary A is satisfied for: [1]\n"++
-                   "--Unary B is satisfied for: [2]\n"++
-                   "Binarys = \n"++
-                   "--Binary R is satisfied for: [(1,2),(2,1)]\n"
-          result = modelToConsole input
-          input  = ([1,2],[("A",[1]),("B",[2])],[("R",[(1,2),(2,1)])])
+testmodeloutput1 = TestCase $ modelToConsole "temp" emptyModel
+
+testmodeloutput2 = TestCase $ modelToConsole "temp" input
+    where input  = ([1,2],[("A",[1]),("B",[2])],[("R",[(1,2),(2,1)])])
 
 modeloutputtests = maplabel "Model output" [testmodeloutput1, testmodeloutput2]
 
-testproofoutput1 = testequality msg target result $ show input
-    where msg    = "Failed to output the simplest of proof"
-          target = "bot\n"++
-                   "=Contradiction on: bot\n"++
-                   "--UNSAT--\n"
-          result = proofToConsole input
-          input  = (NodeZero ([bottom], "", bottom))
-testproofoutput2 = testequality msg target result $ show input
-    where msg    = "Failed to output a simple proof"
-          target = "(Forall R (A))&(Forall R (~A)),Exists R (top)\n"++
-                   "=By rule 'and' applied on concept (Forall R (A))&(Forall R (~A))\n"++
-                   "Exists R (top),Forall R (A),Forall R (~A)\n"++
-                   "=By rule 'exists' applied on concept Exists R (top)\n"++
-                   "A,~A,(Forall R (A))&(Forall R (~A)),Exists R (top),top\n"++
-                   "=Contradiction on: A\n"++
-                   "--UNSAT--\n"
-          result = proofToConsole input
-          input  = (NodeOne ([And (Forall "R" (Atom "A")) (Forall "R" (Neg (Atom "A"))),Exists "R" T],"and",And (Forall "R" (Atom "A")) (Forall "R" (Neg (Atom "A")))) (NodeOne ([Exists "R" T,Forall "R" (Atom "A"),Forall "R" (Neg (Atom "A"))],"exists",Exists "R" T) (NodeZero ([Atom "A",Neg (Atom "A"),And (Forall "R" (Atom "A")) (Forall "R" (Neg (Atom "A"))),Exists "R" T,T],"bottom",Atom "A"))))
+testproofoutput1 = TestCase $ proofToConsole "temp" input
+    where input  = (NodeZero ([bottom], "", bottom))
+
+testproofoutput2 = TestCase $ proofToConsole "temp" input
+    where input  = (NodeOne ([And (Forall "R" (Atom "A")) (Forall "R" (Neg (Atom "A"))),Exists "R" T],"and",And (Forall "R" (Atom "A")) (Forall "R" (Neg (Atom "A")))) (NodeOne ([Exists "R" T,Forall "R" (Atom "A"),Forall "R" (Neg (Atom "A"))],"exists",Exists "R" T) (NodeZero ([Atom "A",Neg (Atom "A"),And (Forall "R" (Atom "A")) (Forall "R" (Neg (Atom "A"))),Exists "R" T,T],"bottom",Atom "A"))))
 
 proofoutputtests = maplabel "Proof output" [testproofoutput1, testproofoutput2]
 
