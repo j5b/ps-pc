@@ -9,7 +9,7 @@
 module OutputProof where 
 
 import System.IO
-import System.Process
+import System.Cmd(system)
 import System.Exit
 import Control.Monad
 
@@ -23,8 +23,7 @@ outputProof proof filename
   = do createGenericPDF [proof] $ filename++".tex"
        let command = "pdflatex -halt-on-error -interaction=nonstopmode "++
                      filename++".tex > /dev/null"
-       hProcess <- runCommand command
-       waitForProcess hProcess
+       system command
        return ()
 
 getConcepts (cs,_,_) = cs
