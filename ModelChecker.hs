@@ -7,7 +7,7 @@
    Description: checks if a model is valid for a given concepts
 -}
 
-module ModelChecker (checkInputModel, checkAtomic, checkConcept, checkModel) where 
+module ModelChecker (checkInputModel, checkAtomic, checkConcept, checkGivens) where 
 
 {-
 To check if a model is valid
@@ -38,11 +38,11 @@ checkInputModel model [] givens = if consistent /= mzero
                                         "\n---- All concepts:\n"++msg++
                                         "---- Gamma only:\n", result)        
   where concepts      = foldl1 (/\) $ map toNNF givens
-  	(msg, result) = checkModel concepts model 
+  	(msg, result) = checkGivens concepts model 
         consistent    = consistentModel model
 checkInputModel model gamma givens = if consistent /= mzero
                                      then error (consistent ++ printModel model)
-                                     else checkModel concepts model `combine`
+                                     else checkGivens concepts model `combine`
                                           checkGamma (foldl1 (/\) $ map toNNF gamma) model
   where concepts = foldl1 (/\) $ map toNNF gamma ++ map toNNF givens
         combine (part1, result1) (part2, result2) =
@@ -64,11 +64,10 @@ checkGamma concept model =
         answerAnd ((msg,False):rest)  = (msg,False)
         answerAnd ((msg,True):rest)   = answerAnd rest
 
-
 -- check if model is a model for concept
-checkModel :: Concept -> Model -> Answer
-checkModel _ ([], _, _ ) = ("Empty model", False)
-checkModel concept model =
+checkGivens :: Concept -> Model -> Answer
+checkGivens _ ([], _, _ ) = ("Empty model", False)
+checkGivens concept model =
   answerOr $ map (checkConcept concept model) $ getDomain model
   where answerOr [(msg, result)]    = (msg,result)
         answerOr ((msg,True):rest)  = (msg,True)
