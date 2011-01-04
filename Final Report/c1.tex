@@ -111,16 +111,152 @@ Furthermore, we used two different ways of black-box testing. We wrote a small p
 
 Both these approaches turned out to be very useful and helped us discover some rather obscure bugs (e.g. bugs that would only occur if concepts were nested in a very particular and complex way). These kinds of tests can also be understood as stress testing of our program, because the cases are larger than we expect normal user input to be and are very likely to test concepts that go beyond what users would normally input.
 
-\subsection{Achievements}
+\subsection{Comparisons of Plans and Achievements}
 
+\subsection*{Iteration 1 (start 22/10/10, end 12/11/10)}
+
+The original plan was to have two complete iterations by the 05/11/10 and 12/11/10 respectively. In practice, we completed one iteration which combined the tasks for both iterations by 12/11/10.
+
+We intended to produce a working program that, given an AL concept, produces either a model for that concept or a proof showing its unsatisfiability, and both proof and model can be checked for correctness by the program. Only in the second iteration, where we to extend the systems functionality to deal with the more expressive ALC logic. However, we found that a vast amount of refactoring and redesign will be required, if we were to move from AL to ALC in the second iteration.
+
+We agreed that, both in the implementation and testing sides, it would be wise to produce one iteration, which would ultimately achieve a combined result of the first and second iterations, i.e. a program that deals with all ALC (rather then AL) concepts.
+
+In the beginning of the iteration all team members spent time acquiring a theoretical understanding of the task by reading journal articles on description logic and proof/model searching. Everyone needed to have a good understanding of the underlying theory and identify suitable algorithms and adapt them to our setup.
+
+* Reference articles here *
+
+Overall, we were able to complete the iteration successfully and we discovered the problem of cycles in the global assumptions, causing non-termination in the proof/model search component. The tasks for our first iteration and our achievements were as follows:
+
+\begin{center}
+\begin{longtable}{| p{7cm} | p{8cm} |}
+\hline
+\textbf{Tasks} & \textbf{Achievements} \\
+\hline
+Specifications of concept, model and proofs as Haskell data types.
+& Specifications of concepts, models and proofs from ALC logic as Haskell data types.\\
+\hline
+Implementation of proof/model search for ALC.
+& Implementation of a model/proof searching algorithm for ALC. Tested and found to be correct for all cases for which it terminates. \\
+\hline
+Implementation of model checker for ALC.
+& Implementation of a model checking algorithm for ALC that checks if a model is correct and additionally provides an error report if the model is incorrect.\\
+\hline
+Implementation of proof checker for ALC.
+& Implementation of a proof checking algorithm for ALC that checks if a proof is correct and additionally provides an indication of the position where the proof is incorrect if it is incorrect.\\
+\hline
+& Complete test suites for the proof/model search, proof checker and model checker, as a result of test-driven development method.\\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection*{Iteration 2 (start 12/11, end 19/11)}
+
+In the draft schedule, we had planned to extend the system's functionality to cover a more expressive logic in this iteration. However, from implementing the first iteration, we discovered there was the potential problem of cycles in the input global assumptions, which causes complications in the implementation of proof search, model construction and model checking.
+
+As a solution we decided to use a mechanism for caching the set of concepts visiting and their resulting model of proof. We decided to deal with in this iteration as addressing this potential problem later, after other extensions have been added, had the risk of causing the solution to be more difficult to attain and test.
+
+At this stage, we decided to run all tests together by using cabal, so it would be convenient for all team members to see test results for all components of the program.
+
+In this iteration, there was difficulty in scheduling meetings and much time was needed to read and understand how to implement caching, especially for proof and model construction simultaneously. Consequently, the completion of this iteration was hindered.
+
+\begin{center}
+\begin{longtable}{| p{7cm} | p{8cm} |}
+\hline
+\textbf{Tasks} & \textbf{Achievements} \\
+\hline
+Implementation of caching so that the proof/model search terminates and returns a correct result when given global assumptions containing cycles. & Reading and understanding the theory and how it would be implemented, but unimplemented.\\
+\hline
+Set up cabal for package management. & Completed.\\
+\hline
+Set up cabal for running all the tests together. & Completed.\\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection*{Iteration 3 (start 19/11, end 26/11)}
+
+In this iteration, we had planned to extend the program to be able to express a new sort, individuals, in logic. This was to enable users to express and reason with a specific individual in the domain. However, since the previous iteration did not run smoothly, the task of implementation of caching was extended to this iteration.
+
+To enable black-box testing to be performed with large complex input cases, a program that automatically generates large test cases; and a parser to extract large complex concepts from benchmark files were implemented. Hence the implementation of the parser for user input was moved to this iteration to be developed at the same time, rather than implemented as planned in the last iteration.
+
+\begin{center}
+\begin{longtable}{| p{7cm} | p{8cm} |}
+\hline
+\textbf{Tasks} & \textbf{Achievements} \\
+\hline
+Implementation of caching so that the proof/model search terminates and returns a correct result when given global assumptions containing cycles. & Implemented with bugs in cases with cycles in the input global assumptions.\\
+\hline
+Implement parser for benchmark files and user input	. & Implemented a parser with different lexical analysers for benchmark files and user input. Unit tests for the lexical analyser component written.\\
+\hline
+Clearer and consistent test suite setup and messages returned for all components. & Completed by refactoring common code/test cases in different components of the program and creating functions to aid the coding of unit tests.\\
+\hline
+Implementation of test case generator. & Implemented and revealed some obscure bugs.\\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection*{Iteration 4 (start 26/11, end 3/12)}
+
+This iteration was intentionally planned to extend the program to cover counting in logic only if the previous iteration progressed well. As expected, there were problems due to the technical nature of this project and difficulty of formulating the algorithm for caching with the existing code in the proof/model search component. Therefore, we started to plan how to extend our program to express individuals in the domain in this iteration rather than in the previous.
+
+After much time spent on reading and discussing the theory on individuals, we found that our code needed to undergo a substantial amount of change to successfully. Given the limited time, we decided not to continue with this extension.
+
+Most of the time was invested in fixing bugs in proof/model search and testing in this iteration. The tasks and achievements were:
+
+\begin{center}
+\begin{longtable}{| p{7cm} | p{8cm} |}
+\hline
+\textbf{Tasks} & \textbf{Achievements} \\
+\hline
+Fix the bug highlighted in the previous iteration, in the proof/model search using caching.	& Fixed this bug, but black box-testing revealed obscure bugs existed in this component.\\
+\hline
+Extend program components to express individuals.	& Forgone.\\
+\hline
+Implement tests for actual parsing of files and user input. & Completed.\\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection*{Iteration 5 (start 3/12, end 10/12)}
+
+For the last iteration, we integrated the additional features as planned, including the output of proofs and models into human readable format, and implementing the search for the shortest proof/smallest model by the proof/model search component. In addition, we were able to complete and fix the remaining bugs in the proof/search component. The final tasks and achievements:
+
+To complete the project, we prepared the program for open-source deployment was done in this iteration by writing the main function and user interface.
+
+\begin{center}
+\begin{longtable}{| p{7cm} | p{8cm} |}
+\hline
+\textbf{Tasks} & \textbf{Achievements} \\
+\hline
+Fix bugs in proof/model search. & Completed.\\
+\hline
+Implement output model component to output a given model as a graph. & Completed.\\
+\hline
+Implement output proof component to output proof as a Latex file. & Completed.\\
+\hline
+Find shortest proof/smallest model. & Completed. * Did we do this? *\\
+\hline
+Implement the main function. & Completed.\\
+\hline
+\end{longtable}
+\end{center}
 
 \subsection{Code Lengths}
 
+During the development of the program, we found that most of the test suites were of a larger length of lines than their associated components, due to our extensive testing methods. Upon completion of all the iterations, our program consisted of the following components and lengths of code, which we believe to be relatively short as a result of using Haskell as our programming language:
 
 \begin{center}
   \begin{tabular}{|l|l|c|}
 \hline
 \textbf{Component} & \textbf{Modules/Files} & \textbf{Code Length (lines)} \\
+\hline
+    Common code & Signature.hs & 118 \\
+    (utilities and data structures) & Signature\_test.hs & 128 \\
+     & Model.hs & 88 \\
+     & Model\_test.hs & 36 \\
+     & Proof.hs & 24 \\
+     & ProofUtils.hs & 107 \\
+     & Proof\_test.hs & 85 \\
 \hline
     Parser & Parser.y & 199 \\
      & Parser.hs (generated code) & 912 \\
