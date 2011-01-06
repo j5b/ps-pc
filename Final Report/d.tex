@@ -1,0 +1,53 @@
+\subsection {Validations and Conclusions}
+
+In order to evaluate the project success, we evaluate the project against two criteria:
+The first criterion is the set of requirements and the extensions set, as agreed upon at the beginning of the project.
+The second criterion is a broader look of the product created against existing technology today.
+
+Looking at the first criterion, the original set of requirements were as follows:
+
+\begin{itemize}
+\item Representation of concepts, models and proofs for description logics.
+\item Implementation in of a model/proof searching algorithm for $\mathcal{ALC}$ which is correct and which terminates
+\item Implementation of a model checking algorithm for $\mathcal{ALC}$ that checks
+if a model is correct
+\item Implementation of a proof checking algorithm for $\mathcal{ALC}$ that checks if a proof is correct
+\item Provide a standard output format for generated models and proofs 
+\end{itemize}
+
+Some further extension to the project were set as follows:
+
+\begin{itemize}
+\item Extend the program to more expressive logics (for instance logics with number restrictions, probabilities, etc.)
+\item Implementation of a parser for reading concepts in Description Logic
+\item Ability to represent models and proofs in a graphical representation
+\item User interface to the program
+\item Find the shortest proof and/or smallest model for a given concept
+\end{itemize}
+
+All of the above requirements were completed. In addition, all of the extensions, apart from the first point were completed, due to time constrains in particular and design issue explained later in this section. 
+
+Looking at the second criterion, there are other proof checkers and model/proof searchers. An example of a model/proof searcher is the COLOSS solver (The Coalgebraic Logic Satisfiability Solver), which decides satisfiability of modal formulas. The set of logics which are catered for in the COLOSS solver is much greater then in our program, and includes for example the logics K and probabilistic modal logic, where as in our program we look at $\mathcal{ALC}$ logic. However, the main advantage in our program is the duality it provides between the proof/model searcher and proof and model checkers. There is a common syntactical interface between the searcher and the checker, and both use a common representation of concepts, models and proofs. In particular, the model and proof checkers are developed independently to the model/proof searcher. This allows for a much greater confidence for the user, who can use our program in two independent stages: find a proof or a model using the proof searcher and then check if that proof or model is correct. The proof/model searcher also provides either a model or a proof (according to the agreed representation) and not only yes/no answer to whether the concept (or a list of concepts) is satisfiable, as many other searchers do. Moreover, the proof and model checkers both provide detailed reports which pinpoint the problem in the proof of model provided. The graphical representation of models and proofs also further eases the understanding of models and proofs for the user.
+
+However most importantly, the program's correctness (both the proof/model seacher and the model and proof checkers) is a vital part of the project success. Verification and validation of our program was done extensively particularly through various kinds of tests as detailed in section \ref{sec:techused} (Technology Used). In addition to these testing techniques we used \emph{hlint} and code reviews. 
+
+DO WE PUT THE PART OF VALIDATION HERE OR IN TESTING METHODS SECTION?!
+
+\emph{hlint}, a program similar to lint, analyses Haskell programs and suggests changes, to ensure a good and consistent style throughout the program. This not only ensured that the source code is easier to read and understand, but also made programming mistakes less likely.
+
+We also make extensive use of \emph{code reviews}. These were conducted through the Google interface which allowed for reviews to be done
+in an efficient and consistent manner. 
+
+We integrated these tools, and the tests described earlier, into a validation process.
+We usually ran \emph{hlint} and unit tests before submitting the code to the
+repository. Then we gave code reviews and used grey-box testing to improve
+the quality of the code and find bugs that weren't found before. On a regular
+basis we ran the black-box tests on the whole program, discovering issues
+that were missed in the previous steps.
+
+On the whole, this gives a high confidence that both the proof/model searcher and the proof and model checkers work correctly and their independence gives further confidence for the user that a certain concept is indeed satisfiable/unsatisfiable.  It is this that is the main advantage in out program.
+
+In terms of the learning outcome of this project, we learnt various things, in particular the importance of a complete design in early stages of the project. At early stages, it was hard to foresee the need for a labelled tableau in our program. Only later, when we wanted to include the option of referring to specific individuals when searching for a model/proof, did we find this necessary. Had we observed this at the beginning of the project we would be able to change the design of our program and re-factoring or changing the code would have been easier, and hence including this change. For this reason, we would allow spending more time on design then initially given; In particular we would look at the extensions more closely in order to anticipate the need for labelled tableau.
+
+In addition, the vast amount time spend on validation and verification, taught us the difficulty of ensuring (high probability of) correctness of software where it necessary. SHOULD I MENTION TECHNIQUES WE LEARNT SUCH AS HAPPY PARSER OR BETTER CODING?!
+ 
