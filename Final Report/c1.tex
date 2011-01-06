@@ -7,7 +7,7 @@ We used several tools and languages in our program, with the main programming la
 
 Haskell, was chosen as the main programming language primarily because Haskell's pattern matching naturally implements the handling of cases (such as proof rules and formulas) together with way we decided to structure the program into the main components. This way work on the different components can be implemented independently and simultaneously. Other reasons why Haskell was more appealing than other programming languages considered (Java, C, C++) were Haskell's compact code and each team member's relative levels of programming skills and experience in each language.
 
-After choosing to use Haskell, GHC was picked as the compiler used in the development of the program. GHC was chosen over Hugs because it has a higher runtime performance and our program could be dealing with complex 
+After choosing to use Haskell, GHC was picked as the compiler used in the development of the program. GHC was chosen over Hugs because it has a higher runtime performance, which was preferable since our program could be dealing with complex sets of concepts. Other reasons for our choice were GHC has a bigger and larger library and can compile to an executable independent of the library.
 
 With no prior experience in programming a parser, we considered using Happy and Parsec in implementing the parser component for user input and benchmark files. Happy is an LR (bottom-up) parser generator and requires Happy to be run to generate the Haskell code for the parser, whilst Parsec is a LL (top-down) parser library for Haskell so does not require this pre-processing stage.
 
@@ -17,7 +17,7 @@ For the output of proofs into human readable format for end users, Latex was use
 
 On the other hand, for the output of models, Graphviz was used. Graphviz is an open source graph visualisation software. Graphviz was chosen because graphs could be drawn by scripting them in simple DOT language to describe the graph, so was suitable for processing our model data structures and had a short learning time.
 
-Other tools used to aid the software development method include Google Code to host our project, Mercurial version control, Issue tracker to log complex bugs, hlint and cabal. These are discussed in the Software Development Methods subsection.
+Other tools used to aid the software development method include Google Code to host our project, Mercurial version control, Issue tracker to log complex bugs, emph{hlint} and cabal. These are discussed in the Software Development Methods subsection.
 
 \subsection{Technical Challenges}
 
@@ -25,7 +25,11 @@ We encountered a few technical challenges throughout the development of this pro
 
 In the early iterations, we discovered the potential problem of cycles in the input global assumptions, which causes complications in the implementation of proof search, model construction and model checking. To prevent the proof/model search component from potentially becoming non-terminating, we decided to implement a mechanism for caching the sets of concepts already expanded and their resulting proof or model.
 
+* Add explicit example input case that gives non-terminating proof search *
+
 Extending the already written proof/model search component to cover this was very challenging because proof construction and model construction are performed simultaneously in our implementation. By implementing caching, the code became much more complex than before and as a result, it was difficult to reason the correctness of code and to debug for very specific cases.
+
+* First change code to detect cycle and terminate before implementing caching, so can catch these cases in the tests *
 
 This issue was tackled by discussion in our frequent group meetings and meetings with our supervisor; using code reviews and bug tracking system. Our discussions revolved around how global caching worked in the literature read (* REFERENCE HERE? *), and how it would be applied to our program. In this way, all members took part and members of the group not assigned to the implementation of the proof/model search aided in locating and fixing bugs.
 
@@ -42,9 +46,9 @@ From considering Unified Process method, we decided to implement the high risk e
 
 The test-driven nature of eXtreme Programming was a core part of our project development since the integrity of code is very important and directly affects whether the key requirements are met. Therefore, test suites for unit testing and test cases well known in the proof-search-writer community were used to test for correctness and performance. These unit tests were written before the coding of functions or simultaneously, and were tested as implemented. To allow an easy way of running the test suite, they were managed using cabal.
 
-To complement with the unit tests, we also made use of hlint, grey-box testing after each significant change and black-box testing to test our program with large complex inputs. We used hlint, a program similar to lint, that analyses Haskell programs and suggests changes, to ensure a good and consistent style throughout the program. This not only ensured that the source code is easier to read and understand, but also made programming mistakes less likely.
+To complement with the unit tests, we also made use of emph{hlint}, grey-box testing after each significant change and black-box testing to test our program with large complex inputs. We used emph{hlint}, a program similar to lint, that analyses Haskell programs and suggests changes, to ensure a good and consistent style throughout the program. This not only ensured that the source code is easier to read and understand, but also made programming mistakes less likely.
 
-We integrated these tools into a validation process. We ran hlint and unit tests before submitting code to the repository. Then we gave code reviews and used grey-box testing to improve the quality of the code and find bugs that weren't found before. On a regular basis we ran the black-box tests on the whole program, discovering issues that were missed in the previous steps. This whole setup gave us high confidence that the program is working correctly.
+We integrated these tools into a validation process. We ran emph{hlint} and unit tests before submitting code to the repository. Then we gave code reviews and used grey-box testing to improve the quality of the code and find bugs that weren't found before. On a regular basis we ran the black-box tests on the whole program, discovering issues that were missed in the previous steps. This whole setup gave us high confidence that the program is working correctly.
 
 Due to the possible difficulty of forming the algorithms in our project, we gave priority to having a simple solution with clear code first, a feature of eXtreme Programming, to guarantee the existence of a working version of the program. This way there was a working version even when using a different implementation.
 
@@ -85,11 +89,9 @@ When possible, we also adopted features of Crystal Clear, including being co-loc
 
 \subsection*{Testing Methods}
 
-Since a test-driven development method was adopted, unit testing was done at all stages of development, using HUnit (a unit testing framework for Haskell). To complement unit testing, other testing methods included the use of grey-box and black-box testing. In this way, we were able to test at multiple levels: simple tests for base cases and more elaborate tests were made testing of a combination of simple inputs as unit tests; and a random selection of complex inputs from test generator and benchmark files containing formulas.
+Since a test-driven development method was adopted, unit testing was done at all stages of development, using HUnit (a unit testing framework for Haskell). To complement unit testing, other testing methods included the use of grey-box and black-box testing. In this way, we were able to test at multiple levels: simple tests for base cases and more elaborate tests for a combination of simple inputs as unit tests; and a random selection of complex inputs from test generator and benchmark files containing formulas. As a result, about 3-10 small bugs were exposed in each component of the program by unit testing, with a total of approximately 30 bugs, whilst another 10 bugs were found by the other testing methods.
 
-Unit tests were written before the implementation of functions or simultaneously; and test suites are run regularly, especially after any changes to code, to guarantee the program still works as expected. Unit tests were written for code coverage, ensuring all input cases were considered and our code produces the expected results. All areas of code were tested in this way individually: model/proof construction; model checking; proof checking; parsing of user input and files containing benchmark formulas; and the outputting of the constructed proof and model.
-
-* Estimate number of unit tests here *
+Unit tests were written before the implementation of functions or simultaneously; and test suites are run regularly, especially after any changes to code, to guarantee the program still works as expected. Unit tests were written for code coverage, ensuring all input cases were considered and our code produces the expected results. All areas of code were tested in this way individually, with a total of approximately 300 unit tests written.
 
 Although writing extensive sets of unit tests that cover all possible cases took almost as much time as implementing the code itself, there were many benefits from this approach. By simultaneously writing the unit tests, it helped programmers think about and have a clear view of the expected/desired output of functions. This made coding of functions easier and members were able to identify mistakes quickly. Most of the time, bugs were found as the functions were implemented and were therefore corrected immediately.
 
@@ -97,11 +99,7 @@ When moving on to code other parts of the program, we have confidence that teste
 
 In particular, having extensively tested proof checker and model checker by unit tests enabled these components of the program to be used with high confidence in other types of testing. The proof and model checkers are important in these other tests to check the results produced, for the automatically generated complex input cases, by the proof and model construction part of the program, which is very complicated and much harder to test simply by unit tests due to its exploratory nature.
 
-* Stress majority of bugs found were by unit testing \& number of bugs found *
-
-Overall, unit testing revealed most bugs early on or immediately as code was being implemented or underwent a change, before code became more complex and difficult to resolve. 
-
-These bugs included cases that were not covered properly, errors in the code, and bugs introduced due to changes in code.
+Overall, unit testing revealed most bugs early on or immediately as code was being implemented or underwent a change, before code became more complex and difficult to resolve. These bugs included cases that were not covered properly, errors in the code, and bugs introduced due to changes in code.
 
 Unit testing immediately revealed some forgotten cases in the initial code, such as:
 
@@ -114,7 +112,7 @@ Unit testing immediately revealed some forgotten cases in the initial code, such
 Some mistakes in code that may have been overlooked without our approach to unit testing:
 
 \begin{itemize}
-\item Proofs should deal with set of concepts not containing any duplicates, however, the proof searcher produced a result containing duplicated concepts as a result of applying the proof rule for Exists since a specific case was not considered. This was where the inputs contained:
+\item After establishing that at each step of a proof, the set of concepts should not contain any duplicates, the proof searcher produced a result containing duplicated concepts as a result of applying the proof rule for Exists since a specific case was not considered. This was where the inputs contained:
 \begin{itemize}
 \item An Exists concept stating there exists a successor to a particular relation that satisfies a concept
 \item A Forall concept stating all successors of the same relation must satisfy the same concept specified by the exists concept
