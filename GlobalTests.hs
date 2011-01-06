@@ -24,7 +24,7 @@ import ProofChecker
 import Model
 import Proof
 
-untilTimeout = 30
+untilTimeout = 20
 
 -- run two threads and return the first one to finish
 compete :: IO a -> IO a -> IO a 
@@ -64,9 +64,9 @@ testtemplate cs gamma = TestCase (template cs gamma)
 
 -- check if the result of computation is correct or not
 check :: [Concept] -> [Concept] -> Either Model ProofTree -> IO (String, Bool)
-check cs gamma (Left model) = do putStrLn $ " #### MODEL: "++show cs++" "++show gamma
+check cs gamma (Left model) = do putStrLn $ " #### MODEL: "
                                  return $ checkInputModel model gamma cs
-check _ gamma (Right proof) = do putStrLn $ " #### PROOF: "++show gamma
+check _ gamma (Right proof) = do putStrLn $ " #### PROOF: "
                                  return $ checkProof proof (map toNNF gamma)
 
 -- Extract the element of the list at the positions given by indicies
