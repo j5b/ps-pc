@@ -14,6 +14,27 @@
 \usepackage{longtable}
 \usepackage{appendix}
 
+\newcommand{\meeting}[6]{%
+\begin{center}%
+\begin{longtable}{| p{3.5cm} | | p{13cm} |}%
+\hline%
+\textbf{Date:} & #1 \\%
+\hline%
+\textbf{People present:} &#2 \\%
+\hline%
+\textbf{Points discussed:} &#3\\%
+\hline%
+\textbf{Achievements:} &#4 \\%
+\hline%
+\textbf{Agreements:} &#5 \\%
+\hline%
+\textbf{Tasks assigned:} &#6  \\%
+\hline%
+\end{longtable}%
+\end{center}%
+\bigbreak
+}
+
 % for the code listings (if any)
 \usepackage{listings}
 \lstset{language=Haskell, numbers=left, 
@@ -72,6 +93,11 @@
 
 \section{Conclusion}
 \input{conclusion}
+
+\newpage
+\appendix
+\section{Log-Book}
+\input{logbook}
 
 \newpage
 \singlespacing
