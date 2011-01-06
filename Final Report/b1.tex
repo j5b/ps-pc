@@ -68,17 +68,21 @@ a website'' and $\exists Friend . (\neg Facebook)$ could be read as
 ``some friend is not on facebook''
 
 A knowledge base in Description Logic is defined by two collections of
-concepts for some signature in $\mathcal{ALC}$. The first one we will
-refer as \textit{Gamma} and the second one as the \textit{Givens}. We
-say a knowledge base is satisfiable if there exists an interpretation
-or model that makes every statement in \textit{Gamma} true at each
-point of $\Delta^{I}$ and every statement in \textit{Givens} true at
-some point in $\Delta^{I}$. If no such model exists we say a knowledge
-base is unsatisfiable. For example if \textit{Givens} consists of one
-concept namely $\exists R. \top$ and if \textit{Gamma} consists of
-also one concept only $A$ (an atomic concept name), then this
-knowledge base is satisfiable since the intrepretation $\Delta^{I}
-= \{1\}$ with $A^{I} = \{1\}$ and $R^{I} = \{(1,1)\}$ is a model. In
-other words a concept in \textit{Gamma} is satisfied if its
-interpretation is $\Delta^{I}$, and a concept in \texit{Givens} is
-satisfied it its interpretation is a non-empty subset of $\Delta^{I}$.
+concepts for some signature in $\mathcal{ALC}$. The first one are the
+global assumptions often written as $\gamma$ and we will refer here
+as \textit{Gamma} and the second one are the initial set of concepts
+which we will refer here as the \textit{Givens}. We say a knowledge
+base is satisfiable if there exists an interpretation or model that
+makes every statement in \textit{Gamma} true at each point of
+$\Delta^{I}$ and every statement in \textit{Givens} true at some point
+in $\Delta^{I}$. If no such model exists we say a knowledge base is
+unsatisfiable. For example if \textit{Givens} consists of one concept
+namely $\exists R. \top$ and if \textit{Gamma} consists of also one
+concept only $A$ (an atomic concept name), then this knowledge base is
+satisfiable since the intrepretation $\Delta^{I} = \{1\}$ with $A^{I}
+= \{1\}$ and $R^{I} = \{(1,1)\}$ is a model. In other words a concept
+in \textit{Gamma} is satisfied if its interpretation is $\Delta^{I}$,
+and a concept in \texit{Givens} is satisfied it its interpretation is
+a non-empty subset of $\Delta^{I}$. If some global assumptions together
+with an initial set of concepts is unsatisfiable, i.e. no model exists 
+then we can show unsatisfiability through a proof. 

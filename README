@@ -1,6 +1,6 @@
 The following program is a solver for ALC a Description Logic. 
 The solver determines satisfiability of a knowledge base by 
-either providing a model or otherwise a proof it is unsatisfiable.
+either providing a model or otherwise a proof if it is unsatisfiable.
 
 REQUIREMENTS:
   -- GHC (>= 6.10) installed 
