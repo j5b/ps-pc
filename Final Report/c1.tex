@@ -1,47 +1,55 @@
+For this project, we considered the programming languages and technology that our program would use; and tools to use during the development process. To reduce risk and difficulties, we adopted features of agile software development and testing methods most suited to our project. As well as planned a schedule of how the project would progress by iterations, in order to meet the requirements of the final product.
+
 \subsection{Technology Used}
 
 We used several tools and languages in our program, with the main programming language being Haskell. Other than Haskell, the parser generator, Happy, was used to produce the Haskell code for the parser component of the program. For the output of models and proofs into more readable format, Graphviz and Latex were used respectively.
 
 Haskell, was chosen as the main programming language primarily because Haskell's pattern matching naturally implements the handling of cases (such as proof rules and formulas) together with way we decided to structure the program into the main components. This way work on the different components can be implemented independently and simultaneously. Other reasons why Haskell was more appealing than other programming languages considered (Java, C, C++) were Haskell's compact code and each team member's relative levels of programming skills and experience in each language.
 
+After choosing to use Haskell, GHC was picked as the compiler used in the development of the program. GHC was chosen over Hugs because it has a higher runtime performance and our program could be dealing with complex 
+
 With no prior experience in programming a parser, we considered using Happy and Parsec in implementing the parser component for user input and benchmark files. Happy is an LR (bottom-up) parser generator and requires Happy to be run to generate the Haskell code for the parser, whilst Parsec is a LL (top-down) parser library for Haskell so does not require this pre-processing stage.
 
 All members of our team have not used either of these before and so the decision to use Happy was based upon the available documentation. Happy's documentation was clearer and we observed that it involved simpler hand-written code. Hence, we believed the parser would be completed in a shorter amount of time by using Happy. The only disadvantage is that Happy needed to be run after any changes to the Happy file to generate, but this would only be required in the development stages and not when used by end users.
 
-For the output of proofs, 
+For the output of proofs into human readable format for end users, Latex was used so that the proofs could be easily integrated into other Latex documents. This is because our program was targeted at academia, we intended for the proofs to be a part of articles/documents written by the end user.
 
-On the other hand, for the output of models, Graphviz was used. Graphviz is an open source graph visualisation software that have tools and libraries
+On the other hand, for the output of models, Graphviz was used. Graphviz is an open source graph visualisation software. Graphviz was chosen because graphs could be drawn by scripting them in simple DOT language to describe the graph, so was suitable for processing our model data structures and had a short learning time.
+
+Other tools used to aid the software development method include Google Code to host our project, Mercurial version control, Issue tracker to log complex bugs, hlint and cabal. These are discussed in the Software Development Methods subsection.
 
 \subsection{Technical Challenges}
 
-We encountered a few technical challenges throughout the development of this project. The most problematic were the implementation of caching in the proof/model search component and in extending our program to allow users to express specific individuals that must exist and to reason with. These problems were addressed by our frequent informal meetings, in which we discussed the difficulties arisen and finding ways to resolve them.
+We encountered a few technical challenges throughout the development of this project. The most problematic was the implementation of caching in the proof/model search component. This problem resulted in other technical difficulties, including in extending our program to allow users to express specific individuals that must exist and to reason with. We addressed these difficulties by our frequent informal meetings, in which we discussed the technical issues arisen and finding ways to resolve them such as through code reviews and bug tracking.
 
 In the early iterations, we discovered the potential problem of cycles in the input global assumptions, which causes complications in the implementation of proof search, model construction and model checking. To prevent the proof/model search component from potentially becoming non-terminating, we decided to implement a mechanism for caching the sets of concepts already expanded and their resulting proof or model.
 
 Extending the already written proof/model search component to cover this was very challenging because proof construction and model construction are performed simultaneously in our implementation. By implementing caching, the code became much more complex than before and as a result, it was difficult to reason the correctness of code and to debug for very specific cases.
 
-This issue was addressed in our frequent group meetings by discussion, using code reviews, and bug tracking system. In this way, other members of the group not assigned to the implementation of the proof/model search aided in locating and fixing bugs.
+This issue was tackled by discussion in our frequent group meetings and meetings with our supervisor; using code reviews and bug tracking system. Our discussions revolved around how global caching worked in the literature read (* REFERENCE HERE? *), and how it would be applied to our program. In this way, all members took part and members of the group not assigned to the implementation of the proof/model search aided in locating and fixing bugs.
 
-Another challenge we faced was when attempting to extend the program to express a new sort, individuals, in logic, enabling a specific individual to be expressed and reasoned with. In our meetings, we discussed the theoretical issues and how this would be implemented. The proof theory for individuals did not work with our design, and all data structures and components of the program needed to go through a great deal of changes. Given the limited time, it was decided that we will not implement this extension, but rather implement the other key requirements set for this project.
+Another challenge we faced was when attempting to extend the program to express a new sort, individuals, in logic, enabling a specific individual to be expressed and reasoned with. In our meetings, we discussed the theoretical issues and how this would be implemented. The proof theory for individuals did not work with our design, and all data structures and components of the program needed to go through a great deal of changes. Given the limited time, it was decided that we will not implement this extension, but rather implement the other requirements set for the finished product.
 
 \subsection{Software Development and Testing Methods}
 
 To minimise risk and allow the project to adapt to changes quickly when difficulties occur, a mixture of software development methods was adopted together with extensive testing methods. In addition, a variety of tools was used and code management policies were established to ensure quality and correctness of code.
 
 
-The software development method adopted was a blend of mainly eXtreme Programming and Scrum, which were suitable for this project. Agile software development methods meant by using short (1 week) iterations and ensured there was a working product at the end of each iteration.
+The software development method adopted was a blend of mainly eXtreme Programming, Scrum and Crystal Clear, which were suitable for this project. Agile software development methods meant by using short (1 week) iterations, we ensured there was a working product at the end of each iteration.
 
-The test-driven nature of eXtreme Programming was a core part of our project development since the integrity of code is very important and directly affects whether the key requirements are met. Therefore, test suites for unit testing and test cases well known in the proof-search-writer community were used to test for correctness and performance. These unit tests were written before the coding of functions or simultaneously, and will be tested as they are implemented.
+From considering Unified Process method, we decided to implement the high risk elements in early iterations so that the most critical key requirements and most difficult aims are achieved first before implementing the features with a lower risk.
+
+The test-driven nature of eXtreme Programming was a core part of our project development since the integrity of code is very important and directly affects whether the key requirements are met. Therefore, test suites for unit testing and test cases well known in the proof-search-writer community were used to test for correctness and performance. These unit tests were written before the coding of functions or simultaneously, and were tested as implemented. To allow an easy way of running the test suite, they were managed using cabal.
 
 To complement with the unit tests, we also made use of hlint, grey-box testing after each significant change and black-box testing to test our program with large complex inputs. We used hlint, a program similar to lint, that analyses Haskell programs and suggests changes, to ensure a good and consistent style throughout the program. This not only ensured that the source code is easier to read and understand, but also made programming mistakes less likely.
 
-We integrated these tools into a validation process. We ran hlint and unit tests before submitting the code to the repository. Then we gave code reviews and used grey-box testing to improve the quality of the code and find bugs that weren't found before. On a regular basis we ran the black-box tests on the whole program, discovering issues that were missed in the previous steps. This whole setup gave us high confidence that the program is working correctly.
+We integrated these tools into a validation process. We ran hlint and unit tests before submitting code to the repository. Then we gave code reviews and used grey-box testing to improve the quality of the code and find bugs that weren't found before. On a regular basis we ran the black-box tests on the whole program, discovering issues that were missed in the previous steps. This whole setup gave us high confidence that the program is working correctly.
 
 Due to the possible difficulty of forming the algorithms in our project, we gave priority to having a simple solution with clear code first, a feature of eXtreme Programming, to guarantee the existence of a working version of the program. This way there was a working version even when using a different implementation.
 
 Extensive code reviews were essential for improving quality of code and for all team members to understand each others code, under eXtreme Programming. It also led to the discovery of some small programming mistakes in the reviews. Hence the project was hosted on Google Code throughout development, chosen for its features allowing easy submission for code reviews by other team members.
 
-In addition, Google Code integrated well with our choice of version control, Mercurial and provided an issue tracker, which we used to report bugs to address them. The benefits of using Mercurial were it allows local commits before pushing the changesets to the repository, with relatively easy-to-use graphical user interface extensions; and it is more flexible than other version controls, for example Git.
+In addition, Google Code integrated well with our choice of version control, Mercurial and provided an issue tracker, which we used to report and track bugs. The benefits of using Mercurial were it allows local commits before pushing the changesets to the repository, with relatively easy-to-use graphical user interface extensions; and it is more flexible than other version controls, for example Git.
 
 From eXtreme Programming, pair programming was used for overlapping areas and more complex parts of the program; and also where sections of the code, implemented by different team members, meet. This ensured code written by different members would be as compatible as possible. Otherwise, each member was mainly responsible for a certain section of the program.
 
@@ -55,17 +63,30 @@ Regular scrum-like meetings were undertaken when we have a group meeting at leas
 \item Any technical and theoretical issues that have arisen and how to resolve them.
 \end{itemize}
 
-These short meetings encouraged progression of the project and highlighted technical problems early on. Most knowledge transfer was done through these meetings and also regular meetings with our supervisor, where the more difficult concepts and later iterations were discussed.
+These short meetings encouraged progression of the project and highlighted technical problems early on. Care was taken to ensure workload was divided fairly taking into account different levels and areas of skills in the team, and team members were not underperforming. When issues found from testing such as integration bugs, we discussed and agreed on specific requirements of each component when differences in expectations arose.
 
-For the first few iterations, there were many extra meetings as well as the scrum-like meetings, in which we discussed the possible algorithms and proof rules used and agreed on specific design requirements of each component. This was to make each member's code as compatible as possible; and it is important for everyone to understand the code under eXtreme Programming.
+In addition, we had weekly meetings with our supervisor in which we discussed next iterations and any issues regarding the code.
 
-From considering Unified Process method, we decided to implement the high risk elements in early iterations so that the most critical key requirements and most difficult aims are achieved first before implementing the features with a lower risk.
+Here is the description of our scheduled meetings:
+\begin{center}
+\begin{tabular}{| c | l | r |}
+\hline
+Meeting 1 & Monday 12 pm & Group Members \\ \hline
+Meeting 2 & Friday 4 pm & Group Members \\ \hline
+Meeting 3 & Thursday 2 pm & Group Members and Supervisor \\ 
+\hline
+\end{tabular}
+\end{center}
+
+Extra meetings were scheduled as needed, in which we solved any problems that have risen from a gap in our technical or theoretical knowledge. This was to avoid the creation of delays in the project development and it is important for everyone to understand the code under eXtreme Programming.
+
+When possible, we also adopted features of Crystal Clear, including being co-located and make reflective improvements. Even when pair programming was not use, by being co-located, immediate suggestions and help could be offered by other team members. Reflective improvements were made possible by reflecting upon what had been done since the last meeting and discussing what might work better. The agreed changes would then be implemented in the following iterations.
 
 \subsection*{Testing Methods}
 
-Since a test-driven development method was adopted, unit testing was done at all stages of development, using HUnit (a unit testing framework for Haskell). To complement unit testing, other testing methods included the use of grey-box and black-box testing.
+Since a test-driven development method was adopted, unit testing was done at all stages of development, using HUnit (a unit testing framework for Haskell). To complement unit testing, other testing methods included the use of grey-box and black-box testing. In this way, we were able to test at multiple levels: simple tests for base cases and more elaborate tests were made testing of a combination of simple inputs as unit tests; and a random selection of complex inputs from test generator and benchmark files containing formulas.
 
-Unit tests were written before the implementation of functions or simultaneously; and test suites are run regularly, especially after any changes to code, to ensure the program still works as expected. All areas of code were tested in this way individually: model/proof construction; model checking; proof checking; parsing of user input and test files; and the outputting of the constructed proof and model.
+Unit tests were written before the implementation of functions or simultaneously; and test suites are run regularly, especially after any changes to code, to guarantee the program still works as expected. Unit tests were written for code coverage, ensuring all input cases were considered and our code produces the expected results. All areas of code were tested in this way individually: model/proof construction; model checking; proof checking; parsing of user input and files containing benchmark formulas; and the outputting of the constructed proof and model.
 
 * Estimate number of unit tests here *
 
@@ -75,7 +96,9 @@ When moving on to code other parts of the program, we have confidence that teste
 
 In particular, having extensively tested proof checker and model checker by unit tests enabled these components of the program to be used with high confidence in other types of testing. The proof and model checkers are important in these other tests to check the results produced, for the automatically generated complex input cases, by the proof and model construction part of the program, which is very complicated and much harder to test simply by unit tests due to its exploratory nature.
 
-Overall, unit testing revealed most bugs early on and immediately as code was being implemented or underwent a change, before code became more complex and difficult to resolve. Unit tests were written for code coverage, ensuring all input cases were considered and our code produces the expected results.
+* Stress majority of bugs found were by unit testing \& number of bugs found *
+
+Overall, unit testing revealed most bugs early on or immediately as code was being implemented or underwent a change, before code became more complex and difficult to resolve. 
 
 These bugs included cases that were not covered properly, errors in the code, and bugs introduced due to changes in code.
 
@@ -105,23 +128,37 @@ After some changes to code, some bugs were introduced since the effect of the ch
 
 Although the unit tests were very useful and helped us find many bugs an early stage, they don't help with more complex bugs. This is why we made use of grey/black box testing.
 
-After each significant change we used grey-box testing to validate these changes, i.e. we tried, using our knowledge of the inner workings of the program, to find possible problems. This sometimes led to the discovery of small issues, for example a forgotten case.
+After each significant change we used grey-box testing to validate these changes, i.e. we tried, using our knowledge of the inner workings of the program, to find possible problems. This sometimes led to the discovery of small issues, for example a forgotten case and integration bugs. To exemplify, the proof/model search did not ensure there were no duplicated concepts produced after applying rules in the proof, whilst the proof checker detects this and indicated the proof was incorrect.
 
 Furthermore, we used two different ways of black-box testing. We wrote a small program that automatically generates large test cases, runs the proof/model searcher on them, and then either the proof or the model checker on the result. We also wrote a parser, so we could read complex `benchmark concepts' that are available from the proof searcher community, and test these in the same way.
 
-Both these approaches turned out to be very useful and helped us discover some rather obscure bugs (e.g. bugs that would only occur if concepts were nested in a very particular and complex way). These kinds of tests can also be understood as stress testing of our program, because the cases are larger than we expect normal user input to be and are very likely to test concepts that go beyond what users would normally input.
+The benchmark formulas used were:
+\begin{itemize}
+\item TANCS benchmarks:
+http://www.cs.man.ac.uk/~schmidt/mspass/problems.html
+\item Logic workbench benchmark:
+http://iamwww.unibe.ch/~lwb/benchmarks/benchmarks.html
+\end{itemize}
+
+Both these approaches to black-box testing turned out to be very useful and helped us discover some rather obscure bugs (e.g. bugs that would only occur if concepts were nested in a very particular and complex way). These kinds of tests can also be understood as stress testing of our program, because the cases are larger than we expect normal user input to be and are very likely to test concepts that go beyond what users would normally input. Once inputs were reduced to the smallest set that results in the error, they were added to the test suites as unit tests.
 
 \subsection{Comparisons of Plans and Achievements}
 
+A schedule of the iteration plans was composed in the early weeks at the beginning of the project, which would produce a finished product, meeting the set requirements. Using agile software development allowed us to adapt to changes in the initial plan due to technical difficulties of implementing caching and extending the program to deal with individuals.
+
+The overall progression was hindered by these technical difficulties, causing planned iterations to be delayed by one iteration. With the exception of implementing caching and individuals, for each iteration, we were able to complete the set tasks in our meetings.
+
+Although, code reviews and testing were not specifically set in each iteration, it was established to be carried out throughout all iterations by our software development method. Where issues were found, such as integration bugs, they were discussed and members agree on a solution in following meetings.
+
 \subsection*{Iteration 1 (start 22/10/10, end 12/11/10)}
 
-The original plan was to have two complete iterations by the 05/11/10 and 12/11/10 respectively. In practice, we completed one iteration which combined the tasks for both iterations by 12/11/10.
+The original plan was to have two complete iterations by the 05/11and 12/11 respectively. In practice, we completed a single iteration which combined the tasks for both iterations by 12/11.
 
 We intended to produce a working program that, given an AL concept, produces either a model for that concept or a proof showing its unsatisfiability, and both proof and model can be checked for correctness by the program. Only in the second iteration, where we to extend the systems functionality to deal with the more expressive ALC logic. However, we found that a vast amount of refactoring and redesign will be required, if we were to move from AL to ALC in the second iteration.
 
 We agreed that, both in the implementation and testing sides, it would be wise to produce one iteration, which would ultimately achieve a combined result of the first and second iterations, i.e. a program that deals with all ALC (rather then AL) concepts.
 
-In the beginning of the iteration all team members spent time acquiring a theoretical understanding of the task by reading journal articles on description logic and proof/model searching. Everyone needed to have a good understanding of the underlying theory and identify suitable algorithms and adapt them to our setup.
+In the beginning of the iteration all team members spent time acquiring a theoretical understanding of the task by reading journal articles on description logic and proof/model searching. Everyone needed to have a good understanding of the underlying theory and identify suitable algorithms and adapt them to our setup, which were discussed in meetings.
 
 * Reference articles here *
 
@@ -132,19 +169,15 @@ Overall, we were able to complete the iteration successfully and we discovered t
 \hline
 \textbf{Tasks} & \textbf{Achievements} \\
 \hline
-Specifications of concept, model and proofs as Haskell data types.
-& Specifications of concepts, models and proofs from ALC logic as Haskell data types.\\
+Specification of concept, model and proof as Haskell data type. & Representation of concepts, models and proofs from ALC logic as Haskell data types.\\
 \hline
-Implementation of proof/model search for ALC.
-& Implementation of a model/proof searching algorithm for ALC. Tested and found to be correct for all cases for which it terminates. \\
+Implementation of proof/model search for ALC. & Implementation of a model/proof searching algorithm for ALC. Tested and found to be correct for all cases for which it terminates.\\
 \hline
-Implementation of model checker for ALC.
-& Implementation of a model checking algorithm for ALC that checks if a model is correct and additionally provides an error report if the model is incorrect.\\
+Implementation of model checker for ALC. & Implementation of a model checking algorithm for ALC that checks if a model is correct and additionally provides an error report if the model is incorrect.\\
 \hline
-Implementation of proof checker for ALC.
-& Implementation of a proof checking algorithm for ALC that checks if a proof is correct and additionally provides an indication of the position where the proof is incorrect if it is incorrect.\\
+Implementation of proof checker for ALC. & Implementation of a proof checking algorithm for ALC that checks if a proof is correct and additionally provides an indication of the position where the proof is incorrect if it is incorrect.\\
 \hline
-& Complete test suites for the proof/model search, proof checker and model checker, as a result of test-driven development method.\\
+ & Created test suites for the proof/model search, proof checker and model checker.\\
 \hline
 \end{longtable}
 \end{center}
@@ -153,22 +186,28 @@ Implementation of proof checker for ALC.
 
 In the draft schedule, we had planned to extend the system's functionality to cover a more expressive logic in this iteration. However, from implementing the first iteration, we discovered there was the potential problem of cycles in the input global assumptions, which causes complications in the implementation of proof search, model construction and model checking.
 
-As a solution we decided to use a mechanism for caching the set of concepts visiting and their resulting model of proof. We decided to deal with in this iteration as addressing this potential problem later, after other extensions have been added, had the risk of causing the solution to be more difficult to attain and test.
+We decided to deal with in this iteration as addressing this potential problem later, after other extensions have been added, had the risk of causing the solution to be more difficult to attain and test. As a solution, we decided to use a mechanism for caching the set of concepts visiting and their resulting model of proof.
 
-At this stage, we decided to run all tests together by using cabal, so it would be convenient for all team members to see test results for all components of the program.
+Much time was needed for us to read and discuss the general algorithm for caching in proof and model construction simultaneously. This proved to be more complicated that we expected, consequently, the completion of this task was unachievable.
 
-In this iteration, there was difficulty in scheduling meetings and much time was needed to read and understand how to implement caching, especially for proof and model construction simultaneously. Consequently, the completion of this iteration was hindered.
+At this stage, we decided to run all tests together by using cabal, so it would be convenient for all team members to see test results for all components of the program. Other tasks set in this iteration included making changes and improvements agreed in meetings to integration bugs highlighted by testing and code reviews from the last iteration.
+
+Our achievements to these tasks were as follows:
 
 \begin{center}
 \begin{longtable}{| p{7cm} | p{8cm} |}
 \hline
 \textbf{Tasks} & \textbf{Achievements} \\
 \hline
-Implementation of caching so that the proof/model search terminates and returns a correct result when given global assumptions containing cycles. & Reading and understanding the theory and how it would be implemented, but unimplemented.\\
+Make changes components of program as discussed in meetings to solve integration bugs and ensure model checker and proof checker interfaces match. & Completed.\\
 \hline
-Set up cabal for package management. & Completed.\\
+Factoring out common test cases and useful functions for reuse in all components. & Completed.\\
 \hline
-Set up cabal for running all the tests together. & Completed.\\
+Specification of other data structures needed for caching. & Completed.\\
+\hline
+Implementation of caching so that the proof/model search terminates and returns a correct result when given global assumptions containing cycles. & Started adapting the proof/model search algorithm to include caching.\\
+\hline
+Set up cabal for package management and running all the tests together. & Completed.\\
 \hline
 \end{longtable}
 \end{center}
@@ -177,7 +216,7 @@ Set up cabal for running all the tests together. & Completed.\\
 
 In this iteration, we had planned to extend the program to be able to express a new sort, individuals, in logic. This was to enable users to express and reason with a specific individual in the domain. However, since the previous iteration did not run smoothly, the task of implementation of caching was extended to this iteration.
 
-To enable black-box testing to be performed with large complex input cases, a program that automatically generates large test cases; and a parser to extract large complex concepts from benchmark files were implemented. Hence the implementation of the parser for user input was moved to this iteration to be developed at the same time, rather than implemented as planned in the last iteration.
+To enable black-box testing to be performed with large complex input cases, a program that automatically generates large test cases; and a parser to extract large complex concepts from benchmark files were implemented. Hence the implementation of the parser for user input was also moved to this iteration to be developed at the same time, rather than implemented as planned in the last iteration.
 
 \begin{center}
 \begin{longtable}{| p{7cm} | p{8cm} |}
@@ -186,9 +225,9 @@ To enable black-box testing to be performed with large complex input cases, a pr
 \hline
 Implementation of caching so that the proof/model search terminates and returns a correct result when given global assumptions containing cycles. & Implemented with bugs in cases with cycles in the input global assumptions.\\
 \hline
-Implement parser for benchmark files and user input	. & Implemented a parser with different lexical analysers for benchmark files and user input. Unit tests for the lexical analyser component written.\\
+Implement parser for benchmark files and user input. & Implemented a parser with a single grammar and different lexical analysers for benchmark files and user input. Unit tests for the lexical analyser component written.\\
 \hline
-Clearer and consistent test suite setup and messages returned for all components. & Completed by refactoring common code/test cases in different components of the program and creating functions to aid the coding of unit tests.\\
+Clearer and consistent test suite setup and messages returned for all components. & Completed by creating functions to aid the coding of unit tests and making changes to test suites to make use of these new functions.\\
 \hline
 Implementation of test case generator. & Implemented and revealed some obscure bugs.\\
 \hline
@@ -201,16 +240,21 @@ This iteration was intentionally planned to extend the program to cover counting
 
 After much time spent on reading and discussing the theory on individuals, we found that our code needed to undergo a substantial amount of change to successfully. Given the limited time, we decided not to continue with this extension.
 
-Most of the time was invested in fixing bugs in proof/model search and testing in this iteration. The tasks and achievements were:
+* Reference *
+http://data.semanticweb.org/pdfs/iswc-aswc/2007/ISWC2007\_RT\_Schmidt.pdf
+
+Most of the time was invested in fixing bugs in the caching part of the proof/model search and testing in this iteration. The tasks and achievements were:
 
 \begin{center}
 \begin{longtable}{| p{7cm} | p{8cm} |}
 \hline
 \textbf{Tasks} & \textbf{Achievements} \\
 \hline
-Fix the bug highlighted in the previous iteration, in the proof/model search using caching.	& Fixed this bug, but black box-testing revealed obscure bugs existed in this component.\\
+Fix the bug highlighted in the previous iteration, in the proof/model search using caching. & Significant progress, which fixed this bug, but black box-testing revealed obscure bugs existed in this component.\\
 \hline
-Extend program components to express individuals.	& Forgone.\\
+Find a proof system for individuals. & Found that Labelled Tableau Calculus.\\
+\hline
+Extend program components to express individuals. & Forgone.\\
 \hline
 Implement tests for actual parsing of files and user input. & Completed.\\
 \hline
@@ -219,9 +263,13 @@ Implement tests for actual parsing of files and user input. & Completed.\\
 
 \subsection*{Iteration 5 (start 3/12, end 10/12)}
 
-For the last iteration, we integrated the additional features as planned, including the output of proofs and models into human readable format, and implementing the search for the shortest proof/smallest model by the proof/model search component. In addition, we were able to complete and fix the remaining bugs in the proof/search component. The final tasks and achievements:
+For the last iteration, we integrated the additional features as planned, including the output of proofs and models into human readable format, and implementing the search for the shortest proof/smallest model by the proof/model search component. In addition, we were able to complete and fix the remaining bugs in the proof/search component.
+
+Although, possible optimisation of code was continuously performed through code reviews, in this iteration, a higher level of code optimisation was done as the development was coming to an end.
 
 To complete the project, we prepared the program for open-source deployment was done in this iteration by writing the main function and user interface.
+
+The final tasks and achievements:
 
 \begin{center}
 \begin{longtable}{| p{7cm} | p{8cm} |}
@@ -238,6 +286,8 @@ Find shortest proof/smallest model. & Completed. * Did we do this? *\\
 \hline
 Implement the main function. & Completed.\\
 \hline
+Code optimisation in all components. & Completed.\\
+\hline
 \end{longtable}
 \end{center}
 
@@ -246,36 +296,31 @@ Implement the main function. & Completed.\\
 During the development of the program, we found that most of the test suites were of a larger length of lines than their associated components, due to our extensive testing methods. Upon completion of all the iterations, our program consisted of the following components and lengths of code, which we believe to be relatively short as a result of using Haskell as our programming language:
 
 \begin{center}
-  \begin{tabular}{|l|l|c|}
+  \begin{tabular}{|l|c|}
 \hline
-\textbf{Component} & \textbf{Modules/Files} & \textbf{Code Length (lines)} \\
+\textbf{Component} & \textbf{Code Length (lines)} \\
 \hline
-    Common code & Signature.hs & 118 \\
-    (utilities and data structures) & Signature\_test.hs & 128 \\
-     & Model.hs & 88 \\
-     & Model\_test.hs & 36 \\
-     & Proof.hs & 24 \\
-     & ProofUtils.hs & 107 \\
-     & Proof\_test.hs & 85 \\
+Common code (utilities and data structures) & 337\\
 \hline
-    Parser & Parser.y & 199 \\
-     & Parser.hs (generated code) & 912 \\
-     & Parser\_test.hs & 472 \\
+Main & 334\\
 \hline
-    Proof/Model Search & ProofSearch.hs & 161 \\
-     & ProofSearch\_test.hs & 342 \\
+Parser & 1111\\
 \hline
-   Model Checker & ModelChecker.hs & 136 \\
-    & ModelChecker\_test.hs & 406 \\
+Proof/Model Search & 161\\
 \hline
-   Proof Checker & ProofChecker.hs & 144 \\
-    & ProofChecker\_test.hs & 297 \\
+Model Checker & 136\\
 \hline
-   Output Model & OutputModel.hs & 102 \\
-    & OutputModel\_test.hs & 138 \\
+Proof Checker & 144\\
 \hline
-   Output Proof & OutputProof.hs & 147 \\
-    & OutputProof\_test.hs & 55 \\
+Output Model & 102\\
+\hline
+Output Proof & 147\\
+\hline
+Tests & 2338\\
+\hline
+Setup & 11\\
 \hline
 \end{tabular}
 \end{center}
+
+`Tests' contains included test generator and all the test suites containing a large set of unit tests, hence is much larger than all other components. The parser component is also notably larger than the other components as it contains generated code from running Happy on the Happy file which was written by hand.
