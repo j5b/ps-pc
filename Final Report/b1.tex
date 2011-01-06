@@ -4,7 +4,7 @@ definition of what we mean by Description Logic. The logical framework
 the software deals with is formally known as $\mathcal{ALC}$
 (\textit{Attributive Concept Language with Complements}). It forms the
 basis for many other Description Logics, and it can be seen as a more
-expressive extension of Proposition Logic and a decidable subset of
+expressive extension of Propositional Logic and a decidable subset of
 First-Order logic.
 
 Like in other logics $\mathcal{ALC}$'s definition is subdivided in two
@@ -51,6 +51,8 @@ properties:
 \item $(\exists R . C)^{I} = \{x \in \Delta^{I} \text{: exists } (x,y) \in R^{I} \text{ implies } y \in C^{I}\}$ 
 \end{itemize}
 
+We sometimes say that a specific intrepretation is a model. 
+
 An intuitive way to think about $\mathcal{ALC}$, is that we are given
 a set of properties an individual might satisfy or not and a set of
 possible relations between them. Description Logic in $\mathcal{ALC}$
@@ -76,4 +78,7 @@ base is unsatisfiable. For example if \textit{Givens} consists of one
 concept namely $\exists R. \top$ and if \textit{Gamma} consists of
 also one concept only $A$ (an atomic concept name), then this
 knowledge base is satisfiable since the intrepretation $\Delta^{I}
-= \{1\}$ with $A^{I} = \{1\}$ and $R^{I} = \{(1,1)\}$ is a model.
+= \{1\}$ with $A^{I} = \{1\}$ and $R^{I} = \{(1,1)\}$ is a model. In
+other words a concept in \textit{Gamma} is satisfied if its
+interpretation is $\Delta^{I}$, and a concept in \texit{Givens} is
+satisfied it its interpretation is a non-empty subset of $\Delta^{I}$.
