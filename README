@@ -6,6 +6,7 @@ REQUIREMENTS:
   -- GHC (>= 6.10) installed 
   -- Cabal installed
   -- Graphivz installed
+  -- Latex installed
 
 INSTALLATION:
 runhaskell Setup.hs configure
