@@ -164,34 +164,41 @@ The main purpose of the proof checker component of the program is to ensure the 
 \begin{itemize}
 \item checkInputModel: The most global function for the model checker.
    It calls two functions: checkGivens and checkGamma that checks that
-   the global Assumptions and the initial set of concepts are satisfied
-   in the model. It combine the result of both function which are tuples of
-   the form described above. If one of the two functions returns false then
-   the result if False with the corresponding a message telling why
-   the model is invalid which is obtained by combining the two Strings
-   obtained from checkGivens and checkGamma. Otherwise True with
-   an empty String is returned.
+   the global assumptions and the initial set of concepts are satisfied
+   in the model. It combine the result of both function which are
+   tuples of the form described above. If one of the two functions
+   returns false then the result is the tuple False together with the
+   combination of the two Strings obtained from both checkGivens and
+   checkGamma.  Otherwise the tuple True together with an empty String
+   is returned.
 
-\item checkGamma and checkGivens: Both function behave in a similar way,
-   the functions use a subroutine called checkConcept, which checks if a concept is
-   satisfied at a distinguished element of the domain. It performs that subroutine
-   for each element of the domain. At each point we get a result of the form
-   described as above: a tuple of a Boolean and a String. The results are
-   then combined by using a function called answerAnd for checkGamma
-   and answerOr for checkGivens. answerAnd stops as soon as one tuple
-   of the form (False, message) is found and then returns that results, if no such
-   tuple is found it returns (True, ""). answerOr stops as soon as a result of
-   the form (True, "") is found otherwise it combines all the message (False, message)
-   together by concatenating the messages.
+\item checkGamma and checkGivens: Both function behave in a similar
+   way, the functions use a subroutine called checkConcept, which
+   checks if a concept is satisfied at a distinguished element of the
+   domain. It performs the subroutine for each element of the
+   domain. At each point we get a result of the form described as
+   above: a tuple of a Boolean and a String. The results are then
+   combined by using a function called answerAnd (for checkGamma) and
+   answerOr (for checkGivens). answerAnd returns as soon as one tuple
+   of the form (False, message) is found and then returns the resulting
+   tuple, if no such tuple is found answerAnd returns (True,
+   ""). answerOr returns as soon as a result of the form (True, "") is
+   found otherwise it combines all the message (False, message)
+   together by concatenating the resulting Strings.
 
-\item checkConcept: It checks if a concept is true at a distinguished element. Its input is of a
-   concept, a model, a distinguished element of the domain. It returns a tuple as described
-   above. It returns (True,"") if the concept is satisfied at that point otherwise it tells what
-   was wrong. The check is performed recursively until an atomic concept is obtained where it
-   simply check if the distinguished element satisfied that concept in the model. And, Or and Negation
-   are done in the intuitive way. For universal and existential restriction of the form (Forall R . C) or
-   (Exists R . C) it checks if all successors or respectively some successors satisfies C using checkConcept again.
-   The results are combined also using answerAnd and respectively answerOr.
+\item checkConcept: It checks if a concept is satisfies at a
+   distinguished element, i.e. if the concept's interpretation include
+   the distinguished element. The functions input are a concept, a
+   model, a distinguished element of the domain. It returns a tuple as
+   described above. It returns (True,"") if the concept is satisfied at
+   that point otherwise it tells what was wrong. The check is performed
+   recursively until an atomic concept is obtained where it simply
+   check if the distinguished element satisfies that atomic concept in
+   the model. And, Or and Negation are done in the intuitive way. For
+   universal and existential restriction of the form (Forall R . C) or
+   (Exists R . C) it checks if all R-successors satisfies C using
+   checkConcept.  The results are combined using the functions
+   answerAnd and respectively answerOr described in the part above.
 \end{itemize}
 
 To summarize the above, our main achievements are:
