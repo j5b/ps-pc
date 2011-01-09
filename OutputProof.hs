@@ -16,7 +16,6 @@ import Control.Monad
 import Signature
 import Proof
 import ProofSearch
-import TestUtils
 
 outputProof :: ProofTree -> FilePath -> IO ()
 outputProof proof filename 

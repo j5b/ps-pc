@@ -10,7 +10,6 @@ import Data.List
 import Data.Either
 import System.IO
 
-import TestUtils
 import Signature
 import Proof
 import Model
