@@ -10,10 +10,18 @@ REQUIREMENTS:
   -- Happy (parser generator) installed
 
 INSTALLATION: 
+
+(local)
+  happy Parser.y
+  runhaskell Setup.hs configure --user
+  runhaskell Setup.hs build
+  runhaskell Setup.hs install
+
+(global)
   happy Parser.y
   runhaskell Setup.hs configure
   runhaskell Setup.hs build
-  runhaskell Setup.hs install
+  sudo runhaskell Setup.hs install (or equivalent)
 
 RUNNING:
 ps-pc --help	
