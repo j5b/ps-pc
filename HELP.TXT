@@ -48,5 +48,7 @@ There are the following options for this program
 The order for the options do not matter. Help option discards all the other 
 information.
 
+Files has to be of the form BASENAME.EXTENSION
+
 e.g. ps-pc --output sample --gamma gamma.txt 
            --givens "Intelligent|Smart" --mode graphical
