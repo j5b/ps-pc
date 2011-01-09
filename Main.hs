@@ -28,6 +28,7 @@ import Reader
 --main :: IO()
 main = do input <- getArgs
           info <- processArgs input
+--          putStrLn $ show info
           command <- createCommand info
           executeCommand command
           return ()
