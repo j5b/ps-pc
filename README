@@ -7,11 +7,13 @@ REQUIREMENTS:
   -- Cabal installed
   -- Graphivz installed
   -- Latex installed
+  -- Happy (parser generator) installed
 
-INSTALLATION:
-runhaskell Setup.hs configure
-runhaskell Setup.hs build
-runhaskell Setup.hs install
+INSTALLATION: 
+  happy Parser.y
+  runhaskell Setup.hs configure
+  runhaskell Setup.hs build
+  runhaskell Setup.hs install
 
 RUNNING:
 ps-pc --help	
