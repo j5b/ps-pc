@@ -56,9 +56,14 @@ or not. Our program will automate this for us.
 
 \subsection{Description of Main Components}
 
-Our program makes use of the theory presented above to say whether a given concept
+The program accepts a set of concepts and general assumptions. It then produces
+either a model -- demonstrating that the givens are satisfiable -- or a proof
+showing unsatisfiablity. The user can choose to get the output in text-format or
+a graphical version, or have it just checked for correctness.
+The program makes use of the theory presented above to say whether a given concept
 is satisfiable or not (assuming some global knowledge). To make sure this is correct
-(and convince skeptical users) the program will provide either a model or a proof.
+(and convince skeptical users) the program will not just say whether the givens
+are satisfiable or not, it will provide the user with either a model or a proof.
 The main components are illustrated in Figure~\ref{components}. A \emph{parser} translates
 the user input into an internal language that is processed by the
 \emph{proof/model searcher}.
