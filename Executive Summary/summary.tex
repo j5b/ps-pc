@@ -1,0 +1,43 @@
+\documentclass[12pt,a4paper]{scrartcl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Validation Report                                     %
+% Proof Searching and Proof checking                    %
+% Computing Group Project 2010                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% standard packages
+\usepackage[latin1]{inputenc}
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{appendix}
+
+% for the code listings (if any)
+\usepackage{listings}
+\lstset{language=Haskell, numbers=left, 
+  showstringspaces=false, frame=single}
+
+% for harvard-style citation
+\usepackage{natbib}
+
+% double spacing
+\usepackage{setspace}
+%\doublespacing
+
+\begin{document}
+
+% the first page
+  \begin{center}
+    {\Large Proof Searching \& Proof Checking \\
+      Executive Summary}
+  \end{center}
+
+\input{michal}
+
+\input{jannis}
+\input{ky}
+\input{sagie}
+
+\end{document}
