@@ -1,0 +1,28 @@
+\subsection{Collaboration/Coordination difficulties}
+
+As a managerial policy for this project, we had frequent SCRUM-like meetings (at least 2 times a week). These frequent meetings allowed as to avoid many collaboration or coordination difficulties and resolve any small issues that remained. The only collaboration difficulty we had, was at one time, finding a common time were all members could meet with the supervisor, which was resolved by having one member leave the meeting earlier.
+
+\subsection{Team member's contribution}
+
+Apart from the separate work done by each member, all members collaborated throughout the project in many parts. Many code and peer reviews, bug reports and corrections were done
+throughout and contributed greatly the the project. Apart from this, each member was responsible for specific parts of the project, which were put together by all members through Google code hosting and Mercurial version control. 
+
+There were some common activities for all members which we list here. The first, and of a primary importance for this project, was reading the background knowledge and noting any design issues that are appropriate, before then elaborating and writing a full design. This background knowledge was mainly present in papers read. Some of which were about description logic (semantics, for example) and tableau calculus (\cite{baadernutt02,gore99}), and some concentrated on proof and model searching (\cite{Gore:2010:OTA,gore07}). In addition, the signature for $\mathcal{ALC}$, as well as the representation of a proof and a model were largely done together as a group during meetings. Furthermore, the three reports (inception, progress and validation reports) were also divided evenly between all group members.
+
+The following is the individual contribution of each member:
+
+\subsubsection*{Jannis Bulian}
+
+As a group leader, Jannis had a principle organisational role which included contacting the supervisor and arranging meetings, as well as submitting reports and making sure activities are coordinated. In addition, Jannis, together with Saguy, wrote the first (and later) version of the proof/model searcher and improved it further, as well as, the final version which included caching. He wrote a parser for K formulas in $\mathcal{ALC}$ as well as a parser for user input which he improved further (particularly in terms of performance). Jannis factorised code when needed and made sure only related code is put in a file and any code reused is put in a separate `utils' file. As we chose a test-driven development, Jannis also wrote many tests throughout. Jannis wokred on this project for approximately 150 hours. 
+
+\subsubsection*{Michal Parusinski}
+
+As the group's secretary, Michal was responsible for writing the log-book and included new logs for each meeting we had. Each log included the date, what has been done from the previous meeting, any relevant discussion during the meeting, and any tasks assigned for the following meeting. Michal wrote the model checker, which he improved constantly in further iterations, for example by the addition of error reports for the cases where the model is incorrect. Michal was responsible for a significant amount of the overall testing suit, including setting up the cabal environment, and writing many tests as well as an automatic test generators for the proof/model searcher as well as the model and proof checkers. He wrote extensive number of unit and global tests for all parts of the program. Michal also wrote the main file and functions to output proofs on the console and on pdf's using latex. Michal worked on this project for approximately 155 hours.
+
+\subsubsection*{Ka Wai Cheng}
+
+Ka Wai wrote the proof checker and improved it in further iterations, for example by including specific messages detailing exactly where a proof is incorrect. Ka Wai also wrote a parser for benchmark files using Happy (a parser generator for Haskell), which she improved constantly (for example through code reuse). Ka Wai also produced a graphical output for models using DOT language. In addition to this, Ka Wai wrote many unit tests for the the model checker and parser.  Ka worked on this project for approximately 150 hours. 
+
+\subsubsection*{Saguy Benaim}
+
+Saguy's work lies mainly in the development of the proof/model searcher throughout its entire write-up, including work on caching and dealing with loops. He wrote many unit tests for the the proof/model searcher. Together with Jannis, Saguy adjusted the algorithm present in the background knowledge in \cite{gore07} to one that outputs either a proof or a model rather then a yes/no answer for whether a model exists. He also wrote an extension to find the shortest proof available and fixed various bugs to ensure program correctness. Saguy worked on this project for approximately 145 hours. 

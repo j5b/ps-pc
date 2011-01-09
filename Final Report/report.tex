@@ -1,0 +1,90 @@
+\documentclass[12pt,a4paper]{scrartcl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Validation Report                                     %
+% Proof Searching and Proof checking                    %
+% Computing Group Project 2010                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% standard packages
+\usepackage[latin1]{inputenc}
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{appendix}
+\usepackage{verbatim}
+
+% for the code listings (if any)
+\usepackage{listings}
+\lstset{language=Haskell, numbers=left, 
+  showstringspaces=false, frame=single}
+
+% for harvard-style citation
+\usepackage{natbib}
+
+% double spacing
+\usepackage{setspace}
+\doublespacing
+
+\begin{document}
+
+% the first page
+\thispagestyle{empty}
+\begin{titlepage}
+  \begin{center}
+    \vspace*{\fill}
+            {{\Large Imperial College London\\ Department of Computing\\}}
+            \vfill {{\Huge Proof Searching \& Proof Checking \\
+                \vspace{0.2cm}
+                     Final Report}}\\
+            \vfill {{\large Computing Group Project\\ 
+                Supervisor: Dirk Pattinson\\ Autumn 2010}}
+            \vfill {Jannis Bulian, jb1508@ic.ac.uk, 567339 \\
+                    Michal Parusinski, mgp08@ic.ac.uk, 566542 \\
+                    Ka Wai Cheng, kwc108@ic.ac.uk, 548464\\
+                    Saguy Benaim, ssb08@ic.ac.uk, 552374}
+  \end{center}
+\end{titlepage}
+
+\newpage
+
+\tableofcontents
+\thispagestyle{empty}
+
+\newpage
+
+\section{Introduction}
+\input{introduction}
+
+\section{Overview (high level description)}
+\input{a}
+
+\section{Background \& Description of Main Components}
+\input{b1}
+\input{b2}
+
+\section{Software Engineering Issues}
+\input{c1}
+\input{c2}
+
+\section{Validation}
+\input{d}
+
+\section{Conclusion}
+\input{conclusion}
+
+\newpage
+\singlespacing
+\appendix
+\appendixpage
+%\addappheadtotoc
+\input{f}
+
+\newpage
+\singlespacing
+
+\bibliographystyle{plainnat}
+\bibliography{bib}
+
+\end{document}

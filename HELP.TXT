@@ -1,0 +1,54 @@
+ps-pc --help
+ps-pc --givens [GIVENS|FILE] 
+      --gamma [GIVENS|FILE] 
+      --mode [none|console|graphical]
+      --output [NAME]
+
+--DESCRIPTION:
+
+This program searches models for a given knowledge base and a set of
+concepts formulated in Description Logic.  If no such model can be
+found a proof is provided.
+
+--LOGIC SYNTAX:
+
+The syntax for Description Logic used is the following:
+  'Forall' -> universal quantification: Forall Relation (Concept)
+  'Exists' -> existential quantification: Exists Relation (Concept)
+  'top'    -> Top/Truth/Tautology (always true): top
+  'bot'    -> Bottom/Falsity (always false): bot
+  '&'      -> Intersection/And symbol: (concept1)&(concept2)
+  '|'      -> Union/Or symbol: (concept1)|(concept2)
+  '~'      -> Complement/Negation symbol: ~(concept)
+  ';' to seperate Concepts (Formulaes) in a list: concept1;concept2
+The rest represents atomic or binary relation (used in forall and exists).
+Brackets can be omitted only if there is no doubt about the meaning.
+The concepts can be given described in a file. Tabs, spaces and newlines are
+handled.
+
+e.g. Forall R (A|top);~(~(top));A|(A|(B&Exists S (top|bot)))
+
+--OPTIONS
+
+There are the following options for this program
+  --help for displaying this message
+  --gamma for specifying gamma (in a file or directly)
+         default is no concepts
+  --givens for specifying givens (in a file or directly)
+         default is no concepts
+  --mode for specifying what type of output you wish
+         -> none for simply stating SATISFIABLE or UNSATISFIABLE
+         -> console for a verbose console output of the model or proof
+         -> graphical for a verbose output in a file of the model or proof
+         default is 'none'
+  --output for specifying the output file name (only makes sense for graphical and console
+  outputs) !! NOT THE FILE PATH BUT A FILE NAME !!
+         default is 'output'
+
+The order for the options do not matter. Help option discards all the other 
+information.
+
+Files has to be of the form BASENAME.EXTENSION
+
+e.g. ps-pc --output sample --gamma gamma.txt 
+           --givens "Intelligent|Smart" --mode graphical
