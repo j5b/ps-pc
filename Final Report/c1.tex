@@ -3,7 +3,7 @@ For this project, we considered the programming languages and technology that ou
 \subsection{Technology Used}
 \label{sec:techused}
 
-We used several tools and languages in our program, with the main programming language being Haskell. Other than Haskell, the parser generator, Happy, was used to produce the Haskell code for the parser component of the program. For the output of models and proofs into more readable format, Graphviz and Latex were used respectively.
+We used several tools and languages in our program, with the main programming language being Haskell. Other than Haskell, the parser generator, Happy, was used to produce the Haskell code for the parser component of the program. For the output of models and proofs into more readable format, Graphviz and LaTeX were used respectively.
 
 Haskell, was chosen as the main programming language primarily because Haskell's pattern matching naturally implements the handling of cases (such as proof rules and formulas) together with way we decided to structure the program into the main components. This way work on the different components can be implemented independently and simultaneously. Other reasons why Haskell was more appealing than other programming languages considered (Java, C, C++) were Haskell's compact code and each team member's relative levels of programming skills and experience in each language.
 
@@ -17,27 +17,27 @@ For the output of proofs into human readable format for end users, Latex was use
 
 On the other hand, for the output of models, Graphviz was used. Graphviz is an open source graph visualisation software. Graphviz was chosen because graphs could be drawn by scripting them in simple DOT language to describe the graph, so was suitable for processing our model data structures and had a short learning time.
 
-Other tools used to aid the software development method include Google Code to host our project, Mercurial version control, Issue tracker to log complex bugs, emph{hlint} and cabal. These are discussed in the Software Development Methods subsection.
+Other tools used to aid the software development method include Google Code to host our project, Mercurial version control, issue tracker to log complex bugs, \emph{hlint} and cabal. These are discussed in the Software Development and Testing Methods subsection.
 
 \subsection{Technical Challenges}
 
-We encountered a few technical challenges throughout the development of this project. The most problematic was the implementation of caching in the proof/model search component. This problem resulted in other technical difficulties, including in extending our program to allow users to express specific individuals that must exist and to reason with. We addressed these difficulties by our frequent informal meetings, in which we discussed the technical issues arisen and finding ways to resolve them such as through code reviews and bug tracking.
+We encountered a few technical challenges throughout the development of this project. The most problematic was the implementation of caching in the proof/model search component. This problem resulted in other technical difficulties, including in extending our program to allow users to express specific individuals that must exist and to reason with. We addressed these challenges by frequent informal meetings, in which we discussed the technical issues arisen and ways to resolve them such as through code reviews and bug tracking.
 
-In the early iterations, we discovered the potential problem of cycles in the input global assumptions, which causes complications in the implementation of proof search, model construction and model checking. To prevent the proof/model search component from potentially becoming non-terminating, we decided to implement a mechanism for caching the sets of concepts already expanded and their resulting proof or model.
+In the early iterations, we discovered the potential problem of cycles in the input global assumptions, which causes complications in the implementation of proof search, model construction and model checking. To prevent the proof/model search component from potentially becoming non-terminating, we decided to implement a mechanism for caching the sets of concepts already expanded and their resulting proof or model. This was the case where \textit{Gamma} contained an existential restriction concept, for example:
 
-* Add explicit example input case that gives non-terminating proof search *
+\textit{Givens} = \{\}
+
+\textit{Gamma} = $\{ \exists knows . \top \}$
 
 Extending the already written proof/model search component to cover this was very challenging because proof construction and model construction are performed simultaneously in our implementation. By implementing caching, the code became much more complex than before and as a result, it was difficult to reason the correctness of code and to debug for very specific cases.
 
-* First change code to detect cycle and terminate before implementing caching, so can catch these cases in the tests *
-
-This issue was tackled by discussion in our frequent group meetings and meetings with our supervisor; using code reviews and bug tracking system. Our discussions revolved around how global caching worked in the literature read (* REFERENCE HERE? *), and how it would be applied to our program. In this way, all members took part and members of the group not assigned to the implementation of the proof/model search aided in locating and fixing bugs.
+This issue was tackled by discussion in our frequent group meetings and meetings with our supervisor; using code reviews and bug tracking system. Our discussions revolved around how global caching worked in the literature read (\cite{gore07, Gore:2010:OTA}), and how it would be applied to our program. In this way, all members took part and members of the group not assigned to the implementation of the proof/model search aided in locating and fixing bugs.
 
 Another challenge we faced was when attempting to extend the program to express a new sort, individuals, in logic, enabling a specific individual to be expressed and reasoned with. In our meetings, we discussed the theoretical issues and how this would be implemented. The proof theory for individuals did not work with our design, and all data structures and components of the program needed to go through a great deal of changes. Given the limited time, it was decided that we will not implement this extension, but rather implement the other requirements set for the finished product.
 
 \subsection{Software Development and Testing Methods}
 
-To minimise risk and allow the project to adapt to changes quickly when difficulties occur, a mixture of software development methods was adopted together with extensive testing methods. In addition, a variety of tools was used and code management policies were established to ensure quality and correctness of code.
+To minimise risk and allow the project to adapt to changes quickly when difficulties occurred, a mixture of software development methods was adopted together with extensive testing methods. In addition, a variety of tools was used and code management policies were established to ensure quality and correctness of code.
 
 
 The software development method adopted was a blend of mainly eXtreme Programming, Scrum and Crystal Clear, which were suitable for this project. Agile software development methods meant by using short (1 week) iterations, we ensured there was a working product at the end of each iteration.
@@ -46,15 +46,15 @@ From considering Unified Process method, we decided to implement the high risk e
 
 The test-driven nature of eXtreme Programming was a core part of our project development since the integrity of code is very important and directly affects whether the key requirements are met. Therefore, test suites for unit testing and test cases well known in the proof-search-writer community were used to test for correctness and performance. These unit tests were written before the coding of functions or simultaneously, and were tested as implemented. To allow an easy way of running the test suite, they were managed using cabal.
 
-To complement with the unit tests, we also made use of emph{hlint}, grey-box testing after each significant change and black-box testing to test our program with large complex inputs. We used emph{hlint}, a program similar to lint, that analyses Haskell programs and suggests changes, to ensure a good and consistent style throughout the program. This not only ensured that the source code is easier to read and understand, but also made programming mistakes less likely.
+To complement with the unit tests, we also made use of \emph{hlint}, grey-box testing after each significant change and black-box testing to test our program with large complex inputs. We used \emph{hlint}, a program similar to lint, that analyses Haskell programs and suggests changes, to ensure a good and consistent style throughout the program. This not only ensured that the source code is easier to read and understand, but also made programming mistakes less likely.
 
-We integrated these tools into a validation process. We ran emph{hlint} and unit tests before submitting code to the repository. Then we gave code reviews and used grey-box testing to improve the quality of the code and find bugs that weren't found before. On a regular basis we ran the black-box tests on the whole program, discovering issues that were missed in the previous steps. This whole setup gave us high confidence that the program is working correctly.
+We integrated these tools into a validation process. We ran \emph{hlint} and unit tests before submitting code to the repository. Then we gave code reviews and used grey-box testing to improve the quality of the code and find bugs that weren't found before. On a regular basis we ran the black-box tests on the whole program, discovering issues that were missed in the previous steps. This whole setup gave us high confidence that the program is working correctly.
 
-Due to the possible difficulty of forming the algorithms in our project, we gave priority to having a simple solution with clear code first, a feature of eXtreme Programming, to guarantee the existence of a working version of the program. This way there was a working version even when using a different implementation.
+Due to the possible difficulty of forming the algorithms in our project, we gave priority to having a simple solution with clear code first, a feature of eXtreme Programming, to guarantee the existence of a working version of the program.
 
-Extensive code reviews were essential for improving quality of code and for all team members to understand each others code, under eXtreme Programming. It also led to the discovery of some small programming mistakes in the reviews. Hence the project was hosted on Google Code throughout development, chosen for its features allowing easy submission for code reviews by other team members.
+Extensive code reviews were essential for improving quality of code and for all team members to understand each others code, under eXtreme Programming. It also led to the discovery of some small programming mistakes in the reviews. Hence, the project was hosted on Google Code throughout development, chosen for its features allowing easy submission for code reviews by other team members.
 
-In addition, Google Code integrated well with our choice of version control, Mercurial and provided an issue tracker, which we used to report and track bugs. The benefits of using Mercurial were it allows local commits before pushing the changesets to the repository, with relatively easy-to-use graphical user interface extensions; and it is more flexible than other version controls, for example Git.
+In addition, Google Code integrated well with our choice of version control, Mercurial and provided an issue tracker, which we used to report and track bugs. The benefits of using Mercurial were it allows local commits before pushing the changesets to the repository, with relatively easy-to-use graphical user interface extensions; and it is more flexible than other version controls, for example SVN.
 
 From eXtreme Programming, pair programming was used for overlapping areas and more complex parts of the program; and also where sections of the code, implemented by different team members, meet. This ensured code written by different members would be as compatible as possible. Otherwise, each member was mainly responsible for a certain section of the program.
 
@@ -105,17 +105,16 @@ Unit testing immediately revealed some forgotten cases in the initial code, such
 
 \begin{itemize}
 \item When falsity was in the set of inputs for the proof and model construction, a model was produced rather than the expected proof containing only falsity to show unsatisfiability.
-\item In the case where top (truth) was among many concepts in the list of inputs, an incorrect model with was constructed and returned without ensuring all other concepts in the list of inputs were also satisfiable.
 \item The possibility of cycles in the input global assumptions was not dealt with by the proof and model construction stage.
 \end{itemize}
 
 Some mistakes in code that may have been overlooked without our approach to unit testing:
 
 \begin{itemize}
-\item After establishing that at each step of a proof, the set of concepts should not contain any duplicates, the proof searcher produced a result containing duplicated concepts as a result of applying the proof rule for Exists since a specific case was not considered. This was where the inputs contained:
+\item After establishing that at each step of a proof, the set of concepts should not contain any duplicates, the proof searcher produced a result containing duplicated concepts as a result of applying the proof rule for existential restriction since a specific case was not considered. This was where the inputs contained:
 \begin{itemize}
-\item An Exists concept stating there exists a successor to a particular relation that satisfies a concept
-\item A Forall concept stating all successors of the same relation must satisfy the same concept specified by the exists concept
+\item An existential restriction concept stating there exists a particular relation-successor that satisfies a concept, e.g. $\exists hasTopping . vegetable $
+\item A universal restriction concept stating all successors of the same relation must satisfy the same concept specified by the exists concept, e.g. $ \forall hasTopping . vegetable $
 \end{itemize}
 \end{itemize}
 
@@ -129,15 +128,7 @@ Although the unit tests were very useful and helped us find many bugs an early s
 
 After each significant change we used grey-box testing to validate these changes, i.e. we tried, using our knowledge of the inner workings of the program, to find possible problems. This sometimes led to the discovery of small issues, for example a forgotten case and integration bugs. To exemplify, the proof/model search did not ensure there were no duplicated concepts produced after applying rules in the proof, whilst the proof checker detects this and indicated the proof was incorrect.
 
-Furthermore, we used two different ways of black-box testing. We wrote a small program that automatically generates large test cases, runs the proof/model searcher on them, and then either the proof or the model checker on the result. We also wrote a parser, so we could read complex `benchmark concepts' that are available from the proof searcher community, and test these in the same way.
-
-The benchmark formulas used were:
-\begin{itemize}
-\item TANCS benchmarks:
-http://www.cs.man.ac.uk/~schmidt/mspass/problems.html
-\item Logic workbench benchmark:
-http://iamwww.unibe.ch/~lwb/benchmarks/benchmarks.html
-\end{itemize}
+Furthermore, we used two different ways of black-box testing. We wrote a small program that automatically generates large test cases, runs the proof/model searcher on them, and then either the proof or the model checker on the result. We also wrote a parser, so we could read complex concepts from benchmark files\footnote{TANCS 2000 Problems: http://www.cs.man.ac.uk/~schmidt/mspass/problems.html}\footnote{logics work bench: http://iamwww.unibe.ch/~lwb/benchmarks/benchmarks.html} that are available from the proof searcher community, and test these in the same way.
 
 Both these approaches to black-box testing turned out to be very useful and helped us discover some rather obscure bugs (e.g. bugs that would only occur if concepts were nested in a very particular and complex way). These kinds of tests can also be understood as stress testing of our program, because the cases are larger than we expect normal user input to be and are very likely to test concepts that go beyond what users would normally input. Once inputs were reduced to the smallest set that results in the error, they were added to the test suites as unit tests.
 
@@ -145,150 +136,58 @@ Both these approaches to black-box testing turned out to be very useful and help
 
 A schedule of the iteration plans was composed in the early weeks at the beginning of the project, which would produce a finished product, meeting the set requirements. Using agile software development allowed us to adapt to changes in the initial plan due to technical difficulties of implementing caching and extending the program to deal with individuals.
 
-The overall progression was hindered by these technical difficulties, causing planned iterations to be delayed by one iteration. With the exception of implementing caching and individuals, for each iteration, we were able to complete the set tasks in our meetings.
+The overall progression was hindered by these technical difficulties, causing planned iterations and achievements to be delayed by one iteration and the eventual decision to no longer implement the individuals extension. With these exceptions, we were able to complete the set tasks in our meetings, for each iteration.
 
-Although, code reviews and testing were not specifically set in each iteration, it was established to be carried out throughout all iterations by our software development method. Where issues were found, such as integration bugs, they were discussed and members agree on a solution in following meetings.
+Although, code reviews and testing were not specifically set in each iteration, it was established to be carried out throughout all iterations by our software development method. Where issues were found, such as integration bugs, they were discussed and members agree on a solution in following meetings. The implementations of solutions were then added as tasks in the next iteration, as well as other possible improvements for reflective improvement.
 
-\subsection*{Iteration 1 (start 22/10/10, end 12/11/10)}
+\subsection*{Iteration 1 (start 22/10, end 12/11)}
 
 The original plan was to have two complete iterations by the 05/11and 12/11 respectively. In practice, we completed a single iteration which combined the tasks for both iterations by 12/11.
 
-We intended to produce a working program that, given an AL concept, produces either a model for that concept or a proof showing its unsatisfiability, and both proof and model can be checked for correctness by the program. Only in the second iteration, where we to extend the systems functionality to deal with the more expressive ALC logic. However, we found that a vast amount of refactoring and redesign will be required, if we were to move from AL to ALC in the second iteration.
+We intended to produce a working program that, given $\mathcal{AL}$ concepts, produces either a model or a proof showing its unsatisfiability, and both proof and model can be checked for correctness by the program. Only in the second iteration, where we to extend the systems functionality to deal with the more expressive  $\mathcal{ALC}$ logic. However, we found that a vast amount of refactoring and redesign will be required, if we were to move from  $\mathcal{AL}$ to  $\mathcal{ALC}$ in the second iteration. Therefore, we decided to produce one iteration, which would ultimately achieve a combined result of the first and second iterations.
 
-We agreed that, both in the implementation and testing sides, it would be wise to produce one iteration, which would ultimately achieve a combined result of the first and second iterations, i.e. a program that deals with all ALC (rather then AL) concepts.
-
-In the beginning of the iteration all team members spent time acquiring a theoretical understanding of the task by reading journal articles on description logic and proof/model searching. Everyone needed to have a good understanding of the underlying theory and identify suitable algorithms and adapt them to our setup, which were discussed in meetings.
-
-* Reference articles here *
-
-Overall, we were able to complete the iteration successfully and we discovered the problem of cycles in the global assumptions, causing non-termination in the proof/model search component. The tasks for our first iteration and our achievements were as follows:
-
-\begin{center}
-\begin{longtable}{| p{7cm} | p{8cm} |}
-\hline
-\textbf{Tasks} & \textbf{Achievements} \\
-\hline
-Specification of concept, model and proof as Haskell data type. & Representation of concepts, models and proofs from ALC logic as Haskell data types.\\
-\hline
-Implementation of proof/model search for ALC. & Implementation of a model/proof searching algorithm for ALC. Tested and found to be correct for all cases for which it terminates.\\
-\hline
-Implementation of model checker for ALC. & Implementation of a model checking algorithm for ALC that checks if a model is correct and additionally provides an error report if the model is incorrect.\\
-\hline
-Implementation of proof checker for ALC. & Implementation of a proof checking algorithm for ALC that checks if a proof is correct and additionally provides an indication of the position where the proof is incorrect if it is incorrect.\\
-\hline
- & Created test suites for the proof/model search, proof checker and model checker.\\
-\hline
-\end{longtable}
-\end{center}
+Overall, we were able to complete the iteration successfully and all team members acquired a theoretical understanding of the task by reading articles on description logic and proof/model construction, (\cite{baadernutt02, gore99, Gore:2010:OTA, gore07}). We achieved, as planned, a tested program that constructs and checks a model/proof for ALC concepts with some bugs. Additionally, from unit testing, we discovered the problem of cycles in the global assumptions, causing non-termination in the proof/model search component.
 
 \subsection*{Iteration 2 (start 12/11, end 19/11)}
 
-In the draft schedule, we had planned to extend the system's functionality to cover a more expressive logic in this iteration. However, from implementing the first iteration, we discovered there was the potential problem of cycles in the input global assumptions, which causes complications in the implementation of proof search, model construction and model checking.
+In the draft schedule, we had planned to extend the system's functionality to cover a more expressive logic in this iteration. However, from implementing the first iteration, we discovered there was the potential problem of cycles in the input global assumptions. We decided to deal with in this iteration as addressing this potential problem later, after other extensions have been added, had the risk of causing the solution to be more difficult to attain and test. 
 
-We decided to deal with in this iteration as addressing this potential problem later, after other extensions have been added, had the risk of causing the solution to be more difficult to attain and test. As a solution, we decided to use a mechanism for caching the set of concepts visiting and their resulting model of proof.
+Much time was needed for us to read and discuss how the problem could be solved in the proof and model construction simultaneously, and work on adapting the proof/model search algorithm was started. This proved to be more complicated that we expected, consequently, this task was incomplete at the end of the iteration.
 
-Much time was needed for us to read and discuss the general algorithm for caching in proof and model construction simultaneously. This proved to be more complicated that we expected, consequently, the completion of this task was unachievable.
-
-At this stage, we decided to run all tests together by using cabal, so it would be convenient for all team members to see test results for all components of the program. Other tasks set in this iteration included making changes and improvements agreed in meetings to integration bugs highlighted by testing and code reviews from the last iteration.
-
-Our achievements to these tasks were as follows:
-
-\begin{center}
-\begin{longtable}{| p{7cm} | p{8cm} |}
-\hline
-\textbf{Tasks} & \textbf{Achievements} \\
-\hline
-Make changes components of program as discussed in meetings to solve integration bugs and ensure model checker and proof checker interfaces match. & Completed.\\
-\hline
-Factoring out common test cases and useful functions for reuse in all components. & Completed.\\
-\hline
-Specification of other data structures needed for caching. & Completed.\\
-\hline
-Implementation of caching so that the proof/model search terminates and returns a correct result when given global assumptions containing cycles. & Started adapting the proof/model search algorithm to include caching.\\
-\hline
-Set up cabal for package management and running all the tests together. & Completed.\\
-\hline
-\end{longtable}
-\end{center}
+We were able to complete the other tasks to:
+\begin{itemize}
+\item Make the changes agreed to solve integration bugs and code improvement from the previous iteration
+\item Set up cabal for package management and running all the tests together, which we found to have very inconsistent test suite setup and messages returned.
+\end{itemize}
 
 \subsection*{Iteration 3 (start 19/11, end 26/11)}
 
 In this iteration, we had planned to extend the program to be able to express a new sort, individuals, in logic. This was to enable users to express and reason with a specific individual in the domain. However, since the previous iteration did not run smoothly, the task of implementation of caching was extended to this iteration.
 
-To enable black-box testing to be performed with large complex input cases, a program that automatically generates large test cases; and a parser to extract large complex concepts from benchmark files were implemented. Hence the implementation of the parser for user input was also moved to this iteration to be developed at the same time, rather than implemented as planned in the last iteration.
+To enable black-box testing to be performed with large complex input cases, a program that automatically generates large test cases; and a parser to extract large complex concepts from benchmark files were implemented. Hence, the implementation of the parser for user input was also moved to this iteration to be developed at the same time, rather than implemented as planned in the last iteration.
 
-\begin{center}
-\begin{longtable}{| p{7cm} | p{8cm} |}
-\hline
-\textbf{Tasks} & \textbf{Achievements} \\
-\hline
-Implementation of caching so that the proof/model search terminates and returns a correct result when given global assumptions containing cycles. & Implemented with bugs in cases with cycles in the input global assumptions.\\
-\hline
-Implement parser for benchmark files and user input. & Implemented a parser with a single grammar and different lexical analysers for benchmark files and user input. Unit tests for the lexical analyser component written.\\
-\hline
-Clearer and consistent test suite setup and messages returned for all components. & Completed by creating functions to aid the coding of unit tests and making changes to test suites to make use of these new functions.\\
-\hline
-Implementation of test case generator. & Implemented and revealed some obscure bugs.\\
-\hline
-\end{longtable}
-\end{center}
+We were able to complete our tasks apart from solving the problem with cycles, which contained bugs after an initial implementation of caching:
+\begin{itemize}
+\item Improvements from the previous iteration to use clearer and consistent test suite setup and messages returned for all components.
+\item A working parser and test generator to test our program, which found additional bugs in the proof/model search
+\end{itemize}
 
 \subsection*{Iteration 4 (start 26/11, end 3/12)}
 
-This iteration was intentionally planned to extend the program to cover counting in logic only if the previous iteration progressed well. As expected, there were problems due to the technical nature of this project and difficulty of formulating the algorithm for caching with the existing code in the proof/model search component. Therefore, we started to plan how to extend our program to express individuals in the domain in this iteration rather than in the previous.
+This iteration was intentionally planned to extend the program to cover counting in logic only if the previous iteration progressed well. As expected, there were problems due to the technical nature of this project, so we started to plan how to extend our program to express individuals in the domain in this iteration.
 
-After much time spent on reading and discussing the theory on individuals, we found that our code needed to undergo a substantial amount of change to successfully. Given the limited time, we decided not to continue with this extension.
+After much time spent on reading and discussing the theory on individuals from \cite{Schmidt:2007:UTD:1785162.1785195}, we found that our code needed to undergo a substantial amount of change to successfully. Given the limited time, we decided not to continue with this extension since we believed it would not be completed in time and will affect other more desirable features that were to be implemented.
 
-* Reference *
-http://data.semanticweb.org/pdfs/iswc-aswc/2007/ISWC2007\_RT\_Schmidt.pdf
-
-Most of the time was invested in fixing bugs in the caching part of the proof/model search and testing in this iteration. The tasks and achievements were:
-
-\begin{center}
-\begin{longtable}{| p{7cm} | p{8cm} |}
-\hline
-\textbf{Tasks} & \textbf{Achievements} \\
-\hline
-Fix the bug highlighted in the previous iteration, in the proof/model search using caching. & Significant progress, which fixed this bug, but black box-testing revealed obscure bugs existed in this component.\\
-\hline
-Find a proof system for individuals. & Found that Labelled Tableau Calculus.\\
-\hline
-Extend program components to express individuals. & Forgone.\\
-\hline
-Implement tests for actual parsing of files and user input. & Completed.\\
-\hline
-\end{longtable}
-\end{center}
+Most of the time was invested in fixing bugs found in the previous iteration; completing the implementation of caching in the proof/model search; and testing in this iteration. As a result, we were able to fix bugs in and complete caching, however, black-box testing revealed some obscure bugs in the proof/model search.
 
 \subsection*{Iteration 5 (start 3/12, end 10/12)}
 
-For the last iteration, we integrated the additional features as planned, including the output of proofs and models into human readable format, and implementing the search for the shortest proof/smallest model by the proof/model search component. In addition, we were able to complete and fix the remaining bugs in the proof/search component.
+For the last iteration, we successfully integrated the additional features as planned, including the output of proofs and models into human readable format, and implementing the search for the shortest proof/smallest model. In addition, we were able to complete and fix the remaining bugs in the proof/search component.
 
 Although, possible optimisation of code was continuously performed through code reviews, in this iteration, a higher level of code optimisation was done as the development was coming to an end.
 
-To complete the project, we prepared the program for open-source deployment was done in this iteration by writing the main function and user interface.
+To complete the project, we prepared the program for open-source deployment was done in this iteration by completing the main function and user interface. We achieved a working program that parses user input into the internal data structures used to construct and check proofs/models, which are returned to users in a readable format. In addition, our program allows the user to use the program to return the shortest proof or smallest model.
 
-The final tasks and achievements:
-
-\begin{center}
-\begin{longtable}{| p{7cm} | p{8cm} |}
-\hline
-\textbf{Tasks} & \textbf{Achievements} \\
-\hline
-Fix bugs in proof/model search. & Completed.\\
-\hline
-Implement output model component to output a given model as a graph. & Completed.\\
-\hline
-Implement output proof component to output proof as a Latex file. & Completed.\\
-\hline
-Find shortest proof/smallest model. & Completed. * Did we do this? *\\
-\hline
-Implement the main function. & Completed.\\
-\hline
-Code optimisation in all components. & Completed.\\
-\hline
-\end{longtable}
-\end{center}
 
 \subsection{Code Lengths}
 
@@ -305,7 +204,7 @@ Main & 334\\
 \hline
 Parser & 1111\\
 \hline
-Proof/Model Search & 161\\
+Proof/Model Search & 234\\
 \hline
 Model Checker & 136\\
 \hline
@@ -322,4 +221,4 @@ Setup & 11\\
 \end{tabular}
 \end{center}
 
-`Tests' contains included test generator and all the test suites containing a large set of unit tests, hence is much larger than all other components. The parser component is also notably larger than the other components as it contains generated code from running Happy on the Happy file which was written by hand.
+`Tests' is much larger than all other components since it includes the test generator and all the test suites containing a large set of unit tests. The parser component is also notably larger than the other components as it contains generated code from running Happy on the Happy file which was written by hand.
