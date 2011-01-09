@@ -33,7 +33,7 @@ modelToConsole :: FilePath -> Model -> IO ()
 modelToConsole file (dom,unarys,binarys) 
     = do putStrLn $ "The generated model has been saved to models/"++file++".txt"
          let result = dompart++unarypart++binpart
-         writeFile ("models/"++file++".mod") result
+         writeFile ("models/"++file++".txt") result
          putStrLn result
     where dompart = "Domain  = "++show dom++"\n"
           unarypart = if unarys == [] 
