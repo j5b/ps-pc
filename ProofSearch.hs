@@ -27,7 +27,7 @@ type Cache      = [([Concept], (Individual, CacheEntry))]
 -- showing inconsistency or a model.
 findPOM :: [Concept] -> [Concept] -> Either Model ProofTree
 findPOM cs gamma = either (Left . sortModel . fst) Right $ fst $
-                   findProofOrModel (conceptSort . nub $ map toNNF cs++gamma)
+                   findProofOrModel (conceptSort . nub $ map toNNF $ cs++gamma)
                    (nub $ map toNNF gamma) [1..] []
 
 -- Maps a set of concepts to either a proof or model. At this stage only
