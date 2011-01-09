@@ -62,12 +62,13 @@ Nothing else is a concept.
 
 \subsection{Semantics of $\mathcal{ALC}$}
 
-The formal semantic for $\mathcal{ALC}$ is defined the notion of
-interpretation which gives meaning for Description Logic concepts. An
-interpretation is a pair $(\Delta^{I},.^{I})$, where $\Delta^{I}$ is a
-non-empty set called the domain and $.^{I}$ is a function sending each
-atomic concept to a subset of $\Delta^{I}$ and each relation name to a
-subset of $\Delta^{I} \times \Delta^{I}$ and satisfying the following
+The formal semantic for $\mathcal{ALC}$ that is deciding the truth
+value of some concepts is defined the notion of interpretation which
+gives meaning for Description Logic concepts. An interpretation is a
+pair $(\Delta^{I},.^{I})$, where $\Delta^{I}$ is a non-empty set
+called the domain and $.^{I}$ is a function sending each atomic
+concept to a subset of $\Delta^{I}$ and each relation name to a subset
+of $\Delta^{I} \times \Delta^{I}$ and satisfying the following
 properties:
 
 \begin{itemize}
@@ -79,29 +80,38 @@ properties:
 \item $(\exists R . C)^{I} = \{x \in \Delta^{I} \text{: exists } (x,y) \in R^{I} \text{ implies } y \in C^{I}\}$ 
 \end{itemize}
 
+As mention before we assume the open-world assumption. Which means
+that we do not assume that all concepts to be false by default, unless
+mentionned. In other words if we are provided some concept then its
+truth value does not depend on whether we known or not. So concepts
+truth values are fully determined by the interpretation, if the 
+truth value can't determined by the interpretation then it has no
+truth value.
+
 \subsection{Knowledge bases}
 
-A knowledge base in Description Logic is defined by two collections of
-concepts for some signature in $\mathcal{ALC}$. The first one are the
-global assumptions often written as $\Gamma$ and we will refer here
-as \textit{Gamma} and the second one are the initial set of concepts
-which we will refer here as the \textit{Givens}. We say a knowledge
-base is satisfiable if there exists an interpretation that makes every
-statement in \textit{Gamma} true at each point of $\Delta^{I}$ and
-every statement in \textit{Givens} true at some point in
-$\Delta^{I}$. In other words if the interpretation of every concept
+A knowledge base in $\mathcal{ALC}$ is defined by a collection of
+concepts for some signature in $\mathcal{ALC}$. It is also called the
+global assumptions and often written as $\Gamma$ and we will refer
+here as \textit{Gamma}. Additionally we often add to the global
+assumptions an initial set of concepts which we will refer here as
+the \textit{Givens}. We say a knowledge base together with an initial
+set of concepts to be satisfiable if there exists an interpretation
+that makes every statement in \textit{Gamma} true at each point of
+$\Delta^{I}$ and every statement in \textit{Givens} true at some point
+in $\Delta^{I}$. In other words if the interpretation of every concept
 in \textit{Gamma} is $\Delta^{I}$, and the interpreration of every
 concept in \textit{Givens} is a non-empty subset of $\Delta^{I}$ for
 some interpretation. Such an interpretation is called a model.  If no
-such model exists we say a knowledge base is unsatisfiable. 
+such model exists we say a knowledge base is unsatisfiable.
 
 For example if \textit{Givens} consists of one concept namely $\exists
 R. \top$ and if \textit{Gamma} consists of also one concept only $A$
-(an atomic concept name), then this knowledge base is satisfiable
-since the intrepretation $\Delta^{I} = \{1\}$ with $A^{I} = \{1\}$ and
-$R^{I} = \{(1,1)\}$ is a model. If some global assumptions together
-with an initial set of concepts is unsatisfiable, i.e. no model exists
-then we can show unsatisfiability through a proof.
+(an atomic concept name), then this is satisfiable since the
+intrepretation $\Delta^{I} = \{1\}$ with $A^{I} = \{1\}$ and $R^{I}
+= \{(1,1)\}$ is a model. If some global assumptions together with an
+initial set of concepts is unsatisfiable, i.e. no model exists then we
+can show unsatisfiability through a proof.
 
 \subsection{Negation normal form}
 
