@@ -8,6 +8,7 @@ module ConsoleOutput where
 
 import Data.List
 import Data.Either
+import System.IO
 
 import TestUtils
 import Signature
@@ -33,7 +34,9 @@ modelToConsole :: FilePath -> Model -> IO ()
 modelToConsole file (dom,unarys,binarys) 
     = do putStrLn $ "The generated model has been saved to models/"++file++".txt"
          let result = dompart++unarypart++binpart
-         writeFile ("models/"++file++".txt") result
+         output <- openFile ("models/"++file++".txt") WriteMode
+         hPutStrLn output result
+         hClose output
          putStrLn result
     where dompart = "Domain  = "++show dom++"\n"
           unarypart = if unarys == [] 
@@ -58,7 +61,9 @@ proofToConsole :: FilePath -> ProofTree -> IO ()
 proofToConsole file proof
     = do let result = (unlines . proofToConsoleInternal) proof
          putStrLn $ "The generated proof has been saved to proofs/"++file++".txt"
-         writeFile ("proofs/"++file++".pdf") result
+         output <- openFile ("proofs/"++file++".pdf") WriteMode
+         hPutStrLn output result
+         hClose output
          putStrLn result
 
 proofToConsoleInternal :: ProofTree -> [String]
