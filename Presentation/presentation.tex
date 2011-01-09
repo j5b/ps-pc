@@ -1,0 +1,59 @@
+\documentclass[usenames,dvipsnames]{beamer}
+
+% theme
+\usetheme{Hannover}
+\usecolortheme{seagull}
+\setbeamercovered{transparent}
+
+% packages
+\usepackage{graphics}
+\usepackage{color}
+\usepackage{cancel}
+
+%\definecolor{mark}{rgb}{0, 0.8, 0}
+
+\title{Proof Searching \& Proof Checking}
+\author[Jannis Bulian \and\\ Michal Parusinski \and\\ Ka Wai Cheng \and\\ Saguy Benaim]{Jannis Bulian \and Michal Parusinski \and \\ Ka Wai Cheng \and Saguy Benaim}
+\date{January 14, 2011}
+\institute{Imperial College London\\
+           Department of Computing}
+
+% for the logo
+\pgfdeclareimage[height=0.5cm]{university-logo}{logo_imperial_college_london.png}
+\logo{\pgfuseimage{university-logo}}
+
+% use overlay without counter by default
+\beamerdefaultoverlayspecification{<+->}
+
+% get rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Michals part}
+\include{michal}
+\section{Jannis part}
+\include{jannis}
+\section{KYs part}
+\include{ky}
+\section{Sagies part}
+\include{sagie}
+
+\appendix
+
+\begin{frame}
+  \begin{center}
+    {\Huge Thank you!}
+  \end{center}
+\end{frame}
+
+\beamerdefaultoverlayspecification{<1>}
+\begin{frame}
+  \bibliographystyle{plainnat}
+  \bibliography{../bib}
+\end{frame}
+
+\end{document}
