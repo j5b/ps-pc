@@ -1,0 +1,21 @@
+Name:           ps-pc
+Version:        0.2
+Cabal-version:  >= 1.6
+License:        GPL-3
+License-File:   LICENSE
+Author:         Jannis Bulian, Sagie Benhaim, Ka Wei Cheng, Michal Parusinski
+Stability:      Alpha
+Homepage:       http://code.google.com/p/ps-pc
+Synopsis:       A tool to find counter-proofs or model for Description Logic. It can also check if proofs or models are correct
+Build-Type:     Simple
+Category:       Automated Proof/Model generator
+Tested-with:    GHC >=6.10.4
+
+Executable ps-pc
+  Build-Depends:  base >=2.0, hunit, process >=1.0, directory >= 1.0, containers >= 0.2, haskell98
+  Main-Is:        Main.hs
+  Other-modules:  Signature ProofSearch Model Proof ModelChecker ProofChecker Parser ConsoleOutput Reader OutputModel OutputProof
+
+Source-repository head
+  Type:         hg
+  location:     https://ps-pc.googlecode.com/hg/

@@ -1,0 +1,76 @@
+\subsection {Validations and Conclusions}
+\label{sec:valandconc}
+
+In order to evaluate the project success, we evaluate the project against two criteria:
+The first criterion is the set of requirements and the extensions set, as agreed upon at the beginning of the project.
+The second criterion is a broader look of the product created against existing technology today.
+
+To evaluate the project, we first look at each of the requirements originally set the for the project and what has been achieved in each.
+
+\subsubsection*{Representation of concepts, models and proofs for $\mathcal{ALC}$}
+Completed. The representation of concepts, models and proofs is present in Signature.hs, Model.hs and Proof.hs. The signature expresses $\mathcal{ALC}$ concepts and binary connectives as well as useful methods to dealing with them. 
+\subsubsection*{Implementation of a model/proof searching algorithm for $\mathcal{ALC}$ which is correct and which terminates}
+Completed. This is provided in ProofSearch.hs. The correctness is described later in this section. The termination in ensured by the use of Caching. Non-termination could only occur in concepts with an Exists rule is applied, and later appears again when evaluated. By caching the concept evaluated we can ensure we don't try to evaluate the same concept again and  and hence not terminate; Instead we create a loop model whereby some node is referring back to a previously written node.
+\subsubsection*{Implementation of a model checking algorithm for $\mathcal{ALC}$ that checks if a model is correct}
+Completed. This is provided in ModelChecker.hs and its correctness is described later in this section. 
+\subsubsection*{Implementation of a proof checking algorithm for $\mathcal{ALC}$ that checks if a proof is correct}
+Completed. This is provided in ProofChecker.hs and its correctness is described later in this section. 
+\subsubsection*{Provide a standard output format for generated models and proofs}
+We provide standard output either directly to a file or command line. 
+
+We also look at the extensions set, and what has been achieved in each.
+
+\subsubsection*{Extend the program to more expressive logics (for instance logics with number restrictions, probabilities, etc.) }
+We were unable to complete this extension due to time constrains in particular and design issue we made at earlier stages of the project. At early stages, it was hard to foresee the need for a labelled tableau in our program. Only later, when we wanted to include the option of referring to specific individuals when searching for a model/proof, did we find this necessary. Had we observed this at the beginning of the project we would be able to change the design of our program and re-factoring or changing the code would have been easier, and hence including this change. 
+\subsubsection*{Implementation of a parser for reading concepts in Description Logic}
+Completed. This is provided in Parser.y and Parser.hs. 
+\subsubsection*{Ability to represent models and proofs in a graphical representation}
+Complete. The graphical representation of proofs is provided as a pdf file generated from latex, written in OutputProof.hs. Similarly we provide model graphical representation with OutputModel.hs which uses Graphviz.
+\subsubsection*{User interface to the program}
+We provide a command line interface which allows the user to specify the concepts to be satisfied (gives), the global assumptions (gamma), the the output file and the mode which specifies to output mode requred:
+none: for simply stating SATISFIABLE or UNSATISFIABLE, console: for a verbose console output of the model or proof, graphical: for a graphical output in a file of the model or proof.
+\subsubsection*{Find the shortest proof for a given concept}
+We also allow the possibility of finding the shortest possbile proof if a proof is given. The is provided in a standalone file called ProofSearchShortestProof. This has a greater time complexity. In order to use the program with shotest proof the user must rename the file to ProofSearch.hs and use instead of the current ProofSearch.hs. 
+
+To illustrate the fulfilment of the those requirements and extensions, we give an example which follows the pizza ontology.
+
+Suppose we have three possible toppings: cheese, vegetable, and meat. As a global assumption we assume that every pizza has a topping and also that vegetarian pizzas have only cheese or vegetable topping.
+In this case our signature consists of 5 Concepts: Pizza, Topping, CheeseTopping, VegetableTopping, MeatTopping, VegetarianPizza. It also contains a role name hasToppping.
+Every pizza has a topping translates to: $Pizza \sqsubseteq \in hasTopping.T.$. A vegetrian pizza has only cheese or vegetable topping translates ot the following: $VegetarianPizza \sqsubseteq \in hasTopping.(CheeseTopping \sqcup VegetableTopping).$. 
+
+It is important to note that we have:
+Pizzas and Topping are distinct: $Pizza \sqcap Topping \sqsubseteq \bot$, VegeterianPizzas are Pizzas: $VegeterianPizza \sqsubseteq Pizza$ and a Topping is either a CheeseTopping, a Vegetable Topping or a MeatTopping: $Topping \equiv (VegetableTopping \sqcup CheeseTopping \sqcup MeatTopping)$. 
+
+Assume that we want to ask whether a vegetarian pizza can have a meat topping. This is clerly unsatisfiable, so we expect the proof/model searcher to find a proof for this.
+We can express this as $VegerianPizza \sqsubseteq \in hasTopping.MeatTopping.$.
+
+Let us represent this in terms of our notation for concepts:
+We therefore let $X$, the set of concepts to be satisfied, be the following: 
+$\Gamma$ or the set of global assumptions is defined to be the following: 
+We domonstrate the graphical mode here, but as mentioned above, other modes are available:
+We run the command: 
+
+The following is the grapical representaion of the proof created:
+It is important to note THE CONVERSION HERE
+
+To verify that this proof is indeed corerct, we run the ProofChecker:
+
+Alternatively if we want to ask wheteher a vegetrian pizza can have a cheese topping. This clearly satisfiable, so we expect the proof/model searcher to find a model for this. We can express this as $VegerianPizza \sqsubseteq \in hasTopping.CheeseTopping.$. 
+
+Representing this in terms of our notation for concepts:
+
+Looking at the second criterion, there are other proof checkers and model/proof searchers. An example of a model/proof searcher is the COLOSS solver (The Coalgebraic Logic Satisfiability Solver) FOOTNOTE HERE, which decides satisfiability of modal formulas. The set of logics which are catered for in the COLOSS solver is much greater then in our program, and includes for example the logics K and probabilistic modal logic, where as in our program we look at $\mathcal{ALC}$ logic. However, the main advantage in our program is the duality it provides between the proof/model searcher and proof and model checkers. There is a common syntactical interface between the searcher and the checker, and both use a common representation of concepts, models and proofs. In particular, the model and proof checkers are developed independently to the model/proof searcher. This allows for a much greater confidence for the user, who can use our program in two independent stages: find a proof or a model using the proof searcher and then check if that proof or model is correct. The proof/model searcher also provides either a model or a proof (according to the agreed representation) and not only yes/no answer to whether the concept (or a list of concepts) is satisfiable, as many other searchers do. Moreover, the proof and model checkers both provide detailed reports which pinpoint the problem in the proof of model provided. The graphical representation of models and proofs also further eases the understanding of models and proofs for the user.
+
+However, most importantly, the program's correctness (both the proof/model searcher and the model and proof checkers) is a vital part of the project success. We verified and validated our program as follows: Firstly, the fundamental design behind the program is such that the proof/model searcher and the model/proof checkers are developed independently. They are both thoroughly tested using the procedure described in section \ref{sec:techused} (Technology used). All of the these tests pass along with further validation techniques (described in the same section) such as code reviews and \emph{hlint}.
+
+This independence is indeed the main advantage of program. It allows a user to first search for a proof/model and then further check its correctness (and hence gain further confidence).
+
+EXAMPLE HERE OF PIZZA ONTOLOGY
+
+In terms of the learning outcome of this project, we learnt various things, in particular the importance of a complete design in early stages of the project. This design issue is explained is section \label{sec:valandconc}. For that reason, we would allow spending more time on design then initially given; In particular we would look at the extensions more closely in order to anticipate the need for labelled tableau.
+
+In addition, the vast amount time spend on validation and verification, taught us the difficulty of ensuring correctness of software where it necessary. All group members also learnt various tools such as Graphviz and the Happy parser generator. The coding style was also improved, especially through peer and code reviews of other group members. 
+
+Overall, the project was successful, not only due to the fulfilment of the requirements and most extensions, but also as it provides a new interface for users, one which primarily increases the user's confidence in an area where correctness is vital. 
+
+
