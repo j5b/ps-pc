@@ -3,7 +3,7 @@ module Main (main) where
 import Distribution.Simple
 import Distribution.Simple.UserHooks
 import Distribution.PackageDescription
-import TestMain
+--import TestMain
 
 main :: IO ()
 main = defaultMain
