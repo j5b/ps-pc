@@ -20,6 +20,8 @@ The syntax for Description Logic used is the following:
   '&'      -> Intersection/And symbol: (concept1)&(concept2)
   '|'      -> Union/Or symbol: (concept1)|(concept2)
   '~'      -> Complement/Negation symbol: ~(concept)
+  '->'     -> Implication: (concept1)->(concept2)
+  '=='     -> Equivalence: (concept1)==(concept2)
   ';' to seperate Concepts (Formulaes) in a list: concept1;concept2
 The rest represents atomic or binary relation (used in forall and exists).
 Brackets can be omitted only if there is no doubt about the meaning.
