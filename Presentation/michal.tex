@@ -58,4 +58,15 @@ $\exists R . C$ & $\{x | \exists y . (x,y) \in R^{I} \land y \in C^{I}\}$ & Exis
 %4
 \begin{frame}
 \frametitle{Description Logic (Continuation)}
+The input for our software is two set of concepts: \pause
+\begin{itemize}
+\item Global assumptions: Concepts to be true at each point, i.e. its interpretation is $\Delta^{I}$.
+\item Initial concepts: Concepts to be true at some point, i.e. its interpretation is a non-empty subset.
+\end{itemize}
+\bigskip
+{\bf If such an interpretation exists:} We say the global assumptions together with the initial concepts are
+satisfiable. We call the interpretation a {\it Model}. \\
+\smallskip
+\pause
+{\bf Otherwise if no such an interpretation exists:}we say the global assumptions together with the initial concepts are unsatisfiable.
 \end{frame}
