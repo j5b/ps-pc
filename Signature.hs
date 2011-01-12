@@ -86,7 +86,7 @@ forall rel concept = Forall rel concept
 -- converts a formula to Negation Normal Form
 toNNF :: Concept -> Concept
 toNNF (And f1 f2)          = And (toNNF f1) (toNNF f2)
-toNNF (Or f1 f2)          = And (toNNF f1) (toNNF f2)
+toNNF (Or f1 f2)           = Or  (toNNF f1) (toNNF f2)
 toNNF (Forall str f)       = Forall str $ toNNF f
 toNNF (Exists str f)       = Exists str $ toNNF f
 toNNF (Neg (Neg f))        = toNNF f
