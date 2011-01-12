@@ -1,0 +1,53 @@
+\begin{frame}
+  \frametitle{So how does it work?}
+  Consider the following example about pizza: \\
+  \pause
+  \bigskip
+  \textbf{Concepts:} Pizza, Topping, CheeseTopping, VegetableTopping, MeatTopping, VegetarianPizza, VeganPizza \\
+  \textbf{Role name:} hasToppping \\
+  \pause
+  \bigskip
+  \textbf {Global assumptions:} A pizza has a topping \\
+  A vegetarian pizza has no meat topping \\
+  A vegan pizza is a vegetarian pizza with no cheese topping
+\end{frame}
+
+\begin{frame}
+   %\frametitle{So how does it work?}
+   Formally, as global assumptions (gamma): \\
+   \bigskip
+   $Pizza \sqsubseteq \exists hasTopping.T.$ \\
+   $VegetarianPizza \sqsubseteq \neg \exists hasTopping.MeatTopping.$  \\
+   $VeganPizza \sqsubseteq VegeterianPizza \sqcap \neg \exists hasTopping.CheeseTopping.$  \\
+   \pause
+   \bigskip
+   Also need following: \\
+   \bigskip
+   $VegeterianPizza \sqsubseteq Pizza$ \\
+   $Pizza \sqcap Topping \sqsubseteq \bot$ \\
+   $Topping \equiv (VegetableTopping \sqcup CheeseTopping \sqcup MeatTopping)$ \\
+\end{frame}
+
+\begin{frame}
+   Vegetarian pizza with cheese\\
+   Is this satisfiable? \\
+   \pause
+   \bigskip
+   So as givens:\\
+   $VegetarianPizza$ \\
+   $VegetarianPizza \sqsubseteq \exists hasTopping.CheeseTopping.$  \\
+\end{frame}   
+
+\begin{frame}
+   Vegan pizza with meat\\
+   Is this satisfiable? \\
+   \pause
+   \bigskip
+   So as givens:\\
+   $VeganPizza$ \\
+   $VeganPizza \sqsubseteq \exists hasTopping.MeatTopping.$  \\
+\end{frame}
+
+
+   
+    
