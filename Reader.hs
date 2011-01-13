@@ -173,7 +173,7 @@ outputResult Check (gm,gi) result filename
             else do putStrLn "Incorrect result:"
                     putStrLn $ fst answer
   where left x  = checkInputModel x gm gi
-        right x = checkProof x gm
+        right x = checkProof x (map toNNF gm)
 
 -- executes command given
 executeCommand :: Command -> IO ()
