@@ -1,7 +1,7 @@
 ps-pc --help
 ps-pc --givens [GIVENS|FILE] 
       --gamma [GIVENS|FILE] 
-      --mode [none|console|graphical]
+      --mode [none|console|graphical|check]
       --output [NAME]
 
 --DESCRIPTION:
@@ -42,6 +42,8 @@ There are the following options for this program
          -> none for simply stating SATISFIABLE or UNSATISFIABLE
          -> console for a verbose console output of the model or proof
          -> graphical for a verbose output in a file of the model or proof
+	 -> check for a verbose console output and the program will check the result with 
+	    the model or proof checker
          default is 'none'
   --output for specifying the output file name (only makes sense for graphical and console
   outputs) !! NOT THE FILE PATH BUT A FILE NAME !!

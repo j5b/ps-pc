@@ -20,12 +20,14 @@ import ProofSearch
 import Signature
 import OutputModel
 import OutputProof
+import ModelChecker
+import ProofChecker
 
 type Gamma = [Concept]
 type Givens = [Concept]
 type Data = (Gamma, Givens)
 
-data OutputMode = None | Console | Graphical
+data OutputMode = None | Console | Graphical | Check
                   deriving (Show, Eq)
                  
 data GammaInput  = DirectGamma String | FileGamma FilePath
@@ -63,6 +65,7 @@ getMode :: String -> OutputMode
 getMode ('n':'o':'n':'e':rest) = None
 getMode ('c':'o':'n':'s':'o':'l':'e':rest) = Console
 getMode ('g':'r':'a':'p':'h':'i':'c':'a':'l':rest) = Graphical
+getMode ('c':'h':'e':'c':'k':rest) = Check
 getMode _ 
     = error "Unable to process mode: please write 'none', 'console' or 'graphical'"
 
@@ -152,16 +155,25 @@ helpString :: IO String
 helpString = readFile "HELP.TXT"
 
 -- output the result of the proof/model searcher
-outputResult :: OutputMode -> Either Model ProofTree -> FilePath -> IO ()
-outputResult None result _             = either left right result
+outputResult :: OutputMode -> Data -> Either Model ProofTree -> FilePath -> IO ()
+outputResult None _ result _             = either left right result
   where left  x = putStrLn "SATISFIABLE"
         right x = putStrLn "UNSATISFIABLE"
-outputResult Console result filename   = resultToConsole result filename
-outputResult Graphical result filename = either left right result
+outputResult Console _ result filename   = resultToConsole result filename
+outputResult Graphical _ result filename = either left right result
   where left  x = do outputModel x filename "png" 
                      putStrLn $ "A generated model has been outputed to models/"++filename++".png"
         right x = do outputProof x $ "proofs/"++filename
                      putStrLn $ "A generated proof has been outputed to proofs/"++filename++".pdf"
+outputResult Check (gm,gi) result filename 
+    = do resultToConsole result filename 
+         let answer = either left right result 
+         if snd answer 
+            then putStrLn "Result check: Everything is fine"
+            else do putStrLn "Incorrect result:"
+                    putStrLn $ fst answer
+  where left x  = checkInputModel x gm gi
+        right x = checkProof x gm
 
 -- executes command given
 executeCommand :: Command -> IO ()
@@ -171,7 +183,7 @@ executeCommand (Solve mode (gamma, givens) filename)
        if mode /= Graphical 
           then putStrLn "The result is:"
           else putStrLn "The result will be generated in a seperate file (indicated by --output if specified)"
-       outputResult mode (findPOM givens gamma) filename
+       outputResult mode (gamma, givens) (findPOM givens gamma) filename
 executeCommand Help
   = do output <- helpString
        putStrLn output
