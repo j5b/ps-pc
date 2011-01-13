@@ -3,5 +3,4 @@
 (VeganPizza) -> ((VegetarianPizza)&(~(Exists hasTopping (CheeseTopping))));
 ((Pizza) & (Topping)) -> (bot);
 (VegetarianPizza) -> (Pizza);
-(Topping) -> (((CheeseTopping)|(VegetableTopping))|(MeatTopping));
-(((CheeseTopping)|(VegetableTopping))|(MeatTopping)) -> (Topping)
+(Topping) == (((CheeseTopping)|(VegetableTopping))|(MeatTopping))
