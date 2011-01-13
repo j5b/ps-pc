@@ -3,12 +3,11 @@
 \textbf{Haskell.} Main programming language
 \begin{itemize}
 \item Pattern matching
-\item GHC compiler
 \end{itemize}
 \smallskip
 \textbf{Happy.} Parser generator for parsing user input
 \begin{itemize}
-\item Documentation \& less hand written code needed
+\item Less hand written code needed
 \end{itemize}
 \smallskip
 \textbf{Latex.} Output proof
@@ -27,8 +26,7 @@
 \textbf{Implementation of caching}
 \begin{itemize}
 \item Caching the sets of concepts already expanded and their resulting proof or model
-\item To prevent the proof/model search from non-terminating when \textit{Gamma} contains an existential restriction concept, e.g. $\exists R . \top$
-\item Implementation more complicated than expected
+\item To prevent non-termination in proof/model search when \textit{Gamma} contains existential restriction concepts e.g. $\exists R . \top$
 \end{itemize}
 
 \textbf{Extending functionality to cover individuals}
@@ -41,11 +39,14 @@
 \begin{itemize}
 \item Discussed theoretical issues in group meetings \& meetings with supervisor
 \item Code reviews \& bug tracking system
+\item Stopped extending program to cover individuals due to limited time and vast amount of change required
 \end{itemize}
  \end{frame}
 
 \begin{frame}
   \frametitle{Software Development Method}
+Weekly iterations were planned at the beginning of the project and was adapted due technical challenges.\\
+\smallskip
 \textbf{eXtreme Programming.}
 \begin{itemize}
 \item Test-driven development
@@ -88,22 +89,6 @@
 Grey-box \& black-box testing detected approx. 10 bugs
 
 E.g. proof search did not ensure no duplicated instances of concepts at each step of the proof.
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{Plans \& Achievements}
-Plan of weekly iterations composed at the beginning of the project.\\
-\bigskip
-Changes were made to the plan due unexpected technical problem of caching causing:
-\begin{itemize}
-\item An iteration dedicated to solving cycles by using caching
-\item Work on caching extended to the last iteration to fix bugs
-\item Iterations for extending functionality delayed by an iteration
-\item Stopped extending program to cover individuals due to limited time and vast amount of change required
-\end{itemize}
-\bigskip
-Otherwise, planned features and set tasks were completed.
 \end{frame}
 
 \begin{frame}
