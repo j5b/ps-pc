@@ -54,7 +54,7 @@ createGenericPDF proofs file = do putStrLn $ "Opening file "++file
                                   hPutStrLn output end
                                   putStrLn $ "Closing file "++file
                                   hClose output
-  where header = "\\documentclass[8pt, a4paper]{article}\n"++
+  where header = "\\documentclass[10pt, a4paper,landscape]{article}\n"++
                  "\\usepackage{amsmath}\n"++
                  "\\usepackage{amssymb}\n"++
                  "\\usepackage{qtree}\n"++

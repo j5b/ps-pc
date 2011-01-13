@@ -54,12 +54,15 @@ $\forall R . C$ & $\{x | \forall y . (x,y) \in R^{I} \to y \in C^{I}\}$ & Univer
 $\exists R . C$ & $\{x | \exists y . (x,y) \in R^{I} \land y \in C^{I}\}$ & Existential rest. \\
 \hline 
 \end{tabular}
+\smallskip
+\pause
+Additionall we define $C \sqsubseteq D$ as $(\neg C) \sqcup D$, and $C \equiv D$ as $C \sqsubseteq D \cap D \sqsubseteq C$.
 \end{frame}
 
 %4
 \begin{frame}
 \frametitle{Description Logic (Continuation)}
-The input for our software is two set of concepts: \pause
+The input for our software is two set of concepts:
 \begin{itemize}
 \item Global assumptions: Concepts to be true at each point, i.e. its interpretation is $\Delta^{I}$.
 \item Initial concepts: Concepts to be true at some point, i.e. its interpretation is a non-empty subset.
