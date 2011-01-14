@@ -83,8 +83,9 @@ findProofOrModel' cs gamma (i:is) _ = Left (constructAtomicModel cs i, is)
 --        a proof is returned.
 foldExists :: [Concept] -> [Concept] -> [Concept] -> [Individual] -> Cache
               -> Either (Model, [Individual]) ProofTree
-foldExists cs _ [] (i:is) _
-  = Left (constructAtomicModel cs i, is)
+foldExists cs gamma [] (i:is) cache
+  = fst $ findProofOrModel (conceptSort cs) gamma (i:is) cache
+--Left (constructAtomicModel cs i, is)
 foldExists cs gamma (Exists rel c : es) (i:is) cache
   = either dealWithModel (Right . constructProof) pom
   where
