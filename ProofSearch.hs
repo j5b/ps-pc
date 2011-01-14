@@ -27,7 +27,7 @@ type Cache      = [([Concept], (Individual, CacheEntry))]
 -- showing inconsistency or a model.
 findPOM :: [Concept] -> [Concept] -> Either Model ProofTree
 findPOM cs gamma = either (Left . sortModel . fst) Right $ fst $
-                   findProofOrModel (conceptSort . nub $ map toNNF cs++gamma)
+                   findProofOrModel (conceptSort . nub $ map toNNF (cs++gamma))
                    (nub $ map toNNF gamma) [1..] []
 
 -- Maps a set of concepts to either a proof or model. At this stage only
@@ -83,36 +83,23 @@ findProofOrModel' cs gamma (i:is) _ = Left (constructAtomicModel cs i, is)
 --        a proof is returned.
 foldExists :: [Concept] -> [Concept] -> [Concept] -> [Individual] -> Cache
               -> Either (Model, [Individual]) ProofTree
-foldExists cs gamma [] (i:is) cache
-  = fst $ findProofOrModel (conceptSort cs) gamma (i:is) cache
---Left (constructAtomicModel cs i, is)
+foldExists cs _ [] (i:is) _
+  = Left (constructAtomicModel cs i, is)
 foldExists cs gamma (Exists rel c : es) (i:is) cache
   = either dealWithModel (Right . constructProof) pom
   where
     (pom, cache') = findProofOrModel cs' gamma is cache
     cs' = applyExists cs gamma (Exists rel c)
-    constructProof pf = newpf $ NodeOne (cs, "exists", Exists rel c) pf
-    newpf pf = either (\m -> pf) (findShortestProof pf) additionalProofOrModel
-    additionalProofOrModel = foldExists cs gamma es (i:is) cache'
+    constructProof = NodeOne (cs, "exists", Exists rel c)
     dealWithModel (m, is') = either (\(m'', is'') -> Left (joinModels m' m'', is''))
-                             Right (foldExists cs gamma es (i:is') cache')
+                             Right (foldExists cs gamma es (i : is') cache')
       where
         m' = joinModels m edgemodel
         edgemodel = maybe forwardEdge createBackEdge $ lookup cs' cache
         forwardEdge = if (head is) `elem` dom then ([i], [], [(rel, [(i, head is)])])
-                                              else ([], [], [])
+                                              else ([i], [], [(rel, [(i, i)])])
         (dom, _, _) = (fst . fromLeft) pom
         createBackEdge (j, _) = ([i], [], [(rel, [(i, j)])])
-
-findShortestProof :: ProofTree -> ProofTree -> ProofTree
-findShortestProof pf1 pf2 
-   | (proofLength pf1) <= (proofLength pf2) = pf1 
-   | otherwise = pf2 
-
-proofLength :: ProofTree -> Int
-proofLength (NodeZero step) = 1
-proofLength (NodeOne step pf) = 1 + (proofLength pf)
-proofLength (NodeTwo step pf1 pf2) = 1 + (proofLength pf1) + (proofLength pf2)  
 
 -- A function that sorts concepts in the following order, first to last:
 -- 'A, not A', 'A and B', 'A or B', 'ER.C', others
