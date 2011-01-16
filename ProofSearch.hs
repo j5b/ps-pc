@@ -5,10 +5,6 @@
    Description: Proof/Model search for description logics.
 -}
 
-{-
-   Here we will write a long description at some point.
--}
-
 module ProofSearch where
 
 import Data.Either
