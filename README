@@ -23,6 +23,10 @@ INSTALLATION:
   runhaskell Setup.hs build
   sudo runhaskell Setup.hs install (or equivalent)
 
+If problems arise because happy can't be found do the following
+after running "happy Parser.y":       
+  mv Parser.y .parser.y
+
 RUNNING:
 ps-pc --help	
 ps-pc --gamma [GAMMA] --givens [GIVENS] --mode [MODE] --output [FILE]
