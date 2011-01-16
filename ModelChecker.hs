@@ -17,7 +17,6 @@ To check if a model is valid
       - Check atomic formulas one by one
       - Output report for each
   - 4th : Output the report (String, Bool)
-  TODO: reports
 -}
 
 import Data.Maybe
@@ -30,7 +29,7 @@ type Concepts = [Concept]
 
 type Answer = (String, Bool)
 
--- checks the inpxut model
+-- Check if the model is a model for gamma and the concepts
 checkInputModel :: Model -> Concepts -> Concepts -> Answer
 checkInputModel model [] givens = if consistent /= mzero 
                                   then error (consistent ++ printModel model)
@@ -52,10 +51,17 @@ checkInputModel model gamma givens = if consistent /= mzero
         consistent = consistentModel model
 
 {-
-  Laziness will prevent to check the concept for every model
-  Once one element validates the model it terminates :)
+  Laziness will prevent to check a concept for every element of the domain
+  Once one element validates the model check for givens terminates :)
+  Once one element doesn't validate the model check for gamma terminates :)
 -}
 
+{-
+  AnswerOr and AnswerAnd occurs in checkGamma/checkGivens and in checkConcept
+  although the behavior is very similar it has some differences.
+-}
+
+-- Checks if Gamma are satisfied everywhere
 checkGamma :: Concept -> Model -> Answer
 checkGamma _ ([], _, _ ) = ("Empty model", False)
 checkGamma concept model =
@@ -64,7 +70,7 @@ checkGamma concept model =
         answerAnd ((msg,False):rest)  = (msg,False)
         answerAnd ((msg,True):rest)   = answerAnd rest
 
--- check if model is a model for concept
+-- Checks if Givens are satisfied somewhere
 checkGivens :: Concept -> Model -> Answer
 checkGivens _ ([], _, _ ) = ("Empty model", False)
 checkGivens concept model =
@@ -94,7 +100,6 @@ checkConcept (Exists relation f) model distinguished =
         matches ind x = fst x == ind
         relationSet   = fromMaybe [] $ lookup relation relations
         relations     = getRelations model
-        answerOr :: [Answer] -> Answer
         answerOr [] = (newMsg, False)
           where newMsg = "No successors for relation "++relation++
                          " for "++show distinguished++"\n"
@@ -109,7 +114,6 @@ checkConcept (Forall relation f) model distinguished =
         matches ind x = fst x == ind
         relationSet   = fromMaybe []  $ lookup relation relations
         relations     = getRelations model
-        answerAnd :: [Answer] -> Answer
         answerAnd [] = ("", True)
         answerAnd ((msg, True) : rest)  = answerAnd rest
         answerAnd ((msg, False) : rest) = (msg,False)

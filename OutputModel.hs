@@ -20,10 +20,9 @@ import ProofSearch
 outputModel :: Model -> FilePath -> String -> IO ()
 outputModel model filename format
   = do writeModel (filename ++ ".dot") model
-       rawSystem "dot" ["-T" ++ format, fp ++ ".dot", "-o", fp ++ "." ++ format]
-       removeFile (fp ++ ".dot")
+       rawSystem "dot" ["-T" ++ format, filename ++ ".dot", "-o", filename ++ "." ++ format]
+       removeFile (filename ++ ".dot")
        return ()
-  where fp = "models/" ++ filename
 
 {-
  Output string of DOT language that draws model
@@ -100,4 +99,4 @@ addToIndividual u (i:is) m = Map.insertWith (++) i [u] $ addToIndividual u is m
 
 -- Writes graph to file.
 writeModel :: FilePath -> Model -> IO()
-writeModel filename = writeFile ("models/"++filename) . modelToGraph
+writeModel filename = writeFile (filename) . modelToGraph

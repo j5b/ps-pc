@@ -17,18 +17,23 @@ import Signature
 import Proof
 import ProofSearch
 
+--Generates a pdf from a proof
 outputProof :: ProofTree -> FilePath -> IO ()
 outputProof proof filename 
-  = do createGenericPDF [proof] $ filename++".tex"
+  = do writeFile (filename++".tex") "" -- helps create a directory
+       createGenericPDF [proof] $ filename++".tex"
        let command = "pdflatex -halt-on-error -interaction=nonstopmode "++
                      filename++".tex > /dev/null"
-       system command
-       return ()
+       code <- system command
+       if code == ExitSuccess 
+          then return () 
+          else error "Unable to generate a pdf file"
 
 getConcepts (cs,_,_) = cs
 getRule (_,rule,_) = rule
 getUsed (_,_,used) = used
 
+-- Turns a proof tree into a string which will be incorporated inside a latex tree
 latexify :: ProofTree -> String
 latexify (NodeZero step) = "[.{"++concepts++end++"\n]"
   where concepts = niceConceptLatex (getConcepts step)
@@ -43,9 +48,12 @@ latexify (NodeTwo step left right) = "[.{"++concepts++"}\n\t"++lrest++"\n\t"++rr
         lrest    = latexify left
         rrest    = latexify right
 
+
+-- Turns a proof into a string representing a tree for latex
 proofToLatexTree :: ProofTree -> String
 proofToLatexTree prooftree = "\\Tree\n"++latexify prooftree++"\n"
 
+-- Takes a proof alongside a location and turns creates a tex file
 createGenericPDF :: [ProofTree] -> FilePath -> IO ()
 createGenericPDF proofs file = do putStrLn $ "Opening file "++file
                                   output <- openFile file WriteMode
@@ -63,6 +71,7 @@ createGenericPDF proofs file = do putStrLn $ "Opening file "++file
                  "\\begin{center}\n"
         end    = "\\end{center}\n"++"\\end{document}"
 
+-- Breaks a list into several list of a certain size
 breakInPieces _ [] = []
 breakInPieces size list = result:breakInPieces size rest
   where (result,rest) = countTo 0 size list
