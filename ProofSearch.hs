@@ -97,7 +97,10 @@ foldExists cs gamma (Exists rel c : es) (i:is) cache
         m' = joinModels m edgemodel
         edgemodel = maybe forwardEdge createBackEdge $ lookup cs' cache
         forwardEdge = if (head is) `elem` dom then ([i], [], [(rel, [(i, head is)])])
-                                              else ([i], [], [(rel, [(i, i)])])
+                                              else ([i], us, [(rel, [(i, i)])])
+        -- Finds unaries that successors must satisfy
+        -- hence new individual i must satisfy in 'else' case in 'forwardedge'
+        us = [ (x,[i]) | Atom x <- cs']
         (dom, _, _) = (fst . fromLeft) pom
         createBackEdge (j, _) = ([i], [], [(rel, [(i, j)])])
 
