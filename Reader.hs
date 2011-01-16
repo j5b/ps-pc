@@ -180,14 +180,14 @@ outputResult :: OutputMode -> Data -> Either Model ProofTree -> FilePath -> IO (
 outputResult None _ result _             = either left right result
   where left  x = putStrLn "SATISFIABLE"
         right x = putStrLn "UNSATISFIABLE"
-outputResult Console _ result filename   = resultToConsole result filename
+outputResult Console _ result _   = resultToConsole result
 outputResult Graphical _ result filename = either left right result
   where left  x = do outputModel x filename "png" 
                      putStrLn $ "A generated model has been outputed to "++filename++".png"
         right x = do outputProof x filename
                      putStrLn $ "A generated proof has been outputed to "++filename++".pdf"
-outputResult Check (gm,gi) result filename 
-    = do resultToConsole result filename 
+outputResult Check (gm,gi) result _
+    = do resultToConsole result 
          let answer = either left right result 
          if snd answer 
             then putStrLn "Result check: Everything is fine"

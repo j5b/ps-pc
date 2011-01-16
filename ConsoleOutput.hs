@@ -24,18 +24,14 @@ existsConsole = "Exists"
 forallConsole = "Forall"
 
 -- creates a string representing the model or the proof tree
-resultToConsole :: Either Model ProofTree -> FilePath -> IO ()
-resultToConsole (Left model) file = modelToConsole file model
-resultToConsole (Right proof) file = proofToConsole file proof
+resultToConsole :: Either Model ProofTree -> IO ()
+resultToConsole (Left model)  = modelToConsole model
+resultToConsole (Right proof) = proofToConsole proof
 
 -- creates a string representing the model
-modelToConsole :: FilePath -> Model -> IO ()
-modelToConsole file (dom,unarys,binarys) 
-    = do putStrLn $ "The generated model has been saved to "++file++".txt"
-         let result = dompart++unarypart++binpart
-         output <- openFile (file++".txt") WriteMode
-         hPutStrLn output result
-         hClose output
+modelToConsole :: Model -> IO ()
+modelToConsole (dom,unarys,binarys) 
+    = do let result = dompart++unarypart++binpart
          putStrLn result
     where dompart = "Domain  = "++show dom++"\n"
           unarypart = if unarys == [] 
@@ -56,13 +52,9 @@ processBinarys list = concatMap f list
    where f (binary, space) = "--Binary "++binary++" is satisfied for: "++show space++"\n"
 
 -- creates a string representing the proof
-proofToConsole :: FilePath -> ProofTree -> IO ()
-proofToConsole file proof
+proofToConsole :: ProofTree -> IO ()
+proofToConsole proof
     = do let result = (unlines . proofToConsoleInternal) proof
-         putStrLn $ "The generated proof has been saved to "++file++".txt"
-         output <- openFile (file++".pdf") WriteMode
-         hPutStrLn output result
-         hClose output
          putStrLn result
 
 proofToConsoleInternal :: ProofTree -> [String]
