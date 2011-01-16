@@ -32,10 +32,14 @@ import Signature
       ';'             { TokenSemicolon }
       '('             { TokenOB }
       ')'             { TokenCB }
+      end             { TokenEnd }
 
 %%
 
-File     : File ';' Concept            { $3 : $1 }
+File     : ConceptSeq end              { $1 }
+         | end                         { [] }
+
+ConceptSeq : ConceptSeq ';' Concept    { $3 : $1 }
          | Concept                     { [$1] }
 
 Concept  : Concept '==' Concept1       {And (Or (Neg $1) $3) (Or $1 (Neg $3))}
@@ -74,6 +78,7 @@ data Token
       | TokenSemicolon
       | TokenOB
       | TokenCB
+      | TokenEnd
  deriving Show
 
 -- Returns a TokenVar and rest of string for all the lexers.
@@ -85,7 +90,7 @@ lexVar cs =
 
 -- Lexer for input grammar.
 lexerI :: String -> [Token]
-lexerI [] = []
+lexerI []                           = [TokenEnd]
 lexerI ('F':'o':'r':'a':'l':'l':cs) = TokenForall    : var : lexerI rest
   where (var, rest) = lexVar cs
 lexerI ('E':'x':'i':'s':'t':'s':cs) = TokenExists    : var : lexerI rest
@@ -108,7 +113,7 @@ lexerI other = error other
 
 -- Lexer for Benchmark 1 file.
 lexerB1 :: String -> [Token]
-lexerB1 [] = []
+lexerB1 [] = [TokenEnd]
 lexerB1 ('b':'e':'g':'i':'n':cs)
                = lexB1Concepts cs
 lexerB1 (c:cs) = lexerB1 cs
@@ -116,7 +121,7 @@ lexerB1 (c:cs) = lexerB1 cs
 -- Tokenizes a list of concepts.
 -- Only allows benchmark files with less than 10 concepts.
 lexB1Concepts :: String -> [Token]
-lexB1Concepts []               = []
+lexB1Concepts []               = [TokenEnd]
 lexB1Concepts ('b':'o':'x':cs) = TokenForall : TokenVar "R" : lexB1Concepts cs
 lexB1Concepts ('d':'i':'a':cs) = TokenExists : TokenVar "R" : lexB1Concepts cs
 lexB1Concepts ('&':cs)         = TokenAnd                   : lexB1Concepts cs
@@ -126,7 +131,7 @@ lexB1Concepts ('(':cs)         = TokenOB                    : lexB1Concepts cs
 lexB1Concepts (')':cs)         = TokenCB                    : lexB1Concepts cs
 lexB1Concepts ('1':':':cs)     = lexB1Concepts cs
 lexB1Concepts (_:':':cs)       = TokenSemicolon             : lexB1Concepts cs
-lexB1Concepts ('e':'n':'d':cs) = []
+lexB1Concepts ('e':'n':'d':cs) = [TokenEnd]
 lexB1Concepts (c:cs) 
       | isSpace    c = lexB1Concepts cs
       | isAlphaNum c = var : lexB1Concepts rest
@@ -134,7 +139,7 @@ lexB1Concepts (c:cs)
 
 -- Lexer for Benchmark 2 file.
 lexerB2 :: String -> [Token]
-lexerB2 [] = []
+lexerB2 [] = [TokenEnd]
 lexerB2 ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':
          '_':'f':'o':'r':'m':'u':'l':'a':'e':'(':'c':'o':'n':'j':'e':
          'c':'t':'u':'r':'e':'s':',':' ':'E':'M':'L':')':'.':cs)
@@ -143,7 +148,7 @@ lexerB2 (c:cs) = lexerB2 cs
 
 -- Removes rubbish inbetween concepts.
 lexB2ContConcepts :: String -> [Token]
-lexB2ContConcepts []     = []
+lexB2ContConcepts []     = [TokenEnd]
 lexB2ContConcepts ('l':'i':'s':'t':'_':'o':'f':'_':'s':'p':'e':'c':'i':'a':'l':
                    '_':'f':'o':'r':'m':'u':'l':'a':'e':'(':'c':'o':'n':'j':'e':
                    'c':'t':'u':'r':'e':'s':',':' ':'E':'M':'L':')':'.':cs)
@@ -159,7 +164,7 @@ lexB2Concepts (c:cs) = lexB2Concepts cs
 
 -- Tokenizes a concept.
 lexB2Concept :: String -> [Token]
-lexB2Concept [] = []
+lexB2Concept []                       = [TokenEnd]
 lexB2Concept ('b':'o':'x':'(':cs)     = TokenForall : var : TokenOB : lexB2Concept rest
   where (var, rest) = lexVar cs
 lexB2Concept ('d':'i':'a':'(':cs)     = TokenExists : var : TokenOB : lexB2Concept rest

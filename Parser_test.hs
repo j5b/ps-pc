@@ -420,53 +420,53 @@ partest1 = testequality msg target result $ show input
   where msg    = "Failed to parse TokenTrue"
         result = file input
         target = [top]
-        input  = [TokenTrue]
+        input  = [TokenTrue, TokenEnd]
 
 partest2 = testequality msg target result $ show input
   where msg    = "Failed to parse TokenFalse"
         result = file input
         target = [bottom]
-        input  = [TokenFalse] 
+        input  = [TokenFalse, TokenEnd] 
 
 partest3 = testequality msg target result $ show input
    where msg    = "Failed to parse TokenVar String"
          result = file input
          target = [atoma]
-         input  = [TokenVar "A"]
+         input  = [TokenVar "A", TokenEnd]
 
 partest4 = testequality msg target result $ show input
    where msg    = "Failed to parse TokenAnd"
          result = file input
          target = [a_and_b]
-         input  = [TokenAnd, TokenOB, TokenVar "A", TokenVar "B", TokenCB]
+         input  = [TokenAnd, TokenOB, TokenVar "A", TokenVar "B", TokenCB, TokenEnd]
 
 partest5 = testequality msg target result $ show input
    where msg    = "Failed to parse TokenOr"
          result = file input
          target = [a_or_b]
-         input  = [TokenOr, TokenOB, TokenVar "A", TokenVar "B", TokenCB]
+         input  = [TokenOr, TokenOB, TokenVar "A", TokenVar "B", TokenCB, TokenEnd]
 
 partest6 = testequality msg target result $ show input
    where msg    = "Failed to parse TokenImplies"
          result = file input
          target = [Or (Neg $ Atom "A") (Atom "B")]
-         input  = [TokenVar "A", TokenImplies, TokenVar "B"]
+         input  = [TokenVar "A", TokenImplies, TokenVar "B", TokenEnd]
 
 partest7 = testequality msg target result $ show input
    where msg    = "Failed to parse TokenNeg"
          result = file input
          target = [notatoma]
-         input  = [TokenNeg, TokenVar "A"]
+         input  = [TokenNeg, TokenVar "A", TokenEnd]
 
 partest8 = testequality msg target result $ show input
    where msg    = "Failed to parse TokenForall"
          result = file input
          target = [forall_r_a]
-         input  = [TokenForall, TokenVar "R", TokenOB, TokenVar "A", TokenCB]
+         input  = [TokenForall, TokenVar "R", TokenOB, TokenVar "A", TokenCB, TokenEnd]
 
 partest9 = testequality msg target result $ show input
    where msg    = "Failed to parse TokenExists"
          result = file input
          target = [exists_r_a]
-         input  = [TokenExists, TokenVar "R", TokenOB, TokenVar "A", TokenCB]
+         input  = [TokenExists, TokenVar "R", TokenOB, TokenVar "A", TokenCB, TokenEnd]
 
