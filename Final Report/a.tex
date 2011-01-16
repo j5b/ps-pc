@@ -1,0 +1,42 @@
+
+The main goal of our project was to create a tool for formal reasoning
+in a knowledge representation framework called Description Logic. More
+specifically a solver for Description Logic. Description Logic find
+many uses in Artificial Intelligence, Bioinformatics and Web
+Semantic. The latter is one of the most prominent examples of
+application of Description Logic since it provides a way create a
+knowledge domain for websites, and hence has potential to improve the
+``surfing on the web'' experience.
+
+More specifically our software provides a tool for showing
+satisfiability or otherwise unsatisfiability in Description Logic by
+generating a model (for satisfiability) or a proof (otherwise). The
+program was written in Haskell for the GHC (Glasgow Haskell Compiler)
+Platform and is intented to run on most platforms. It has been tested
+on Windows, Mac OS X and Linux and is licensed under the open-source
+license GPL 3.0. Additionally it requires Graphivz, Latex, Happy and
+Cabal to be installed. 
+
+Unlike most other Description Logic solvers which are focused on Web
+Semantics our software possess the following aspects and qualities: 
+
+\begin{itemize}
+\item It unifies both the proof and model generator in one tool and
+  the generated output are then checked with a seperate function (a
+  proof checker or a model checker) to provide confidence to the
+  user about the correctness of the output.
+\item It assumes the Open World assumption unlike for instance Prolog
+\item It is targeted for academia since the program generates output
+  that can be easily integrated into latex documents.
+\item It is highly flexible especially since the software has been
+  written in the high level language Haskell which is particularly
+  well suited for Description Logic.
+\item It is open-source under the license GPL 3.0 so it can be
+  incorporated in other project, it can be forked if necessary and can
+  be used to study the algorithms used for deciding satisfiability or
+  otherwise unsatisfiability.
+\item it focuses on providing short, correct and clear output of the
+  obtained models and proofs in a graphical or a textual format, thus
+  the software can help study the theory of Description Logic.
+\end{itemize}
+

@@ -1,0 +1,35 @@
+The following program is a solver for ALC a Description Logic. 
+The solver determines satisfiability of a knowledge base by 
+either providing a model or otherwise a proof if it is unsatisfiable.
+
+REQUIREMENTS:
+  -- GHC (>= 6.10) installed 
+  -- Cabal installed
+  -- Graphivz installed
+  -- Latex installed
+  -- Happy (parser generator) installed
+
+INSTALLATION: 
+
+(local)
+  happy Parser.y
+  runhaskell Setup.hs configure --user
+  runhaskell Setup.hs build
+  runhaskell Setup.hs install
+
+(global)
+  happy Parser.y
+  runhaskell Setup.hs configure
+  runhaskell Setup.hs build
+  sudo runhaskell Setup.hs install (or equivalent)
+
+If problems arise because happy can't be found do the following
+after running "happy Parser.y":       
+  mv Parser.y .parser.y
+
+RUNNING:
+ps-pc --help	
+ps-pc --gamma [GAMMA] --givens [GIVENS] --mode [MODE] --output [FILE]
+
+The order for the options doesn't matter and there are defaults options
+for each. For more information run the first command.
