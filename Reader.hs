@@ -99,6 +99,11 @@ match str1 str2 = match' str1 str2
 isFilePath :: String -> Bool
 isFilePath string = length (filter (== '.') string) == 1
 
+empty :: String -> Bool
+empty []  = True
+empty (' ':rest) = empty rest
+empty _ = False 
+
 -- Takes the information obtained and turns into a command
 createCommand :: [Info] -> IO Command
 createCommand [] = error "Can't do nothing with no arguments please refer to help"
@@ -107,8 +112,8 @@ createCommand infos
     | otherwise = do 
         gammaStr <- readGamma gm
         givensStr <- readGivens gi
-        let gamma = file $ lexerI gammaStr
-        let givens = file $ lexerI givensStr
+        let gamma = if empty gammaStr then [T] else file $ lexerI gammaStr
+        let givens = if empty givensStr then [T] else file $ lexerI givensStr
         return $ Solve outmode (gamma,givens) outfile
     where (gm,gi,outf,outmode) = processInfo infos
           outfile = readLocation outf
