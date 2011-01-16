@@ -31,9 +31,9 @@ resultToConsole (Right proof) file = proofToConsole file proof
 -- creates a string representing the model
 modelToConsole :: FilePath -> Model -> IO ()
 modelToConsole file (dom,unarys,binarys) 
-    = do putStrLn $ "The generated model has been saved to models/"++file++".txt"
+    = do putStrLn $ "The generated model has been saved to "++file++".txt"
          let result = dompart++unarypart++binpart
-         output <- openFile ("models/"++file++".txt") WriteMode
+         output <- openFile (file++".txt") WriteMode
          hPutStrLn output result
          hClose output
          putStrLn result
@@ -59,8 +59,8 @@ processBinarys list = concatMap f list
 proofToConsole :: FilePath -> ProofTree -> IO ()
 proofToConsole file proof
     = do let result = (unlines . proofToConsoleInternal) proof
-         putStrLn $ "The generated proof has been saved to proofs/"++file++".txt"
-         output <- openFile ("proofs/"++file++".pdf") WriteMode
+         putStrLn $ "The generated proof has been saved to "++file++".txt"
+         output <- openFile (file++".pdf") WriteMode
          hPutStrLn output result
          hClose output
          putStrLn result
