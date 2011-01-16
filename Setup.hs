@@ -10,6 +10,4 @@ import System.Exit
 --import TestMain
 
 main :: IO ()
-main = defaultMainWithHooks simpleUserHooks
-     { postConf = postconfiguration }
-
+main = defaultMain
